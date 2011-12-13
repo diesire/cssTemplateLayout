@@ -20,8 +20,7 @@ AsyncTestCase("templateLayoutAsync", {
         var text = "body {display-model: \"a (intrinsic), b (intrinsic)\";} div#uno {situated: a; display-model: \"123 (intrinsic)\";}";
         queue.call(function (callbacks) {
             var myCallback = callbacks.add(function () {
-                wef.fn.templateLayout.init();
-                wef.fn.cssParser.init().parse(text);
+                wef.fn.cssParser.parse(text);
             });
             window.setTimeout(myCallback, 5000);
         });
