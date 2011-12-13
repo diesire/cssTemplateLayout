@@ -13,17 +13,12 @@
         description:"W3C CSS Template Layout Module",
         authors:["Pablo Escalada <uo1398@uniovi.es>"],
         licenses:["MIT"], //TODO: Licenses
-        templateLayout:function () {
-            document.addEventListener('selectorFound', function (e) {
-                // e.target matches the elem from above
-                lastEvent = e;
-                //console.log(lastEvent.selectorText | lastEvent.property);
-            }, false);
+        init:function () {
 
             document.addEventListener('propertyFound', function (e) {
                 // e.target matches the elem from above
                 lastEvent = e;
-                //console.log(lastEvent.selectorText | lastEvent.property);
+                //console.log(lastEvent.property);
             }, false);
             return templateLayout;
         },
