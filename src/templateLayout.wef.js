@@ -20,9 +20,10 @@ var parser = wef.fn.cssParser; //TODO: loader
 
         init:function () {
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                // e.target matches the elem from above
+                //console.log(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
                 //TODO populate TemplateDOM
+
             }, false);
             return templateLayout;
         },
