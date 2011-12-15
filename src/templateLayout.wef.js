@@ -5,7 +5,11 @@
  */
 
 //requires: cssParser
+var parser = wef.fn.cssParser; //TODO: loader
 //exports: templateLayout
+
+
+
 (function () {
     var templateLayout = {
         name:"templateLayout",
@@ -13,20 +17,23 @@
         description:"W3C CSS Template Layout Module",
         authors:["Pablo Escalada <uo1398@uniovi.es>"],
         licenses:["MIT"], //TODO: Licenses
-        init:function () {
 
-            document.addEventListener('propertyFound', function (e) {
+        init:function () {
+            document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 // e.target matches the elem from above
                 lastEvent = e;
                 //console.log(lastEvent.property);
+                //TODO populate TemplateDOM
             }, false);
             return templateLayout;
         },
+
         getLastEvent:function () {
             return lastEvent;
         }
     };
-    var lastEvent = 0;
+
+    var lastEvent = null;
 
     wef.plugins.register("templateLayout", templateLayout);
 })();

@@ -26,7 +26,7 @@ AsyncTestCase("templateLayoutAsync", {
         });
 
         queue.call(function () {
-            var result = wef.fn.templateLayout.getLastEvent().property;
+            var result = wef.fn.templateLayout.getLastEvent().declaration.property;
             //console.log(result);
             assertEquals("display-model", result);
         })
