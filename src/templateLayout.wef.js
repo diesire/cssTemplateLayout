@@ -22,7 +22,6 @@ var parser = wef.fn.cssParser; //TODO: loader
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 // e.target matches the elem from above
                 lastEvent = e;
-                //console.log(lastEvent.property);
                 //TODO populate TemplateDOM
             }, false);
             return templateLayout;
