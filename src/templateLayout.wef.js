@@ -17,8 +17,8 @@ var parser = wef.fn.cssParser; //TODO: loader
         authors:["Pablo Escalada <uo1398@uniovies>"],
         licenses:["MIT"], //TODO: Licenses
         constants:{
-            DISPLAY_MODEL:"display-model",
-            SITUATED:"situated"
+            DISPLAY:"display-model",
+            SITUATION:"situated"
         },
 
         init:function () {
@@ -26,33 +26,24 @@ var parser = wef.fn.cssParser; //TODO: loader
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 console.log(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
+                //TODO store them
+                //buffer.add(e.data.selectorText, e.data.declaration);
                 //TODO populate TemplateDOM
-                var model = e.data.declaration.property == this.constants.DISPLAY_MODEL ? e.data.declaration.valueText : "";
-                var situation = e.data.declaration.property == this.constants.SITUATED ? e.data.declaration.valueText : "";
-                this.add(e.data.selectorText, model, situation);
+                //var model = e.data.declaration.property == this.constants.DISPLAY ? e.data.declaration.valueText : "";
+                //var situation = e.data.declaration.property == this.constants.SITUATION ? e.data.declaration.valueText : "";
+                //this.add(e.data.selectorText, model, situation);
 
             }, false);
             return templateLayout;
         },
-        add:function (selector, model, situated) {
-            //no situated
-            if (situated == "") {
-                root.add(new Template(selector, model, situated));
-            } else {
-                throw "Operation not implemented";
-                //situated
-                //root.search(function (template) {}).add(new Template(selector, model, situated));
-            }
 
-
-        },
+        //testing purposes
         getLastEvent:function () {
             return lastEvent;
         }
     };
 
     var lastEvent = null;
-    var root = null;
 
     wef.plugins.register("templateLayout", templateLayout);
 })();
@@ -63,15 +54,7 @@ function Template(selectorText, model, situated) {
     this.situated = situated;
 }
 Template.prototype = {
-    childTemplates:{},
     model:"",
     selectorText:"",
-    situated:"",
-    situation:"",
-    isContainer:function () {
-        return true;
-    },
-    add:function (child) {
-        this.childTemplates[child.selectorText] = child;
-    }
+    situated:""
 };
