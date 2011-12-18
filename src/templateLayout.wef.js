@@ -25,7 +25,9 @@ var parser = wef.fn.cssParser; //TODO: loader
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
-                store(e.data.selectorText, e.data.declaration);
+                if(isSupportedProperty(e.data.declaration)) {
+                    store(e.data.selectorText, e.data.declaration);
+                }
             }, false);
             return templateLayout;
         },
@@ -66,6 +68,11 @@ var parser = wef.fn.cssParser; //TODO: loader
 
     function store(selector, declaration) {
         buffer[selector] = declaration;
+    }
+    function isSupportedProperty(declaration) {
+        templateLayout.constants.some(function(property, i, array) {
+            return declaration.property == property ? true: false;
+        });
     }
 
     function Template(selectorText, model, situated) {
