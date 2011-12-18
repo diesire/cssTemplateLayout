@@ -1,7 +1,7 @@
 body {
     display: "abcd"
 }
-h1 {situated: "d"}
-h2 {situated: "c"}
-h3 {situated: "b"}
-h4 {situated: "a"}
+h1 {position: "d"}
+h2 {position: "c"}
+h3 {position: "b"}
+h4 {position: "a"}

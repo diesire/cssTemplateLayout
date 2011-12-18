@@ -17,14 +17,14 @@ var parser = wef.fn.cssParser; //TODO: loader
         authors:["Pablo Escalada <uo1398@uniovies>"],
         licenses:["MIT"], //TODO: Licenses
         constants:{
-            DISPLAY:"display-model",
-            SITUATION:"situated"
+            DISPLAY:"display",
+            POSITION:"position"
         },
 
         init:function () {
             root = new Template("", "", "");
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                console.log(e.data.selectorText, e.data.declaration);
+                console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
                 //TODO store them
                 //buffer.add(e.data.selectorText, e.data.declaration);
