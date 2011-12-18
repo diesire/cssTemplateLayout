@@ -22,17 +22,12 @@ var parser = wef.fn.cssParser; //TODO: loader
         },
 
         init:function () {
-            root = new Template("", "", "");
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                console.debug(e.data.selectorText, e.data.declaration);
+                //console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
-                //TODO store them
-
-                store(e.data.selectorText, e.data.declaration);
-                //TODO populate TemplateDOM
-                //var model = e.data.declaration.property == this.constants.DISPLAY ? e.data.declaration.valueText : "";
-                //var situation = e.data.declaration.property == this.constants.SITUATION ? e.data.declaration.valueText : "";
-                //this.add(e.data.selectorText, model, situation);
+                if (isSupportedProperty(e.data.declaration)) {
+                    store(e.data.selectorText, e.data.declaration);
+                }
 
             }, false);
             return templateLayout;
@@ -52,7 +47,8 @@ var parser = wef.fn.cssParser; //TODO: loader
                 try {
                     return ajaxReadFile(url);
                 } catch (e) {
-                    //TODO: chrome workaround
+                    //FIXME: chrome workaround
+                    console.error(e);
                     throw "OperationNotSupportedException";
                 }
             }
@@ -64,7 +60,7 @@ var parser = wef.fn.cssParser; //TODO: loader
         getLastEvent:function () {
             return lastEvent;
         },
-        getBuffer: function() {
+        getBuffer:function () {
             return buffer;
         }
     };
@@ -74,6 +70,13 @@ var parser = wef.fn.cssParser; //TODO: loader
 
     function store(selector, declaration) {
         buffer[selector] = declaration;
+    }
+
+    function isSupportedProperty(declaration) {
+        for (var property in templateLayout.constants) {
+            if (templateLayout.constants[property] == declaration.property) return true;
+        }
+        return false;
     }
 
     function Template(selectorText, model, situated) {

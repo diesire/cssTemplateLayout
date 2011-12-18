@@ -34,7 +34,6 @@ AsyncTestCase("templateLayoutAsync", {
 
         queue.call(function () {
             var result = wef.fn.templateLayout.getLastEvent().data.declaration.property;
-            //console.log(result);
             assertEquals("display", result);
         })
     },
@@ -50,7 +49,6 @@ AsyncTestCase("templateLayoutAsync", {
 
             queue.call(function () {
                 var result = wef.fn.templateLayout.getBuffer();
-                //console.log(result);
                 assertEquals({property:"display",valueText:"\"abcd\""}, result["body"]);
             })
         }
