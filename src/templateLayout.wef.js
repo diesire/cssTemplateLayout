@@ -39,7 +39,7 @@ var parser = wef.fn.cssParser; //TODO: loader
 
         transform:function (cssFile) {
 
-            function readFile(url) {
+            function readFile(cssFile) {
                 function html5ReadFile() {
                     var support = window.File && window.FileReader && window.FileList && window.Blob;
                     if (!support) throw "OperationNotSupportedException";
@@ -78,15 +78,15 @@ var parser = wef.fn.cssParser; //TODO: loader
 
                 function ajaxReadFile() {
                     var request = new XMLHttpRequest();
-                    request.open("get", url, false);
+                    request.open("get", cssFile, false);
                     request.send("");
                     return request.responseText;
                 }
 
                 try {
-                    return ajaxReadFile(url);
+                    return ajaxReadFile(cssFile);
                 } catch (e) {
-                    return html5ReadFile(url);
+                    return html5ReadFile(cssFile);
                 }
 
             }
