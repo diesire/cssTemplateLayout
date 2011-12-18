@@ -40,6 +40,7 @@ var parser = wef.fn.cssParser; //TODO: loader
         transform:function (cssFile) {
 
             function readFile(url) {
+                //TODO: refactor
                 function ajaxReadFile() {
                     var request = new XMLHttpRequest();
                     request.open("get", url, false);
@@ -53,11 +54,9 @@ var parser = wef.fn.cssParser; //TODO: loader
                     //TODO: chrome workaround
                     throw "OperationNotSupportedException";
                 }
-
             }
 
             parser.parse(readFile(cssFile));
-
         },
 
         //testing purposes
@@ -68,16 +67,17 @@ var parser = wef.fn.cssParser; //TODO: loader
 
     var lastEvent = null;
 
+    function Template(selectorText, model, situated) {
+        this.selectorText = selectorText;
+        this.model = model;
+        this.situated = situated;
+    }
+
+    Template.prototype = {
+        model:"",
+        selectorText:"",
+        situated:""
+    };
+
     wef.plugins.register("templateLayout", templateLayout);
 })();
-
-function Template(selectorText, model, situated) {
-    this.selectorText = selectorText;
-    this.model = model;
-    this.situated = situated;
-}
-Template.prototype = {
-    model:"",
-    selectorText:"",
-    situated:""
-};
