@@ -14,24 +14,44 @@ TestCase("templateLayout", {
     },
     "test templateLayout transform":function () {
             assertNotUndefined(wef.fn.templateLayout.transform);
-        }
+    },
+
+    "test templateLayout buffer":function() {
+        assertTrue(true);
+    }
 });
 
 AsyncTestCase("templateLayoutAsync", {
     "test templateLayout listen cssParser events":function (queue) {
         //requires cssParser
-        var text = "body {display-model: \"a (intrinsic), b (intrinsic)\";} div#uno {situated: a; display-model: \"123 (intrinsic)\";}";
+        var text = "body {display: \"a (intrinsic), b (intrinsic)\";} div#uno {situated: a; display: \"123 (intrinsic)\";}";
         queue.call(function (callbacks) {
             var myCallback = callbacks.add(function () {
                 wef.fn.cssParser.parse(text);
             });
-            window.setTimeout(myCallback, 5000);
+            window.setTimeout(myCallback, 1000);
         });
 
         queue.call(function () {
             var result = wef.fn.templateLayout.getLastEvent().data.declaration.property;
             //console.log(result);
-            assertEquals("display-model", result);
+            assertEquals("display", result);
         })
-    }
+    },
+    "test templateLayout buffer":function (queue) {
+            //requires cssParser
+            var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
+            queue.call(function (callbacks) {
+                var myCallback = callbacks.add(function () {
+                    wef.fn.cssParser.parse(text);
+                });
+                window.setTimeout(myCallback, 1000);
+            });
+
+            queue.call(function () {
+                var result = wef.fn.templateLayout.getBuffer();
+                //console.log(result);
+                assertEquals({property:"display",valueText:"\"abcd\""}, result["body"]);
+            })
+        }
 })

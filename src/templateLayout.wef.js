@@ -27,7 +27,8 @@ var parser = wef.fn.cssParser; //TODO: loader
                 console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
                 //TODO store them
-                //buffer.add(e.data.selectorText, e.data.declaration);
+
+                store(e.data.selectorText, e.data.declaration);
                 //TODO populate TemplateDOM
                 //var model = e.data.declaration.property == this.constants.DISPLAY ? e.data.declaration.valueText : "";
                 //var situation = e.data.declaration.property == this.constants.SITUATION ? e.data.declaration.valueText : "";
@@ -62,10 +63,18 @@ var parser = wef.fn.cssParser; //TODO: loader
         //testing purposes
         getLastEvent:function () {
             return lastEvent;
+        },
+        getBuffer: function() {
+            return buffer;
         }
     };
 
     var lastEvent = null;
+    var buffer = {};
+
+    function store(selector, declaration) {
+        buffer[selector] = declaration;
+    }
 
     function Template(selectorText, model, situated) {
         this.selectorText = selectorText;
