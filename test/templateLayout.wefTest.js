@@ -11,7 +11,10 @@ TestCase("templateLayout", {
     "test templateLayout namespace":function () {
         assertNotUndefined(wef.fn.templateLayout);
         assertEquals("templateLayout", wef.fn.templateLayout.name);
-    }
+    },
+    "test templateLayout transform":function () {
+            assertNotUndefined(wef.fn.templateLayout.transform);
+        }
 });
 
 AsyncTestCase("templateLayoutAsync", {

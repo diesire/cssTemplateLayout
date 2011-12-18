@@ -37,6 +37,64 @@ var parser = wef.fn.cssParser; //TODO: loader
             return templateLayout;
         },
 
+        transform:function (cssFile) {
+
+            function readFile(url) {
+                function html5ReadFile() {
+                    var support = window.File && window.FileReader && window.FileList && window.Blob;
+                    if (!support) throw "OperationNotSupportedException";
+
+                    var file;
+                    var reader = new FileReader();
+                    var result;
+
+                    document.addEventListener("change", function() {
+                        file = function handleFiles(evt) {
+                                                var files = evt.target.files;
+                                                return files[0];
+                                                /* now you can work with the file list */
+                                            }
+                    }, false);
+
+
+
+
+                    // Closure to capture the file information.
+                    reader.onload = (function (file) {
+                        result = function (e) {
+                            // Render thumbnail.
+                            var span = document.createElement('span');
+                            span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', file.name, '"/>'].join('');
+                            document.getElementById('list').insertBefore(span, null);
+                        };
+                        return result;
+                    })(file);
+
+                    // Read in the image file as a data URL.
+                    reader.readAsText(file);
+
+                }
+
+                function ajaxReadFile() {
+                    var request = new XMLHttpRequest();
+                    request.open("get", url, false);
+                    request.send("");
+                    return request.responseText;
+                }
+
+                try {
+                    return ajaxReadFile(url);
+                } catch (e) {
+                    return html5ReadFile(url);
+                }
+
+            }
+
+            parser.parse(readFile(cssFile));
+
+        },
+
         //testing purposes
         getLastEvent:function () {
             return lastEvent;
