@@ -13,10 +13,10 @@ TestCase("templateLayout", {
         assertEquals("templateLayout", wef.fn.templateLayout.name);
     },
     "test templateLayout transform":function () {
-        assertNotUndefined(wef.fn.templateLayout.transform);
+            assertNotUndefined(wef.fn.templateLayout.transform);
     },
 
-    "test templateLayout buffer":function () {
+    "test templateLayout buffer":function() {
         assertTrue(true);
     }
 });
@@ -34,40 +34,24 @@ AsyncTestCase("templateLayoutAsync", {
 
         queue.call(function () {
             var result = wef.fn.templateLayout.getLastEvent().data.declaration.property;
+            //console.log(result);
             assertEquals("display", result);
         })
     },
     "test templateLayout buffer":function (queue) {
-        //requires cssParser
-        var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
-        queue.call(function (callbacks) {
-            var myCallback = callbacks.add(function () {
-                wef.fn.cssParser.parse(text);
+            //requires cssParser
+            var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
+            queue.call(function (callbacks) {
+                var myCallback = callbacks.add(function () {
+                    wef.fn.cssParser.parse(text);
+                });
+                window.setTimeout(myCallback, 1000);
             });
-            window.setTimeout(myCallback, 1000);
-        });
 
-        queue.call(function () {
-            var result = wef.fn.templateLayout.getBuffer();
-            assertEquals({property:"display", valueText:"\"abcd\""}, result["body"]);
-        })
-    },
-    "test templateLayout isValidProperty":function (queue) {
-        //requires cssParser
-        var text = "body {display: \"abcd\"; background-color: red} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
-        queue.call(function (callbacks) {
-            var myCallback = callbacks.add(function () {
-                wef.fn.cssParser.parse(text);
-            });
-            window.setTimeout(myCallback, 1000);
-        });
-
-        queue.call(function () {
-            var result = wef.fn.templateLayout.getBuffer();
-            assertEquals({property:"display", valueText:"\"abcd\""}, result["body"]);
-            assertUndefined(result["body"]["background-color"]);
-            assertEquals("\"a\"", result["h4"]["position"]);
-            assertEquals("\"abcd\"", result["body"]["display"]);
-        })
-    }
+            queue.call(function () {
+                var result = wef.fn.templateLayout.getBuffer();
+                //console.log(result);
+                assertEquals({property:"display",valueText:"\"abcd\""}, result["body"]);
+            })
+        }
 })
