@@ -22,37 +22,29 @@ var parser = wef.fn.cssParser; //TODO: loader
         },
 
         init:function () {
-            root = new Template("", "", "");
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
-                //TODO store them
-
                 store(e.data.selectorText, e.data.declaration);
-                //TODO populate TemplateDOM
-                //var model = e.data.declaration.property == this.constants.DISPLAY ? e.data.declaration.valueText : "";
-                //var situation = e.data.declaration.property == this.constants.SITUATION ? e.data.declaration.valueText : "";
-                //this.add(e.data.selectorText, model, situation);
-
             }, false);
             return templateLayout;
         },
 
         transform:function (cssFile) {
 
-            function readFile(url) {
-                //TODO: refactor
+            function readFile(file) {
+                //TODO: refactor wef.ajax
                 function ajaxReadFile() {
                     var request = new XMLHttpRequest();
-                    request.open("get", url, false);
+                    request.open("get", file, false);
                     request.send("");
                     return request.responseText;
                 }
 
                 try {
-                    return ajaxReadFile(url);
+                    return ajaxReadFile(file);
                 } catch (e) {
-                    //TODO: chrome workaround
+                    //FIXME: chrome workaround
                     throw "OperationNotSupportedException";
                 }
             }
