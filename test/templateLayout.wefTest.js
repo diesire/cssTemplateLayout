@@ -33,8 +33,7 @@ AsyncTestCase("templateLayoutAsync", {
         });
 
         queue.call(function () {
-            var result = wef.fn.templateLayout.getLastEvent().data.declaration.property;
-            assertEquals("display", result);
+            assertEquals(wef.fn.cssParser.events.PARSER_DONE, wef.fn.templateLayout.getLastEvent().type);
         })
     },
     "test templateLayout buffer":function (queue) {

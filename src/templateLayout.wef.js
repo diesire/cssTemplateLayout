@@ -22,13 +22,18 @@ var parser = wef.fn.cssParser; //TODO: loader
         },
 
         init:function () {
+            document.addEventListener(parser.events.PARSER_START, function (e) {
+                lastEvent = null;
+                buffer = {};
+            }, false);
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                //console.debug(e.data.selectorText, e.data.declaration);
                 lastEvent = e;
                 if (isSupportedProperty(e.data.declaration)) {
                     store(e.data.selectorText, e.data.declaration);
                 }
-
+            }, false);
+            document.addEventListener(parser.events.PARSER_DONE, function (e) {
+                lastEvent = e;
             }, false);
             return templateLayout;
         },
