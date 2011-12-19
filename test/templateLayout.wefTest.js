@@ -48,7 +48,7 @@ AsyncTestCase("templateLayoutAsync", {
 
         queue.call(function () {
             var result = wef.fn.templateLayout.getBuffer();
-            assertEquals({display:"\"abcd\""}, result["body"]);
+            assertEquals({"selectorText":"body","declaration":{"display":"\"abcd\""}}, result["body"]);
         })
     },
     "test templateLayout buffer appending":function (queue) {
@@ -63,8 +63,8 @@ AsyncTestCase("templateLayoutAsync", {
 
         queue.call(function () {
             var result = wef.fn.templateLayout.getBuffer();
-            assertEquals("\"cd\"", result["h1"]["display"]);
-            assertEquals("\"a\"", result["h1"]["position"]);
+            assertEquals("\"cd\"", result["h1"].declaration["display"]);
+            assertEquals("\"a\"", result["h1"].declaration["position"]);
         })
     }
 

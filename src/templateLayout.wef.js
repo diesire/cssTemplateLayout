@@ -32,7 +32,7 @@ var parser = wef.fn.cssParser; //TODO: loader
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 lastEvent = e;
                 if (isSupportedProperty(e.data)) {
-                    store(e.data.selectorText, e.data.declaration);
+                    store(e.data);
                 }
             }, false);
 
@@ -79,11 +79,11 @@ var parser = wef.fn.cssParser; //TODO: loader
     var lastEvent = null;
     var buffer = {};
 
-    function store(selectorText, declaration) {
-        if (!buffer[selectorText]) {
-            buffer[selectorText] = {};
+    function store(rule) {
+        if (!buffer[rule.selectorText]) {
+            buffer[rule.selectorText] = {selectorText:rule.selectorText, declaration:{}};
         }
-        buffer[selectorText][declaration.property] = declaration.valueText;
+        buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
     }
 
     function isSupportedProperty(rule) {
