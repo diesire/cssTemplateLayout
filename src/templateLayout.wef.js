@@ -31,7 +31,7 @@ var parser = wef.fn.cssParser; //TODO: loader
 
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 lastEvent = e;
-                if (isSupportedProperty(e.data.declaration)) {
+                if (isSupportedProperty(e.data)) {
                     store(e.data.selectorText, e.data.declaration);
                 }
             }, false);
@@ -70,6 +70,7 @@ var parser = wef.fn.cssParser; //TODO: loader
         getLastEvent:function () {
             return lastEvent;
         },
+
         getBuffer:function () {
             return buffer;
         }
@@ -78,25 +79,24 @@ var parser = wef.fn.cssParser; //TODO: loader
     var lastEvent = null;
     var buffer = {};
 
-    function store(selector, declaration) {
-        if (!buffer[selector]) {
-            buffer[selector] = {};
+    function store(selectorText, declaration) {
+        if (!buffer[selectorText]) {
+            buffer[selectorText] = {};
         }
-        buffer[selector][declaration.property] = declaration.valueText;
-
+        buffer[selectorText][declaration.property] = declaration.valueText;
     }
 
-    function isSupportedProperty(declaration) {
+    function isSupportedProperty(rule) {
         for (var property in templateLayout.constants) {
-            if (templateLayout.constants[property] == declaration.property) return true;
+            if (templateLayout.constants[property] == rule.declaration.property) return true;
         }
         return false;
     }
 
-    function Template(selectorText, model, situated) {
+    function Template(selectorText, display, position) {
         this.selectorText = selectorText;
-        this.model = model;
-        this.situated = situated;
+        this.model = display;
+        this.situated = position;
     }
 
     Template.prototype = {
@@ -106,7 +106,4 @@ var parser = wef.fn.cssParser; //TODO: loader
     };
 
     wef.plugins.register("templateLayout", templateLayout);
-}
-
-    )
-    ();
+})();
