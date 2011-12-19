@@ -13,10 +13,10 @@ TestCase("templateLayout", {
         assertEquals("templateLayout", wef.fn.templateLayout.name);
     },
     "test templateLayout transform":function () {
-            assertNotUndefined(wef.fn.templateLayout.transform);
+        assertNotUndefined(wef.fn.templateLayout.setTemplate);
     },
 
-    "test templateLayout buffer":function() {
+    "test templateLayout buffer":function () {
         assertTrue(true);
     }
 });
@@ -37,18 +37,36 @@ AsyncTestCase("templateLayoutAsync", {
         })
     },
     "test templateLayout buffer":function (queue) {
-            //requires cssParser
-            var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
-            queue.call(function (callbacks) {
-                var myCallback = callbacks.add(function () {
-                    wef.fn.cssParser.parse(text);
-                });
-                window.setTimeout(myCallback, 1000);
+        //requires cssParser
+        var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
+        queue.call(function (callbacks) {
+            var myCallback = callbacks.add(function () {
+                wef.fn.cssParser.parse(text);
             });
+            window.setTimeout(myCallback, 1000);
+        });
 
-            queue.call(function () {
-                var result = wef.fn.templateLayout.getBuffer();
-                assertEquals({property:"display",valueText:"\"abcd\""}, result["body"]);
-            })
-        }
+        queue.call(function () {
+            var result = wef.fn.templateLayout.getBuffer();
+            assertEquals({display:"\"abcd\""}, result["body"]);
+        })
+    },
+    "test templateLayout buffer appending":function (queue) {
+        //requires cssParser
+        var text = "body {display: \"ab\"} h1 {position: \"a\"; display: \"cd\"} h2 {position: \"b\"} h3 {position: \"c\"} h4 {position: \"d\"}";
+        queue.call(function (callbacks) {
+            var myCallback = callbacks.add(function () {
+                wef.fn.cssParser.parse(text);
+            });
+            window.setTimeout(myCallback, 1000);
+        });
+
+        queue.call(function () {
+            var result = wef.fn.templateLayout.getBuffer();
+            assertEquals("\"cd\"", result["h1"]["display"]);
+            assertEquals("\"a\"", result["h1"]["position"]);
+        })
+    }
+
+
 })

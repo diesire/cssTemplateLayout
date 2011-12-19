@@ -22,23 +22,28 @@ var parser = wef.fn.cssParser; //TODO: loader
         },
 
         init:function () {
+            lastEvent = null;
+
             document.addEventListener(parser.events.PARSER_START, function (e) {
-                lastEvent = null;
+                lastEvent = e;
                 buffer = {};
             }, false);
+
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
                 lastEvent = e;
                 if (isSupportedProperty(e.data.declaration)) {
                     store(e.data.selectorText, e.data.declaration);
                 }
             }, false);
+
             document.addEventListener(parser.events.PARSER_DONE, function (e) {
                 lastEvent = e;
+                //TODO: validate and transform
             }, false);
             return templateLayout;
         },
 
-        transform:function (cssFile) {
+        setTemplate:function (cssFile) {
 
             function readFile(url) {
                 //TODO: refactor
@@ -61,7 +66,7 @@ var parser = wef.fn.cssParser; //TODO: loader
             parser.parse(readFile(cssFile));
         },
 
-        //testing purposes
+        //only for testing purposes
         getLastEvent:function () {
             return lastEvent;
         },
@@ -74,7 +79,11 @@ var parser = wef.fn.cssParser; //TODO: loader
     var buffer = {};
 
     function store(selector, declaration) {
-        buffer[selector] = declaration;
+        if (!buffer[selector]) {
+            buffer[selector] = {};
+        }
+        buffer[selector][declaration.property] = declaration.valueText;
+
     }
 
     function isSupportedProperty(declaration) {
@@ -97,4 +106,7 @@ var parser = wef.fn.cssParser; //TODO: loader
     };
 
     wef.plugins.register("templateLayout", templateLayout);
-})();
+}
+
+    )
+    ();
