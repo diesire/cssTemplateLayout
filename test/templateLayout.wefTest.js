@@ -4,20 +4,20 @@
  * MIT Licensed
  */
 TestCase("templateLayout", {
-    "test templateLayout registration":function () {
+    "test registration":function () {
         assertNotUndefined(wef.plugins.registered.templateLayout);
         assertEquals("templateLayout", wef.plugins.registered.templateLayout.name);
     },
-    "test templateLayout namespace":function () {
+    "test namespace":function () {
         assertNotUndefined(wef.fn.templateLayout);
         assertEquals("templateLayout", wef.fn.templateLayout.name);
     },
-    "test templateLayout transform":function () {
+    "test transform":function () {
         assertNotUndefined(wef.fn.templateLayout.setTemplate);
     },
 
-    "test templateLayout buffer":function () {
-        assertTrue(true);
+    "test setTemplate":function () {
+        wef.fn.templateLayout.setTemplate("/test/plugins/templateLayout/test/css/template1.css");
     }
 });
 
@@ -67,6 +67,4 @@ AsyncTestCase("templateLayoutAsync", {
             assertEquals("\"a\"", result["h1"].declaration["position"]);
         })
     }
-
-
 })

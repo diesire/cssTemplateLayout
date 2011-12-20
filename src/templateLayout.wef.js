@@ -25,11 +25,13 @@ var parser = wef.fn.cssParser; //TODO: loader
             lastEvent = null;
 
             document.addEventListener(parser.events.PARSER_START, function (e) {
+                console.log("templateLayout listens: start parsing");
                 lastEvent = e;
                 buffer = {};
             }, false);
 
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
+                console.log("templateLayout listens: property found");
                 lastEvent = e;
                 if (isSupportedProperty(e.data)) {
                     store(e.data);
@@ -37,8 +39,10 @@ var parser = wef.fn.cssParser; //TODO: loader
             }, false);
 
             document.addEventListener(parser.events.PARSER_DONE, function (e) {
+                console.log("templateLayout listens: parsing done");
                 lastEvent = e;
                 //TODO: validate and transform
+                compile();
             }, false);
             return templateLayout;
         },
@@ -51,6 +55,7 @@ var parser = wef.fn.cssParser; //TODO: loader
                     var request = new XMLHttpRequest();
                     request.open("get", url, false);
                     request.send("");
+                    console.log("request status: ", request.statusText);
                     return request.responseText;
                 }
 
@@ -87,22 +92,60 @@ var parser = wef.fn.cssParser; //TODO: loader
     }
 
     function isSupportedProperty(rule) {
-        for (var property in templateLayout.constants) {
-            if (templateLayout.constants[property] == rule.declaration.property) return true;
+        for (var iterator in templateLayout.constants) {
+            if (templateLayout.constants[iterator] == rule.declaration.property) return true;
         }
         return false;
     }
 
-    function Template(selectorText, display, position) {
-        this.selectorText = selectorText;
-        this.model = display;
-        this.situated = position;
+    function compile() {
+        //<display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
+        //regex for <display-type>     /\s*inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none/i
+        //regex for <string>    /\s*\"[a-zA-Z0-9.@ ]+\"\s*/
+
+
+        function parseDisplay(displayValue) {
+            //var displayTypeRegExp = /\s*inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none/i;
+            //var stringRegExp = /\s*\"[a-zA-Z0-9.@ ]+\"\s*/;
+
+            console.log("displayyyyyyyyyyyyy");
+            try {
+                var separatorPattern = "\\s*";
+                var displayTypePattern = "^\\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?";
+                var stringPattern = "\\s*(\"[a-zA-Z0-9.@ ]+\"\\s*)+\\s*";
+                var pattern = displayTypePattern + stringPattern
+                var regExp = new RegExp(pattern, "i");
+                //console.log(regExp.toString());
+                var result = displayValue.match(regExp);
+                console.log("*********", result);
+            } catch (e) {
+                console.error(e);
+            }
+
+        }
+
+        function parseProperties(rule) {
+            //TODO:
+            if (rule.declaration[templateLayout.constants.DISPLAY] != undefined) {
+                parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
+            }
+        }
+
+        for (var selectorText in buffer) {
+            var metadata = parseProperties(buffer[selectorText]);
+            //var tmp = new Template(metadata);
+            //TODO: insert
+        }
+    }
+
+    function Template(rule) {
+        this.selectorText = rule.selectorText;
+        this.declaration = rule.declaration;
     }
 
     Template.prototype = {
-        model:"",
         selectorText:"",
-        situated:""
+        declaration:{}
     };
 
     wef.plugins.register("templateLayout", templateLayout);
