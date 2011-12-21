@@ -25,13 +25,13 @@ var parser = wef.fn.cssParser; //TODO: loader
             lastEvent = null;
 
             document.addEventListener(parser.events.PARSER_START, function (e) {
-                console.log("templateLayout listens: start parsing");
+                wef.log.info("templateLayout listens: start parsing");
                 lastEvent = e;
                 buffer = {};
             }, false);
 
             document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                console.log("templateLayout listens: property found");
+                wef.log.info("templateLayout listens: property found");
                 lastEvent = e;
                 if (isSupportedProperty(e.data)) {
                     store(e.data);
@@ -39,7 +39,7 @@ var parser = wef.fn.cssParser; //TODO: loader
             }, false);
 
             document.addEventListener(parser.events.PARSER_DONE, function (e) {
-                console.log("templateLayout listens: parsing done");
+                wef.log.info("templateLayout listens: parsing done");
                 lastEvent = e;
                 //TODO: validate and transform
                 compile();
@@ -55,7 +55,7 @@ var parser = wef.fn.cssParser; //TODO: loader
                     var request = new XMLHttpRequest();
                     request.open("get", url, false);
                     request.send("");
-                    console.log("request status: ", request.statusText);
+                    wef.log.info("request status: ", request.statusText);
                     return request.responseText;
                 }
 
@@ -63,7 +63,7 @@ var parser = wef.fn.cssParser; //TODO: loader
                     return ajaxReadFile(url);
                 } catch (e) {
                     //FIXME: chrome workaround
-                    console.error(e);
+                    wef.log.error(e);
                     throw "OperationNotSupportedException";
                 }
             }
@@ -107,7 +107,7 @@ var parser = wef.fn.cssParser; //TODO: loader
             var stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
             metadata.displayType = displayValue.match(displayTypeRegExp);
             metadata.grid = displayValue.match(stringRegExp);
-            console.log("+++++", displayValue, " ::: ", metadata);
+            wef.log.info("+++++", displayValue, " ::: ", metadata);
         }
 
         function parseProperties(rule) {
