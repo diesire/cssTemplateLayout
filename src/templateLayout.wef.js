@@ -99,29 +99,15 @@ var parser = wef.fn.cssParser; //TODO: loader
     }
 
     function compile() {
-        //<display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
-        //regex for <display-type>     /\s*inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none/i
-        //regex for <string>    /\s*\"[a-zA-Z0-9.@ ]+\"\s*/
-
+        //Grammar: <display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
 
         function parseDisplay(displayValue) {
-            //var displayTypeRegExp = /\s*inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none/i;
-            //var stringRegExp = /\s*\"[a-zA-Z0-9.@ ]+\"\s*/;
-
-            console.log("displayyyyyyyyyyyyy");
-            try {
-                var separatorPattern = "\\s*";
-                var displayTypePattern = "^\\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?";
-                var stringPattern = "\\s*(\"[a-zA-Z0-9.@ ]+\"\\s*)+\\s*";
-                var pattern = displayTypePattern + stringPattern
-                var regExp = new RegExp(pattern, "i");
-                //console.log(regExp.toString());
-                var result = displayValue.match(regExp);
-                console.log("*********", result);
-            } catch (e) {
-                console.error(e);
-            }
-
+            var metadata = {};
+            var displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig;
+            var stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
+            metadata.displayType = displayValue.match(displayTypeRegExp);
+            metadata.grid = displayValue.match(stringRegExp);
+            console.log("+++++", displayValue, " ::: ", metadata);
         }
 
         function parseProperties(rule) {
