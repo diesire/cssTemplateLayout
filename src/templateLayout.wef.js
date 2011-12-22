@@ -1,50 +1,18 @@
 /*!
- * TemplateLayout Wef plugin
+ * CSS Template Layout
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
 
 //requires: cssParser
-var parser = wef.fn.cssParser; //TODO: loader
 //exports: templateLayout
 
-
 (function () {
-    var templateLayout = {
-        name:"templateLayout",
-        version:"0.0.1",
-        description:"W3C CSS Template Layout Module",
-        authors:["Pablo Escalada <uo1398@uniovies>"],
-        licenses:["MIT"], //TODO: Licenses
+    var lastEvent, buffer, parser;
+    var that = {
         constants:{
             DISPLAY:"display",
             POSITION:"position"
-        },
-
-        init:function () {
-            lastEvent = null;
-
-            document.addEventListener(parser.events.PARSER_START, function (e) {
-                wef.log.info("templateLayout listens: start parsing");
-                lastEvent = e;
-                buffer = {};
-            }, false);
-
-            document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-                wef.log.info("templateLayout listens: property found");
-                lastEvent = e;
-                if (isSupportedProperty(e.data)) {
-                    store(e.data);
-                }
-            }, false);
-
-            document.addEventListener(parser.events.PARSER_DONE, function (e) {
-                wef.log.info("templateLayout listens: parsing done");
-                lastEvent = e;
-                //TODO: validate and transform
-                compile();
-            }, false);
-            return templateLayout;
         },
 
         setTemplate:function (cssFile) {
@@ -63,12 +31,12 @@ var parser = wef.fn.cssParser; //TODO: loader
                     return ajaxReadFile(url);
                 } catch (e) {
                     //FIXME: chrome workaround
-                    wef.log.error(e);
+                    wef.log.info(e);
                     throw "OperationNotSupportedException";
                 }
             }
 
-            parser.parse(readFile(cssFile));
+            wef.fn.cssParser.parse(readFile(cssFile));
         },
 
         //only for testing purposes
@@ -81,8 +49,34 @@ var parser = wef.fn.cssParser; //TODO: loader
         }
     };
 
-    var lastEvent = null;
-    var buffer = {};
+    function init() {
+        lastEvent = null;
+        buffer = {};
+        parser = wef.fn.cssParser;
+
+        document.addEventListener(parser.events.PARSER_START, function (e) {
+            wef.log.debug(this.toString());
+            wef.log.info("templateLayout listens: start parsing");
+            lastEvent = e;
+            buffer = {};
+        }, false);
+
+        document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
+            wef.log.info("templateLayout listens: property found");
+            lastEvent = e;
+            if (isSupportedProperty(e.data)) {
+                store(e.data);
+            }
+        }, false);
+
+        document.addEventListener(parser.events.PARSER_DONE, function (e) {
+            wef.log.info("templateLayout listens: parsing done");
+            lastEvent = e;
+            //TODO: validate and transform
+            compile();
+        }, false);
+    };
+    init();
 
     function store(rule) {
         if (!buffer[rule.selectorText]) {
@@ -92,8 +86,8 @@ var parser = wef.fn.cssParser; //TODO: loader
     }
 
     function isSupportedProperty(rule) {
-        for (var iterator in templateLayout.constants) {
-            if (templateLayout.constants[iterator] == rule.declaration.property) return true;
+        for (var iterator in that.constants) {
+            if (that.constants[iterator] == rule.declaration.property) return true;
         }
         return false;
     }
@@ -112,8 +106,8 @@ var parser = wef.fn.cssParser; //TODO: loader
 
         function parseProperties(rule) {
             //TODO:
-            if (rule.declaration[templateLayout.constants.DISPLAY] != undefined) {
-                parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
+            if (rule.declaration[that.constants.DISPLAY] != undefined) {
+                parseDisplay(rule.declaration[that.constants.DISPLAY]);
             }
         }
 
@@ -134,5 +128,5 @@ var parser = wef.fn.cssParser; //TODO: loader
         declaration:{}
     };
 
-    wef.plugins.register("templateLayout", templateLayout);
+    templateLayout = that;
 })();

@@ -4,20 +4,16 @@
  * MIT Licensed
  */
 TestCase("templateLayout", {
-    "test registration":function () {
-        assertNotUndefined(wef.plugins.registered.templateLayout);
-        assertEquals("templateLayout", wef.plugins.registered.templateLayout.name);
+    "test main":function () {
+        assertNotUndefined(templateLayout);
     },
-    "test namespace":function () {
-        assertNotUndefined(wef.fn.templateLayout);
-        assertEquals("templateLayout", wef.fn.templateLayout.name);
-    },
-    "test transform":function () {
-        assertNotUndefined(wef.fn.templateLayout.setTemplate);
-    },
-
     "test setTemplate":function () {
-        wef.fn.templateLayout.setTemplate("/test/plugins/templateLayout/test/css/template1.css");
+        //var template = template();
+        templateLayout.setTemplate("/test/test/css/template1.css");
+    },
+    "test xxx":function () {
+        templateLayout.setTemplate("/test/test/css/template1.css");
+        templateLayout.setTemplate("/test/test/css/template1.css");
     }
 });
 
@@ -33,8 +29,9 @@ AsyncTestCase("templateLayoutAsync", {
         });
 
         queue.call(function () {
-            assertEquals(wef.fn.cssParser.events.PARSER_DONE, wef.fn.templateLayout.getLastEvent().type);
-        })
+            console.log("--", wef.fn.cssParser.events.PARSER_DONE, templateLayout.getLastEvent());
+            assertEquals(wef.fn.cssParser.events.PARSER_DONE, templateLayout.getLastEvent().type);
+        });
     },
     "test templateLayout buffer":function (queue) {
         //requires cssParser
@@ -47,9 +44,9 @@ AsyncTestCase("templateLayoutAsync", {
         });
 
         queue.call(function () {
-            var result = wef.fn.templateLayout.getBuffer();
-            assertEquals({"selectorText":"body","declaration":{"display":"\"abcd\""}}, result["body"]);
-        })
+            var result = templateLayout.getBuffer();
+            assertEquals({"selectorText":"body", "declaration":{"display":"\"abcd\""}}, result["body"]);
+        });
     },
     "test templateLayout buffer appending":function (queue) {
         //requires cssParser
@@ -62,9 +59,9 @@ AsyncTestCase("templateLayoutAsync", {
         });
 
         queue.call(function () {
-            var result = wef.fn.templateLayout.getBuffer();
+            var result = templateLayout.getBuffer();
             assertEquals("\"cd\"", result["h1"].declaration["display"]);
             assertEquals("\"a\"", result["h1"].declaration["position"]);
-        })
+        });
     }
-})
+});
