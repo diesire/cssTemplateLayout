@@ -1,0 +1,13 @@
+h1. About CSS Template Layout
+
+CSS Template Layout is an implementation of "CSS Template Layout Module":http://www.w3.org/TR/css3-layout/ from W3C
+
+* License: "MIT License":https://github.com/diesire/cssTemplateLayout/blob/master/LICENSE.txt
+* Tests: "test/":https://github.com/diesire/cssTemplateLayout/tree/master/test
+
+h2. Features
+* Educational purposes. Because I`m learning JavaScript and Hello, world! is mainstream.
+* Work in progress. You know, forever beta stage.
+* Eating your own dog food. CSS Template Layout uses "Wef":https://github.com/diesire/wef my own "jQuery killer" framework.
+* Plain JavaScript, no third party libraries
+* Modular, extensible
