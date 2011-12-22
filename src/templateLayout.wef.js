@@ -3,10 +3,6 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
-
-//requires: cssParser
-//exports: templateLayout
-
 (function () {
     var lastEvent, buffer, parser;
     var that = {
