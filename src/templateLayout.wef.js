@@ -27,7 +27,7 @@
                     return ajaxReadFile(url);
                 } catch (e) {
                     //FIXME: chrome workaround
-                    wef.log.info(e);
+                    wef.log.error(e);
                     throw "OperationNotSupportedException";
                 }
             }
@@ -51,7 +51,6 @@
         parser = wef.fn.cssParser;
 
         document.addEventListener(parser.events.PARSER_START, function (e) {
-            wef.log.debug(this.toString());
             wef.log.info("templateLayout listens: start parsing");
             lastEvent = e;
             buffer = {};
@@ -92,19 +91,30 @@
         //Grammar: <display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
 
         function parseDisplay(displayValue) {
-            var metadata = {};
+            var displayMetadata = {};
             var displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig;
             var stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
-            metadata.displayType = displayValue.match(displayTypeRegExp);
-            metadata.grid = displayValue.match(stringRegExp);
-            wef.log.info("+++++", displayValue, " ::: ", metadata);
+            displayMetadata.displayType = displayValue.match(displayTypeRegExp);
+            displayMetadata.grid = displayValue.match(stringRegExp);
+            wef.log.debug("parserDisplay: ", displayValue, " : ", displayMetadata);
+            return displayMetadata;
+        }
+
+        function parsePosition(positionValue) {
+            var positionMetadata = {};
+            //TODO
+            wef.log.debug("parsePosition: ", positionValue, " : ", positionMetadata);
+            return positionMetadata;
         }
 
         function parseProperties(rule) {
-            //TODO:
-            if (rule.declaration[that.constants.DISPLAY] != undefined) {
-                parseDisplay(rule.declaration[that.constants.DISPLAY]);
-            }
+            var metadata = {};
+            //if (rule.declaration[that.constants.DISPLAY] != undefined) {
+                metadata.display = parseDisplay(rule.declaration[that.constants.DISPLAY]);
+            //}
+            metadata.position = parsePosition(rule.declaration[that.constants.POSITION]);
+            wef.log.debug("+ parserProperties: ", rule, " : ", metadata);
+            return metadata;
         }
 
         for (var selectorText in buffer) {
@@ -114,15 +124,5 @@
         }
     }
 
-    function Template(rule) {
-        this.selectorText = rule.selectorText;
-        this.declaration = rule.declaration;
-    }
-
-    Template.prototype = {
-        selectorText:"",
-        declaration:{}
-    };
-
-    templateLayout = that;
+    window.templateLayout = that;
 })();
