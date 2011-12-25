@@ -4,17 +4,19 @@
  * MIT Licensed
  */
 (function () {
-    var lastEvent, buffer, parser;
+    var lastEvent, buffer, parser, compiler;
     var that = {
         constants:{
             DISPLAY:"display",
             POSITION:"position"
         },
+        OperationNotSupportedException: Error,
 
         setTemplate:function (cssFile) {
+            wef.log.info("loading template...");
 
             function readFile(url) {
-                //TODO: refactor
+                //TODO: FIXME
                 function ajaxReadFile() {
                     var request = new XMLHttpRequest();
                     request.open("get", url, false);
@@ -26,13 +28,15 @@
                 try {
                     return ajaxReadFile(url);
                 } catch (e) {
-                    //FIXME: chrome workaround
                     wef.log.error(e);
-                    throw "OperationNotSupportedException";
+                    throw new that.OperationNotSupportedException(e);
                 }
             }
 
             wef.fn.cssParser.parse(readFile(cssFile));
+            wef.log.info("template loaded OK");
+        },
+
         insertTemplate:function (templateSource) {
             wef.log.info("adding template...");
             wef.fn.cssParser.parse(templateSource);
@@ -49,54 +53,16 @@
         }
     };
 
-    function init() {
-        lastEvent = null;
-        buffer = {};
-        parser = wef.fn.cssParser;
+    function defaultCompiler() {
+        var that = {
+            compile: compile,
+            UnexpectedValueException: Error
+        };
 
-        document.addEventListener(parser.events.PARSER_START, function (e) {
-            wef.log.info("templateLayout listens: start parsing");
-            lastEvent = e;
-            buffer = {};
-        }, false);
+        (function init() {
+            wef.log.info("new compiler created");
+        })();
 
-        document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-            wef.log.info("templateLayout listens: property found");
-            lastEvent = e;
-            if (isSupportedProperty(e.data)) {
-                store(e.data);
-            }
-        }, false);
-
-        document.addEventListener(parser.events.PARSER_DONE, function (e) {
-            wef.log.info("templateLayout listens: parsing done");
-            lastEvent = e;
-            //TODO: validate and transform
-            compile();
-        }, false);
-    };
-    init();
-
-    function store(rule) {
-        if (!buffer[rule.selectorText]) {
-            buffer[rule.selectorText] = {selectorText:rule.selectorText, declaration:{}};
-        }
-        buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
-        wef.log.info("property stored: ", rule.declaration.property);
-    }
-
-    function isSupportedProperty(rule) {
-        for (var iterator in that.constants) {
-            if (that.constants[iterator] == rule.declaration.property) {
-                wef.log.info("supported property found: ", rule.declaration.property);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function compile() {
-        wef.log.info("compiling...");
         function parseDisplay(displayValue) {
             /**
              * Name:    ‘display’
@@ -133,6 +99,7 @@
             var displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig;
             var stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
             if (displayValue != undefined) {
+                //TODO: check invalid values
                 displayMetadata.displayType = displayValue.match(displayTypeRegExp);
                 displayMetadata.grid = displayValue.match(stringRegExp);
             }
@@ -155,9 +122,15 @@
             var positionMetadata = {
                 position: null
             };
+            var matched;
             var positionRegExp = /^\s*([a-zA-Z0-9]+|same)\s*/i;
             if (positionValue != undefined) {
-                positionMetadata.position = positionValue.match(positionRegExp)[1];
+                matched = positionValue.match(positionRegExp);
+                if (matched == null) {
+                    wef.log.error("Error: unexpected value at ", positionValue);
+                    throw new that.UnexpectedValueException("Error: unexpected value at ", positionValue);
+                }
+                positionMetadata.position = matched[0];
             }
             wef.log.info("position result: ", positionMetadata);
             return positionMetadata;
@@ -168,26 +141,84 @@
             wef.log.info("compiling properties...");
             wef.log.debug("properties source: ", rule);
 
-            wef.log.debug("* ", that.constants.DISPLAY, rule.declaration[that.constants.DISPLAY]);
-            metadata.display = parseDisplay(rule.declaration[that.constants.DISPLAY]);
-            ////}
-            wef.log.debug("* ", that.constants.POSITION, rule.declaration[that.constants.POSITION]);
-            metadata.position = parsePosition(rule.declaration[that.constants.POSITION]);
+            wef.log.debug("* ", templateLayout.constants.DISPLAY, rule.declaration[templateLayout.constants.DISPLAY]);
+            metadata.display = parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
+
+            wef.log.debug("* ", templateLayout.constants.POSITION, rule.declaration[templateLayout.constants.POSITION]);
+            metadata.position = parsePosition(rule.declaration[templateLayout.constants.POSITION]);
 
             wef.log.info("properties result: ", metadata);
             return metadata;
         }
 
-        wef.log.debug("source: ", buffer);
+        function compile(buffer) {
+            wef.log.info("compiling...");
+            wef.log.debug("source: ", buffer);
 
-        for (var selectorText in buffer) {
-            wef.log.debug("next element: ", selectorText);
-            var metadata = parseProperties(buffer[selectorText]);
-            //var tmp = new Template(metadata);
-            wef.log.debug("result: ", metadata);
-            //TODO: insert
+            for (var selectorText in buffer) {
+                wef.log.debug("next element: ", selectorText);
+                var metadata = parseProperties(buffer[selectorText]);
+                wef.log.debug("result: ", metadata);
+            }
+            wef.log.debug("compiling ... OK");
         }
-        wef.log.debug("compiling ... done");
+
+        return that;
+    }
+
+    (function init() {
+        wef.log.info("creating templateLayout...");
+        lastEvent = null;
+        buffer = {};
+        parser = wef.fn.cssParser;
+
+        document.addEventListener(parser.events.PARSER_START, function (e) {
+            wef.log.info("templateLayout listens: start parsing");
+            lastEvent = e;
+            buffer = {};
+        }, false);
+
+        document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
+            wef.log.info("templateLayout listens: property found");
+            lastEvent = e;
+            if (isSupportedProperty(e.data)) {
+                store(e.data);
+            }
+        }, false);
+
+        document.addEventListener(parser.events.PARSER_DONE, function (e) {
+            wef.log.info("templateLayout listens: parsing done");
+            lastEvent = e;
+            transform();
+        }, false);
+
+        wef.log.info("templateLayout OK");
+    })();
+
+
+    function transform() {
+        compiler = defaultCompiler();
+        wef.log.debug("transforming template ...");
+        compiler.compile(buffer);
+        wef.log.debug("template transformed...     OK");
+    }
+
+    function store(rule) {
+        if (!buffer[rule.selectorText]) {
+            buffer[rule.selectorText] = {selectorText:rule.selectorText, declaration:{}};
+        }
+        buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
+        wef.log.info("property stored: ", rule.declaration.property);
+    }
+
+    function isSupportedProperty(rule) {
+        for (var iterator in that.constants) {
+            if (that.constants[iterator] == rule.declaration.property) {
+                wef.log.info("supported property found: ", rule.declaration.property);
+                return true;
+            }
+        }
+        return false;
     }
 
     window.templateLayout = that;
