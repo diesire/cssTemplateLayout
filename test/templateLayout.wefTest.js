@@ -29,7 +29,7 @@ AsyncTestCase("templateLayoutAsync", {
     },
 
     "test templateLayout buffer":function (queue) {
-        var text = "body {display: \"abcd\"} h1 {position: \"d\"} h2 {position: \"c\"} h3 {position: \"b\"} h4 {position: \"a\"}";
+        var text = "body {display: \"abcd\"} h1 {position: d} h2 {position: c} h3 {position: b} h4 {position: a}";
         queue.call(function (callbacks) {
             var myCallback = callbacks.add(function () {
                 wef.fn.cssParser.parse(text);
@@ -44,7 +44,7 @@ AsyncTestCase("templateLayoutAsync", {
     },
 
     "test templateLayout buffer appending":function (queue) {
-        var text = "body {display: \"ab\"} h1 {position: \"a\"; display: \"cd\"} h2 {position: \"b\"} h3 {position: \"c\"} h4 {position: \"d\"}";
+        var text = "body {display: \"ab\"} h1 {position: a; display: \"cd\"} h2 {position: b} h3 {position: c} h4 {position: d}";
         queue.call(function (callbacks) {
             var myCallback = callbacks.add(function () {
                 wef.fn.cssParser.parse(text);
@@ -55,7 +55,7 @@ AsyncTestCase("templateLayoutAsync", {
         queue.call(function () {
             var result = templateLayout.getBuffer();
             assertEquals("\"cd\"", result["h1"].declaration["display"]);
-            assertEquals("\"a\"", result["h1"].declaration["position"]);
+            assertEquals("a", result["h1"].declaration["position"]);
         });
     }
 });
