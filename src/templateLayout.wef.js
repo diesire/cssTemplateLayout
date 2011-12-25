@@ -33,6 +33,10 @@
             }
 
             wef.fn.cssParser.parse(readFile(cssFile));
+        insertTemplate:function (templateSource) {
+            wef.log.info("adding template...");
+            wef.fn.cssParser.parse(templateSource);
+            wef.log.info("template added OK");
         },
 
         //only for testing purposes
