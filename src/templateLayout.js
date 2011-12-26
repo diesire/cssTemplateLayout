@@ -66,25 +66,35 @@
                 selector: null,
                 display: preProcessTemplate.display,
                 position: preProcessTemplate.position,
-                rows: null
+                rows: null,
                 isRoot: isRoot
             };
 
             function isRoot() {
                 return that.position.position == null;
             }
+
             wef.log.info("new template:  ", that);
             return that;
         }
 
         var rootTemplate = function() {
             var that = {
-                insert: insert
+                insert: insert,
+                rows: {}
             };
 
             function insert (preProcessTemplate) {
                 wef.log.warn("inserting ", preProcessTemplate.selectorText);
                 var aTemplate = template(preProcessTemplate);
+
+                if(aTemplate.isRoot()) {
+                    wef.log.debug("inserting at root", aTemplate.selectorText);
+                    that.rows[aTemplate.selectorText] = aTemplate;
+                } else {
+                    wef.log.debug("searching parent: ", aTemplate.selectorText);
+                    //search in children
+                }
 
             }
             
