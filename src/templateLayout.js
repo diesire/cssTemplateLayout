@@ -110,6 +110,13 @@
                     }
                 })();
 
+                function hasSlot(slotIdentifier) {
+                    wef.log.debug("hasSlot ? ", slotIdentifier);
+                    return that.rows.some(function(row) {
+                        var regExp = new RegExp(slotIdentifier);
+                        return regExp.exec(row.rowText);
+                    })
+                }
                 wef.log.info("grid: ", that);
                 return that;
             }
