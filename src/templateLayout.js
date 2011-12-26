@@ -143,7 +143,9 @@
             if (displayValue != undefined) {
                 //TODO: check invalid values
                 displayMetadata.displayType = displayValue.match(displayTypeRegExp);
-                displayMetadata.grid = displayValue.match(stringRegExp);
+                displayMetadata.grid = displayValue.match(stringRegExp).map(function(element) {
+                    return element.replace(/"/g, "").replace(/\s*/, "");
+                });
             }
             wef.log.info("display result: ", displayMetadata);
             return displayMetadata;
