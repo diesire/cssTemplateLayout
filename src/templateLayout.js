@@ -59,6 +59,34 @@
             UnexpectedValueException: Error
         };
 
+        function template(preProcessTemplate) {
+            var that = {
+                parentTemplate: null,
+                selectorText: preProcessTemplate.selectorText,
+                selector: null,
+                display: preProcessTemplate.display,
+                position: preProcessTemplate.position,
+                rows: null
+            };
+
+            wef.log.info("new template:  ", that);
+            return that;
+        }
+
+        var rootTemplate = function() {
+            var that = {
+                insert: insert
+            };
+
+            function insert (preProcessTemplate) {
+                wef.log.warn("inserting ", preProcessTemplate.selectorText);
+                var aTemplate = template(preProcessTemplate);
+
+            }
+            
+            return that;
+        }();
+
         (function init() {
             wef.log.info("new compiler created");
         })();
@@ -137,18 +165,20 @@
         }
 
         function parseProperties(rule) {
-            var metadata = {};
+            var preProcessTemplate = {};
             wef.log.info("compiling properties...");
             wef.log.debug("properties source: ", rule);
 
+            preProcessTemplate.selectorText = rule.selectorText;
+
             wef.log.debug("* ", templateLayout.constants.DISPLAY, rule.declaration[templateLayout.constants.DISPLAY]);
-            metadata.display = parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
+            preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
 
             wef.log.debug("* ", templateLayout.constants.POSITION, rule.declaration[templateLayout.constants.POSITION]);
-            metadata.position = parsePosition(rule.declaration[templateLayout.constants.POSITION]);
+            preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.constants.POSITION]);
 
-            wef.log.info("properties result: ", metadata);
-            return metadata;
+            wef.log.info("properties result: ", preProcessTemplate);
+            return preProcessTemplate;
         }
 
         function compile(buffer) {
@@ -157,11 +187,10 @@
 
             for (var selectorText in buffer) {
                 wef.log.debug("next element: ", selectorText);
-                var metadata = parseProperties(buffer[selectorText]);
-                wef.log.debug("result: ", metadata);
+                var preProcessTemplate = parseProperties(buffer[selectorText]);
+                wef.log.debug("result: ", preProcessTemplate);
 
-
-
+                rootTemplate.insert(preProcessTemplate);
             }
             wef.log.debug("compiling ... OK");
         }
@@ -203,7 +232,7 @@
         compiler = defaultCompiler();
         wef.log.debug("transforming template ...");
         compiler.compile(buffer);
-        wef.log.debug("template transformed...     OK");
+        wef.log.debug("template transformed OK");
     }
 
     function store(rule) {
