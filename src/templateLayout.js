@@ -153,6 +153,7 @@
                 position: preProcessTemplate.position,
                 grid: null,
                 isRoot: isRoot,
+                isLeaf: isLeaf,
                 insert:insert
             };
 
@@ -160,6 +161,10 @@
                 wef.log.debug("creating template...");
                 that.grid = grid(preProcessTemplate.display);
             })();
+
+            function isLeaf() {
+                return that.display.grid == null;
+            }
 
             function isRoot() {
                 return that.position.position == null;
