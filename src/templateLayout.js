@@ -93,12 +93,12 @@
             function grid(display) {
                 wef.log.info("creating new grid...");
 
-                //var slots = {};
                 var that = {
-                    rows: []
+                    rows: [],
                     //getTemplate
-                    //setTemplate
+                    setTemplate: setTemplate
                 };
+                var slots = {};
 
                 (function init() {
                     
@@ -117,6 +117,30 @@
                         return regExp.exec(row.rowText);
                     })
                 }
+                
+                function setTemplate(aTemplate) {
+                    if(hasSlot(aTemplate.position.position)) {
+                        wef.log.debug("insert here");
+                        var tmp = slots[aTemplate.position.position] || new Array();
+                        tmp.push(aTemplate);
+                        slots[aTemplate.position.position] = tmp;
+                        wef.log.debug("at ", slots[aTemplate.position.position]);
+                        return true;
+                    }
+
+                    //forEach non leaf template in slots
+                    for(var slot in slots) {
+                        if(slots[slot].some(function (currentTemplate){
+                            return !currentTemplate.isLeaf() && currentTemplate.insert(currentTemplate);
+                        })) {
+                            return true;
+                        }
+                    }
+
+                    wef.log.debug("parent template not found");
+                    return false;
+                }
+
                 wef.log.info("grid: ", that);
                 return that;
             }
