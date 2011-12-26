@@ -70,6 +70,10 @@
                 isRoot: isRoot
             };
 
+            (function init() {
+                wef.log.debug("creating template...");
+            })();
+
             function isRoot() {
                 return that.position.position == null;
             }
