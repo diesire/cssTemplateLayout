@@ -76,11 +76,12 @@
 
                 var that = {
                     rowText: rowText,
-                    slots: []
+                    slotIdentifier: [],
+                    length: rowText.length
                 };
 
                 (function init() {
-                    that.slots = Array.prototype.map.call(rowText, function(slot) {
+                    that.slotIdentifier = Array.prototype.map.call(rowText, function(slot) {
                         return gridSlot(slot.charAt(0));
                     });
                 })();
@@ -92,15 +93,16 @@
             function grid(display) {
                 wef.log.info("creating new grid...");
 
+                var slots = {};
                 var that = {
                     rows: [],
+                    slots: slots,
                     //getTemplate
                     setTemplate: setTemplate
                 };
-                var slots = {};
+
 
                 (function init() {
-                    
                     if (display.grid != null) {
                         that.rows = display.grid.map(function(row) {
                             return gridRow(row);
@@ -115,9 +117,9 @@
                         return regExp.exec(row.rowText);
                     })
                 }
-                
+
                 function setTemplate(aTemplate) {
-                    if(hasSlot(aTemplate.position.position)) {
+                    if (hasSlot(aTemplate.position.position)) {
                         wef.log.debug("insert here");
                         var tmp = slots[aTemplate.position.position] || new Array();
                         tmp.push(aTemplate);
@@ -127,8 +129,8 @@
                     }
 
                     //forEach non leaf template in slots
-                    for(var slot in slots) {
-                        if(slots[slot].some(function (currentTemplate){
+                    for (var slot in slots) {
+                        if (slots[slot].some(function (currentTemplate) {
                             return !currentTemplate.isLeaf() && currentTemplate.insert(currentTemplate);
                         })) {
                             return true;
