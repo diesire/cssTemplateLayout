@@ -60,22 +60,82 @@
         };
 
         function template(preProcessTemplate) {
+            function gridSlot(slotText) {
+                wef.log.info("creating new slot...");
+
+                var that = {
+                    slotText: slotText
+                };
+
+                wef.log.info("slot: ", that);
+                return that;
+            }
+
+            function gridRow(rowText) {
+                wef.log.info("creating new row...");
+
+                var that = {
+                    rowText: rowText,
+                    slots: []
+                };
+
+                (function init() {
+                    that.slots = Array.prototype.map.call(rowText, function(slot) {
+                        wef.log.warn(rowText, "->", slot);
+                        return gridSlot(slot.charAt(0));
+                    });
+                })();
+
+                wef.log.info("row: ", that);
+                return that;
+            }
+
+            function grid(display) {
+                wef.log.info("creating new grid...");
+
+                //var slots = {};
+                var that = {
+                    rows: []
+                    //getTemplate
+                    //setTemplate
+                };
+
+                (function init() {
+                    
+                    if (display.grid != null) {
+                        that.rows = display.grid.map(function(row) {
+                            wef.log.warn("row >>>", row);
+                            return gridRow(row);
+                        });
+                    }
+                })();
+
+                wef.log.info("grid: ", that);
+                return that;
+            }
+
             var that = {
                 parentTemplate: null,
                 selectorText: preProcessTemplate.selectorText,
                 selector: null,
                 display: preProcessTemplate.display,
                 position: preProcessTemplate.position,
-                rows: null,
-                isRoot: isRoot
+                grid: null,
+                isRoot: isRoot,
+                insert:insert
             };
 
             (function init() {
                 wef.log.debug("creating template...");
+                that.grid = grid(preProcessTemplate.display);
             })();
 
             function isRoot() {
                 return that.position.position == null;
+            }
+
+            function insert(aTemplate) {
+
             }
 
             wef.log.info("new template:  ", that);
@@ -85,23 +145,26 @@
         var rootTemplate = function() {
             var that = {
                 insert: insert,
-                rows: {}
+                rows: []
             };
 
-            function insert (preProcessTemplate) {
+            function insert(preProcessTemplate) {
                 wef.log.warn("inserting ", preProcessTemplate.selectorText);
                 var aTemplate = template(preProcessTemplate);
 
-                if(aTemplate.isRoot()) {
+                if (aTemplate.isRoot()) {
                     wef.log.debug("inserting at root", aTemplate.selectorText);
-                    that.rows[aTemplate.selectorText] = aTemplate;
+                    that.rows.push(aTemplate);
+                    return true;
                 } else {
                     wef.log.debug("searching parent: ", aTemplate.selectorText);
-                    //search in children
+                    //insert in children
+                    return that.rows.some(function(element, index, array) {
+                        return element.insert(aTemplate);
+                    });
                 }
-
             }
-            
+
             return that;
         }();
 
@@ -191,10 +254,10 @@
 
             preProcessTemplate.selectorText = rule.selectorText;
 
-            wef.log.debug("* ", templateLayout.constants.DISPLAY, rule.declaration[templateLayout.constants.DISPLAY]);
+            //wef.log.debug("* ", templateLayout.constants.DISPLAY, rule.declaration[templateLayout.constants.DISPLAY]);
             preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
 
-            wef.log.debug("* ", templateLayout.constants.POSITION, rule.declaration[templateLayout.constants.POSITION]);
+            //wef.log.debug("* ", templateLayout.constants.POSITION, rule.declaration[templateLayout.constants.POSITION]);
             preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.constants.POSITION]);
 
             wef.log.info("properties result: ", preProcessTemplate);
