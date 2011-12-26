@@ -67,8 +67,12 @@
                 display: preProcessTemplate.display,
                 position: preProcessTemplate.position,
                 rows: null
+                isRoot: isRoot
             };
 
+            function isRoot() {
+                return that.position.position == null;
+            }
             wef.log.info("new template:  ", that);
             return that;
         }
