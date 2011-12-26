@@ -81,7 +81,6 @@
 
                 (function init() {
                     that.slots = Array.prototype.map.call(rowText, function(slot) {
-                        wef.log.warn(rowText, "->", slot);
                         return gridSlot(slot.charAt(0));
                     });
                 })();
@@ -104,7 +103,6 @@
                     
                     if (display.grid != null) {
                         that.rows = display.grid.map(function(row) {
-                            wef.log.warn("row >>>", row);
                             return gridRow(row);
                         });
                     }
@@ -171,7 +169,8 @@
             }
 
             function insert(aTemplate) {
-
+                wef.log.debug("trying to insert into ", that);
+                return that.grid.setTemplate(aTemplate);
             }
 
             wef.log.info("new template:  ", that);
@@ -189,11 +188,11 @@
                 var aTemplate = template(preProcessTemplate);
 
                 if (aTemplate.isRoot()) {
-                    wef.log.debug("inserting at root", aTemplate.selectorText);
+                    wef.log.debug("inserting at root", aTemplate);
                     that.rows.push(aTemplate);
                     return true;
                 } else {
-                    wef.log.debug("searching parent: ", aTemplate.selectorText);
+                    wef.log.debug("searching parent: ", aTemplate.position.position);
                     //insert in children
                     return that.rows.some(function(element, index, array) {
                         return element.insert(aTemplate);
@@ -309,9 +308,11 @@
                 var preProcessTemplate = parseProperties(buffer[selectorText]);
                 wef.log.debug("result: ", preProcessTemplate);
 
-                rootTemplate.insert(preProcessTemplate);
+                var inserted = rootTemplate.insert(preProcessTemplate);
+                wef.log.warn("insertion: ", inserted);
             }
             wef.log.debug("compiling ... OK");
+            return rootTemplate;
         }
 
         return that;
@@ -350,7 +351,8 @@
     function transform() {
         compiler = defaultCompiler();
         wef.log.debug("transforming template ...");
-        compiler.compile(buffer);
+        var tom = compiler.compile(buffer);
+        wef.log.info("TOM: ", tom);
         wef.log.debug("template transformed OK");
     }
 
