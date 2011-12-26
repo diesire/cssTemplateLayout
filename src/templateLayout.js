@@ -159,6 +159,9 @@
                 wef.log.debug("next element: ", selectorText);
                 var metadata = parseProperties(buffer[selectorText]);
                 wef.log.debug("result: ", metadata);
+
+
+
             }
             wef.log.debug("compiling ... OK");
         }
