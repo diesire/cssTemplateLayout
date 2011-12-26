@@ -162,7 +162,7 @@
                     wef.log.error("Error: unexpected value at ", positionValue);
                     throw new that.UnexpectedValueException("Error: unexpected value at ", positionValue);
                 }
-                positionMetadata.position = matched[0];
+                positionMetadata.position = matched[1];
             }
             wef.log.info("position result: ", positionMetadata);
             return positionMetadata;
