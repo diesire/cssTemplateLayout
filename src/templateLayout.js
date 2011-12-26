@@ -318,6 +318,53 @@
         return that;
     }
 
+    function htmlGenerator() {
+        var that = {
+            patchDOM:patchDOM
+        };
+
+        function patchDOM(tom) {
+            var tom = tom;
+            wef.log.info("patching ........");
+            wef.log.debug("source: ", tom);
+
+            tom.rows.forEach(generateTemplate);
+
+        }
+
+        function generateTemplate(template) {
+            var currentElement = document.querySelector(template.selectorText);
+            var childElement;
+            var generated = {};
+            console.log(template.grid.rows);
+            template.grid.rows.forEach(function(row) {
+                console.log(row.rowText);
+                row.slotIdentifier.forEach(function(slotId) {
+                    console.log("id", slotId);
+                    generated[slotId.slotText] = document.createElement("div");
+                    //set div style & options
+
+                    //child -> new div
+
+                    template.grid.slots[slotId.slotText].forEach(function (childTemplate) {
+                        console.log("child", childTemplate);
+                        childElement = document.querySelector(childTemplate.selectorText)
+                        console.log("child", childElement);
+                        generated[slotId.slotText].appendChild(childElement.parentNode.removeChild(childElement));
+                        console.log("child", generated[slotId.slotText]);
+
+                        //new div -> current
+                        currentElement.appendChild(generated[slotId.slotText]);
+
+                    });
+
+                });
+            });
+        }
+
+        return that;
+    }
+
     (function init() {
         wef.log.info("creating templateLayout...");
         lastEvent = null;
@@ -352,7 +399,11 @@
         compiler = defaultCompiler();
         wef.log.debug("transforming template ...");
         var tom = compiler.compile(buffer);
-        wef.log.info("TOM: ", tom);
+        // wef.log.info("TOM: ", tom);
+
+        var generator = htmlGenerator();
+        generator.patchDOM(tom);
+
         wef.log.debug("template transformed OK");
     }
 
