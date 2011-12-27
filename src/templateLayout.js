@@ -7,6 +7,7 @@
 (function () {
     var lastEvent, buffer, parser, compiler;
     var that = {
+        VERSION: "0.0.1",
         constants:{
             DISPLAY:"display",
             POSITION:"position"
@@ -332,7 +333,6 @@
             wef.log.debug("source: ", tom);
 
             tom.rows.forEach(generateTemplate);
-
         }
 
         function generateTemplate(template) {
