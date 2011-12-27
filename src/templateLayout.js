@@ -3,6 +3,7 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
+
 (function () {
     var lastEvent, buffer, parser, compiler;
     var that = {
@@ -335,33 +336,44 @@
         }
 
         function generateTemplate(template) {
-            var currentElement = document.querySelector(template.selectorText);
-            var childElement;
-            var generated = {};
-            console.log(template.grid.rows);
-            template.grid.rows.forEach(function(row) {
-                console.log(row.rowText);
-                row.slotIdentifier.forEach(function(slotId) {
-                    console.log("id", slotId);
-                    generated[slotId.slotText] = document.createElement("div");
-                    //set div style & options
+            //example code
+            function example(template) {
+                var currentElement = document.querySelector(template.selectorText);
+                var childElement;
+                var generated = {};
+                console.log(template.grid.rows);
+                template.grid.rows.forEach(function(row) {
+                    console.log(row.rowText);
+                    var rowDiv = document.createElement("div");
+                    rowDiv.style.display = "table-row";
+                    row.slotIdentifier.forEach(function(slotId) {
+                        console.log("id", slotId);
+                        generated[slotId.slotText] = document.createElement("div");
+                        generated[slotId.slotText].style.display = "table-cell";
+                        //set div style & options
 
-                    //child -> new div
+                        //child -> new div
 
-                    template.grid.slots[slotId.slotText].forEach(function (childTemplate) {
-                        console.log("child", childTemplate);
-                        childElement = document.querySelector(childTemplate.selectorText)
-                        console.log("child", childElement);
-                        generated[slotId.slotText].appendChild(childElement.parentNode.removeChild(childElement));
-                        console.log("child", generated[slotId.slotText]);
+                        template.grid.slots[slotId.slotText].forEach(function (childTemplate) {
+                            console.log("child", childTemplate);
+                            childElement = document.querySelector(childTemplate.selectorText);
+                            console.log("child", childElement);
+                            generated[slotId.slotText].appendChild(childElement.parentNode.removeChild(childElement));
+                            console.log("child", generated[slotId.slotText]);
 
-                        //new div -> current
-                        currentElement.appendChild(generated[slotId.slotText]);
+                            //new div -> current
+                            currentElement.style.display = "table";
+                            currentElement.appendChild(rowDiv);
+
+                            rowDiv.appendChild(generated[slotId.slotText]);
+
+                        });
 
                     });
-
                 });
-            });
+            }
+
+            example(template);
         }
 
         return that;
