@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../lib/wef/build/wef.js"></script>
+    <script type="text/javascript" src="../lib/wef/build/cssParser.wef.js"></script>
+    <script type="text/javascript" src="../src/templateLayout.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            var text = "body {display: \"ab\"} #id11{position: a; display: \"cd\"} #id21{position: b} #id12{position: c} #id22{position: d}";
+            templateLayout.insertTemplate(text);
+        }
+    </script>
+    <title></title>
+</head>
+<body>
+<div id="id11">
+    hi, from node 1 level1
+</div>
+
+<div id="id12">
+    hi, from node 1 level 2
+</div>
+
+<div id="id21">
+    hi, from node 2 level1
+</div>
+<div id="id22">
+    hi, from node 2 level 2
+</div>
+</body>
+</html>
