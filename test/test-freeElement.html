@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../lib/wef/build/wef.js"></script>
+    <script type="text/javascript" src="../lib/wef/build/cssParser.wef.js"></script>
+    <script type="text/javascript" src="../src/templateLayout.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            var text = "body {display: \"aa\" \"bc\"} h2 {position: c} h3 {position: b} h4 {position: a}";
+            templateLayout.insertTemplate(text);
+        }
+    </script>
+    <title></title>
+</head>
+<body>
+<p>This paragraph is inside body but outside the template.
+    PreTransform: is the first child of body
+    PostTransform: continue as the first one</p>
+<h2>Second</h2>
+<h3>Third</h3>
+<h4>Fourth</h4>
+
+</body>
+</html>
