@@ -14,36 +14,9 @@
         },
         OperationNotSupportedException: Error,
 
-        setTemplate:function (cssFile) {
-            wef.log.info("loading template...");
+        setTemplate: setTemplate,
 
-            function readFile(url) {
-                //TODO: FIXME
-                function ajaxReadFile() {
-                    var request = new XMLHttpRequest();
-                    request.open("get", url, false);
-                    request.send("");
-                    wef.log.info("request status: ", request.statusText);
-                    return request.responseText;
-                }
-
-                try {
-                    return ajaxReadFile(url);
-                } catch (e) {
-                    wef.log.error(e);
-                    throw new that.OperationNotSupportedException(e);
-                }
-            }
-
-            wef.fn.cssParser.parse(readFile(cssFile));
-            wef.log.info("template loaded OK");
-        },
-
-        insertTemplate:function (templateSource) {
-            wef.log.info("adding template...");
-            wef.fn.cssParser.parse(templateSource);
-            wef.log.info("template added OK");
-        },
+        insertTemplate:insertTemplate,
 
         //only for testing purposes
         getLastEvent:function () {
@@ -52,7 +25,11 @@
 
         getBuffer:function () {
             return buffer;
-        }
+        },
+
+        preprocess: preprocess,
+
+        compile: compile
     };
 
     function defaultCompiler() {
@@ -332,48 +309,58 @@
             wef.log.info("patching ........");
             wef.log.debug("source: ", tom);
 
-            tom.rows.forEach(generateTemplate);
+            tom.rows.forEach(generateRootTemplate);
         }
 
-        function generateTemplate(template) {
-            //example code
-            function example(template) {
-                var currentElement = document.querySelector(template.selectorText);
-                var childElement;
-                var generated = {};
-                console.log(template.grid.rows);
-                template.grid.rows.forEach(function(row) {
-                    console.log(row.rowText);
-                    var rowDiv = document.createElement("div");
-                    rowDiv.style.display = "table-row";
-                    row.slotIdentifier.forEach(function(slotId) {
-                        console.log("id", slotId);
-                        generated[slotId.slotText] = document.createElement("div");
-                        generated[slotId.slotText].style.display = "table-cell";
-                        //set div style & options
+        function generateRootTemplate(template) {
+            //here is document
+            //if template.isLeaf() creates DOM and append to parentDOM
+            //else traverse TOM
 
-                        //child -> new div
-
-                        template.grid.slots[slotId.slotText].forEach(function (childTemplate) {
-                            console.log("child", childTemplate);
-                            childElement = document.querySelector(childTemplate.selectorText);
-                            console.log("child", childElement);
-                            generated[slotId.slotText].appendChild(childElement.parentNode.removeChild(childElement));
-                            console.log("child", generated[slotId.slotText]);
-
-                            //new div -> current
-                            currentElement.style.display = "table";
-                            currentElement.appendChild(rowDiv);
-
-                            rowDiv.appendChild(generated[slotId.slotText]);
-
-                        });
-
-                    });
-                });
+            function generateLeaf(template, parentHtmlNode) {
+                wef.log.warn("leaf   ", template.selectorText, parentHtmlNode.localName);
+                var childElement = document.querySelector(template.selectorText);
+                childElement.style.display = "table-cell";
+                //childElement.parentNode.removeChild(childElement);
+                parentHtmlNode.appendChild(childElement);
             }
 
-            example(template);
+            function generateTemplate(template, parentHtmlNode) {
+
+                if (template.isLeaf()) {
+                    generateLeaf(template, parentHtmlNode);
+                } else {
+                    wef.log.warn("no leaf   ", template.selectorText, parentHtmlNode.localName);
+                    var rootElement = document.querySelector(template.selectorText);
+                    rootElement.style.display = "table";
+                    parentHtmlNode.appendChild(rootElement);
+
+                    template.grid.rows.forEach(function (row) {
+                        wef.log.warn("row ", row.rowText);
+                        var rowDiv = document.createElement("div");
+                        rowDiv.className = "templateLayoutDiv";
+                        rowDiv.style.display = "table-row";
+                        rootElement.appendChild(rowDiv);
+
+                        row.slotIdentifier.forEach(function(slotId) {
+                            wef.log.warn("slot ", slotId.slotText);
+                            //each slot can have multiple elements
+                            template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
+                                wef.log.warn("slotELEMENT ", templateInSlot.selectorText);
+                                generateTemplate(templateInSlot, rowDiv);
+                            });
+                        });
+                        //rootElement.appendChild(rowDiv);
+                    });
+                    //rootElement.parentNode.removeChild(rootElement);
+                    //parentHtmlNode.appendChild(rootElement);
+                }
+                wef.log.debug("template generated: ", template);
+            }
+
+            var rootElement = document.querySelector(template.selectorText);
+            generateTemplate(template, rootElement.parentElement);
+            //document.body.appendChild(rootElement);
         }
 
         return that;
@@ -385,6 +372,23 @@
         buffer = {};
         parser = wef.fn.cssParser;
 
+        wef.log.info("templateLayout OK");
+    })();
+
+
+    function transform() {
+        compiler = defaultCompiler();
+        wef.log.debug("transforming template ...");
+        var tom = compiler.compile(buffer);
+        // wef.log.info("TOM: ", tom);
+
+        var generator = htmlGenerator();
+        generator.patchDOM(tom);
+
+        wef.log.debug("template transformed OK");
+    }
+
+    function registerParserEvents() {
         document.addEventListener(parser.events.PARSER_START, function (e) {
             wef.log.info("templateLayout listens: start parsing");
             lastEvent = e;
@@ -404,21 +408,38 @@
             lastEvent = e;
             transform();
         }, false);
+    }
 
-        wef.log.info("templateLayout OK");
-    })();
+    function insertTemplate(templateSource) {
+        wef.log.info("adding template...");
+        registerParserEvents();
+        wef.fn.cssParser.parse(templateSource);
+        wef.log.info("template added OK");
+    }
 
+    function setTemplate(cssFile) {
+        wef.log.info("loading template...");
 
-    function transform() {
-        compiler = defaultCompiler();
-        wef.log.debug("transforming template ...");
-        var tom = compiler.compile(buffer);
-        // wef.log.info("TOM: ", tom);
+        function readFile(url) {
+            //TODO: FIXME
+            function ajaxReadFile() {
+                var request = new XMLHttpRequest();
+                request.open("get", url, false);
+                request.send("");
+                wef.log.info("request status: ", request.statusText);
+                return request.responseText;
+            }
 
-        var generator = htmlGenerator();
-        generator.patchDOM(tom);
+            try {
+                return ajaxReadFile(url);
+            } catch (e) {
+                wef.log.error(e);
+                throw new that.OperationNotSupportedException(e);
+            }
+        }
 
-        wef.log.debug("template transformed OK");
+        insertTemplate(readFile(cssFile));
+        wef.log.info("template loaded OK");
     }
 
     function store(rule) {
