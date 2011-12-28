@@ -8,7 +8,7 @@
 
     <script type="text/javascript">
         window.onload = function() {
-            var text = "body {display: \"ab\"} #id11{position: a; display: \"cd\"} #id21{position: b} #id12{position: c} #id22{position: d}";
+            var text = "body {display: \"ab\"} #id21{position: a; display: \"cd\"} #id21{position: b display: \"ef\"} #id22a{position: c} #id22b{position: d} #id12a{position: e} #id12b{position: f}";
             templateLayout.insertTemplate(text);
         }
     </script>
@@ -19,15 +19,22 @@
     hi, from node 1 level1
 </div>
 
-<div id="id12">
+<div id="id12a">
+    hi, from node 1 level 2
+</div>
+<div id="id12b">
     hi, from node 1 level 2
 </div>
 
 <div id="id21">
     hi, from node 2 level1
 </div>
-<div id="id22">
+<div id="id22a">
     hi, from node 2 level 2
 </div>
+<div id="id22b">
+    hi, from node 2 level 2
+</div>
+
 </body>
 </html>
