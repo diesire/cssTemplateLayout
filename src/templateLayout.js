@@ -16,12 +16,15 @@ var templateLayout = (function () {
         generator = htmlGenerator();
 
     templateLayout.fn = templateLayout.prototype;
+
     templateLayout.prototype.constructor = templateLayout;
+
     //templateLayout(), templateLayout(""), templateLayout("", "", ...)
     templateLayout.prototype.init = function(templateSources) {
         wef.log.info("creating templateLayout...");
         var args = Array.prototype.slice.call(templateSources);
         var firstSource = args[0];
+
         //templateLayout()
         if (!firstSource) {
             //TODO: load style & inline css
@@ -32,11 +35,9 @@ var templateLayout = (function () {
             };
             return this;
         }
+
         //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
         if (args.length >= 1 && args.every(isString)) {
-//            this.sourceType = args.map(getSourceType).reduce(function(previousValue, currentValue) {
-//                return previousValue == currentValue ? previousValue : "mixed";
-//            });
             this.templateSources = args.map(getContent);
             wef.log.info("templateLayout OK");
             return this;
@@ -45,13 +46,19 @@ var templateLayout = (function () {
         wef.log.error("Invalid argument");
         throw new this.InvalidArgumentException("Invalid argument");
     };
+
     templateLayout.prototype.version = "0.0.1";
+
     templateLayout.prototype.templateSources = [];
+
     templateLayout.prototype.constants = {
         DISPLAY:"display",
         POSITION:"position"};
+
     templateLayout.prototype.OperationNotSupportedException = Error;
+
     templateLayout.prototype.InvalidArgumentException = Error;
+    
     templateLayout.prototype.transform = function() {
         wef.log.debug("transforming...");
         var options = parseTransformOptions(arguments);
@@ -80,7 +87,13 @@ var templateLayout = (function () {
         wef.log.debug("template transformed OK");
         return this;
     };
+
+    templateLayout.prototype.getTOM = function () {
+        return tom;
+    }
+
     templateLayout.fn.init.prototype = templateLayout.fn;
+
     //only for testing purposes
     templateLayout.prototype.getLastEvent = function () {
         return lastEvent;
@@ -362,11 +375,11 @@ var templateLayout = (function () {
 
             preProcessTemplate.selectorText = rule.selectorText;
 
-            //wef.log.debug("* ", templateLayout.constants.DISPLAY, rule.declaration[templateLayout.constants.DISPLAY]);
-            preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.constants.DISPLAY]);
+            //wef.log.debug("* ", templateLayout.fn.constants.DISPLAY, rule.declaration[templateLayout.fn.constants.DISPLAY]);
+            preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.fn.constants.DISPLAY]);
 
-            //wef.log.debug("* ", templateLayout.constants.POSITION, rule.declaration[templateLayout.constants.POSITION]);
-            preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.constants.POSITION]);
+            //wef.log.debug("* ", templateLayout.fn.constants.POSITION, rule.declaration[templateLayout.fn.constants.POSITION]);
+            preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.fn.constants.POSITION]);
 
             wef.log.info("properties result: ", preProcessTemplate);
             return preProcessTemplate;
