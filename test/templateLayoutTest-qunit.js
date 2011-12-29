@@ -62,5 +62,5 @@ test("transform options", function() {
     var result = templateLayout(templateSource).transform({action:"parse"}).getBuffer();
     wef.log.info("buffer: ", result);
     var result = templateLayout(templateSource).transform({action:"compile"}).getTOM();
-    wef.log.info("buffer: ", result);
+    wef.log.info("TOM: ", result);
 });
