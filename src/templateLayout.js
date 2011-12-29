@@ -52,7 +52,34 @@ var templateLayout = (function () {
         POSITION:"position"};
     templateLayout.prototype.OperationNotSupportedException = Error;
     templateLayout.prototype.InvalidArgumentException = Error;
-    templateLayout.prototype.transform = transform;
+    templateLayout.prototype.transform = function() {
+        wef.log.debug("transforming...");
+        var options = parseTransformOptions(arguments);
+
+        if (options.parse) {
+            wef.log.debug("transforming template ...");
+            document.addEventListener(parser.events.PARSER_START, parserStarts, false);
+            document.addEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+            document.addEventListener(parser.events.PARSER_DONE, parserDone, false);
+
+            //TODO: FIXME multiple sources
+            parser.parse(this.templateSources[0].sourceText);
+
+            document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
+            document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+            document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
+        }
+        if (options.compile) {
+            tom = compiler.compile(buffer);
+            // wef.log.info("TOM: ", tom);
+        }
+        if (options.generate) {
+            generator.patchDOM(tom);
+        }
+
+        wef.log.debug("template transformed OK");
+        return this;
+    };
     templateLayout.fn.init.prototype = templateLayout.fn;
     //only for testing purposes
     templateLayout.prototype.getLastEvent = function () {
@@ -429,35 +456,6 @@ var templateLayout = (function () {
         }
 
         return that;
-    }
-
-    function transform() {
-        wef.log.debug("transforming...");
-        var options = parseTransformOptions(arguments);
-
-        if (options.parse) {
-            wef.log.debug("transforming template ...");
-            document.addEventListener(parser.events.PARSER_START, parserStarts, false);
-            document.addEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-            document.addEventListener(parser.events.PARSER_DONE, parserDone, false);
-
-            //TODO: FIXME multiple sources
-            parser.parse(this.templateSources[0].sourceText);
-
-            document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
-            document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-            document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
-        }
-        if (options.compile) {
-            tom = compiler.compile(buffer);
-            // wef.log.info("TOM: ", tom);
-        }
-        if (options.generate) {
-            generator.patchDOM(tom);
-        }
-
-        wef.log.debug("template transformed OK");
-        return this;
     }
 
     function parseTransformOptions(args) {
