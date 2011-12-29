@@ -3,34 +3,99 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
+var templateLayout = (function () {
 
-(function () {
-    var lastEvent, buffer, parser, compiler;
-    var that = {
-        VERSION: "0.0.1",
-        constants:{
-            DISPLAY:"display",
-            POSITION:"position"
-        },
-        OperationNotSupportedException: Error,
+    var templateLayout = function (templateSource) {
+        return new templateLayout.fn.init(arguments);
+    },
+        lastEvent = null,
+        buffer = {},
+        tom,
+        parser = wef.fn.cssParser,
+        compiler = defaultCompiler(),
+        generator = htmlGenerator();
 
-        setTemplate: setTemplate,
+    templateLayout.fn = templateLayout.prototype;
+    templateLayout.prototype.constructor = templateLayout;
+    //templateLayout(), templateLayout(""), templateLayout("", "", ...)
+    templateLayout.prototype.init = function(templateSources) {
+        wef.log.info("creating templateLayout...");
+        var args = Array.prototype.slice.call(templateSources);
+        var firstSource = args[0];
+        //templateLayout()
+        if (!firstSource) {
+            //TODO: load style & inline css
+            wef.log.info("templateLayout OK");
+            this.templateSources[0] = {
+                type: "inherited",
+                sourceText: ""
+            };
+            return this;
+        }
+        //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
+        if (args.length >= 1 && args.every(isString)) {
+//            this.sourceType = args.map(getSourceType).reduce(function(previousValue, currentValue) {
+//                return previousValue == currentValue ? previousValue : "mixed";
+//            });
+            this.templateSources = args.map(getContent);
+            wef.log.info("templateLayout OK");
+            return this;
+        }
 
-        insertTemplate:insertTemplate,
-
-        //only for testing purposes
-        getLastEvent:function () {
-            return lastEvent;
-        },
-
-        getBuffer:function () {
-            return buffer;
-        },
-
-        preprocess: preprocess,
-
-        compile: compile
+        wef.log.error("Invalid argument");
+        throw new this.InvalidArgumentException("Invalid argument");
     };
+    templateLayout.prototype.version = "0.0.1";
+    templateLayout.prototype.templateSources = [];
+    templateLayout.prototype.constants = {
+        DISPLAY:"display",
+        POSITION:"position"};
+    templateLayout.prototype.OperationNotSupportedException = Error;
+    templateLayout.prototype.InvalidArgumentException = Error;
+    templateLayout.prototype.transform = transform;
+    templateLayout.fn.init.prototype = templateLayout.fn;
+    //only for testing purposes
+    templateLayout.prototype.getLastEvent = function () {
+        return lastEvent;
+    };
+    templateLayout.prototype.getBuffer = function () {
+        return buffer;
+    };
+
+    function isString(element) {
+        return typeof element == "string";
+    }
+
+    function getSourceType(templateSource) {
+        var rxHttp = /^http[s]?:\/\/.*\.css$/i,
+            rxFile = /^file:\/\/.*\.css$/i,
+            rxPath = /^(?!\s*.*(http[s]?|file))(\.){0,2}(\/.*)*.*\.css$/i;
+        if (rxHttp.exec(templateSource)) {
+            return "http";
+        }
+        if (rxPath.exec(templateSource) || rxFile.exec(templateSource)) {
+            return "file";
+        }
+        return "css";
+    }
+
+    function getContent(templateSource) {
+        var type = getSourceType(templateSource);
+        if (type == "http" || type == "file") {
+            return {
+                type: type,
+                sourceText: readFile(templateSource)
+            };
+        }
+        if (type == "css") {
+            return {
+                type: type,
+                sourceText: templateSource
+            };
+        } else {
+            throw new this.OperationNotSupportedException("unknown sourceType");
+        }
+    }
 
     function defaultCompiler() {
         var that = {
@@ -366,93 +431,106 @@
         return that;
     }
 
-    (function init() {
-        wef.log.info("creating templateLayout...");
-        lastEvent = null;
-        buffer = {};
-        parser = wef.fn.cssParser;
-
-        wef.log.info("templateLayout OK");
-    })();
-
-
     function transform() {
-        compiler = defaultCompiler();
-        wef.log.debug("transforming template ...");
-        var tom = compiler.compile(buffer);
-        // wef.log.info("TOM: ", tom);
+        wef.log.debug("transforming...");
+        var options = parseTransformOptions(arguments);
 
-        var generator = htmlGenerator();
-        generator.patchDOM(tom);
+        if (options.parse) {
+            wef.log.debug("transforming template ...");
+            document.addEventListener(parser.events.PARSER_START, parserStarts, false);
+            document.addEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+            document.addEventListener(parser.events.PARSER_DONE, parserDone, false);
 
-        wef.log.debug("template transformed OK");
-    }
+            //TODO: FIXME multiple sources
+            parser.parse(this.templateSources[0].sourceText);
 
-    function registerParserEvents() {
-        document.addEventListener(parser.events.PARSER_START, function (e) {
-            wef.log.info("templateLayout listens: start parsing");
-            lastEvent = e;
-            buffer = {};
-        }, false);
-
-        document.addEventListener(parser.events.PROPERTY_FOUND, function (e) {
-            wef.log.info("templateLayout listens: property found");
-            lastEvent = e;
-            if (isSupportedProperty(e.data)) {
-                store(e.data);
-            }
-        }, false);
-
-        document.addEventListener(parser.events.PARSER_DONE, function (e) {
-            wef.log.info("templateLayout listens: parsing done");
-            lastEvent = e;
-            transform();
-        }, false);
-    }
-
-    function insertTemplate(templateSource) {
-        wef.log.info("adding template...");
-        registerParserEvents();
-        wef.fn.cssParser.parse(templateSource);
-        wef.log.info("template added OK");
-    }
-
-    function setTemplate(cssFile) {
-        wef.log.info("loading template...");
-
-        function readFile(url) {
-            //TODO: FIXME
-            function ajaxReadFile() {
-                var request = new XMLHttpRequest();
-                request.open("get", url, false);
-                request.send("");
-                wef.log.info("request status: ", request.statusText);
-                return request.responseText;
-            }
-
-            try {
-                return ajaxReadFile(url);
-            } catch (e) {
-                wef.log.error(e);
-                throw new that.OperationNotSupportedException(e);
-            }
+            document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
+            document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+            document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
+        }
+        if (options.compile) {
+            tom = compiler.compile(buffer);
+            // wef.log.info("TOM: ", tom);
+        }
+        if (options.generate) {
+            generator.patchDOM(tom);
         }
 
-        insertTemplate(readFile(cssFile));
-        wef.log.info("template loaded OK");
+        wef.log.debug("template transformed OK");
+        return this;
+    }
+
+    function parseTransformOptions(args) {
+        var options = {parse:true, compile:true, generate:true}
+        if (args.length == 0) {
+            return options;
+        }
+        if (args[0].action == "none") {
+            options.parse = options.compile = options.generate = false;
+        }
+        if (args[0].action == "parse") {
+            options.compile = options.generate = false;
+        }
+        if (args[0].action == "compile") {
+            options.generate = false;
+        }
+        return options;
+    }
+
+    function parserStarts(e) {
+        wef.log.info("templateLayout listens: start parsing");
+        lastEvent = e;
+        buffer = {};
+    }
+
+    function propertyFound(e) {
+        wef.log.info("templateLayout listens: property found");
+        lastEvent = e;
+        if (isSupportedProperty(e.data)) {
+            store(e.data);
+        }
+    }
+
+    function parserDone(e) {
+        wef.log.info("templateLayout listens: parsing done");
+        lastEvent = e;
+    }
+
+    function readFile(url) {
+        //TODO: FIXME
+        function ajaxReadFile(url) {
+            var request = new XMLHttpRequest();
+            request.open("get", url, false);
+            request.send("");
+            wef.log.info("request status: ", request.statusText);
+            return request.responseText;
+        }
+
+        try {
+            wef.log.info("reading file...");
+            var templateText = ajaxReadFile(url);
+            wef.log.info("template loaded OK");
+            return templateText;
+        } catch (e) {
+            wef.log.error("Operation not supported", e);
+            throw new that.OperationNotSupportedException(e);
+        }
     }
 
     function store(rule) {
         if (!buffer[rule.selectorText]) {
-            buffer[rule.selectorText] = {selectorText:rule.selectorText, declaration:{}};
+            buffer[rule.selectorText] = {
+                selectorText:rule.selectorText,
+                declaration:{}
+            };
         }
         buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
         wef.log.info("property stored: ", rule.declaration.property);
     }
 
     function isSupportedProperty(rule) {
-        for (var iterator in that.constants) {
-            if (that.constants[iterator] == rule.declaration.property) {
+        for (var iterator in templateLayout.fn.constants) {
+            if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
                 wef.log.info("supported property found: ", rule.declaration.property);
                 return true;
             }
@@ -460,5 +538,5 @@
         return false;
     }
 
-    window.templateLayout = that;
+    return templateLayout;
 })();
