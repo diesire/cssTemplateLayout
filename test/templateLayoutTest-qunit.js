@@ -26,10 +26,10 @@ test("constructor", function() {
 
     if (!isChrome) {
         //Chrome can't load local files from local ones
-        equal(templateLayout("example.css").templateSources[0].type, "file", "loading local css file");
-        equal(templateLayout("css/example.css").templateSources[0].type, "file", "loading local css file");
-        equal(templateLayout("./css/example.css").templateSources[0].type, "file", "loading local css file");
-        equal(templateLayout("../test/css/example.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("css/template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("./css/template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("../test/css/template.css").templateSources[0].type, "file", "loading local css file");
     }
     equal(templateLayout(templateSource).templateSources[0].type, "css", "loading css string");
 
