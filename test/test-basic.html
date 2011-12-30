@@ -2,22 +2,48 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <script type="text/javascript" src="../lib/wef/build/wef.js"></script>
-    <script type="text/javascript" src="../lib/wef/build/cssParser.wef.js"></script>
-    <script type="text/javascript" src="../src/templateLayout.js"></script>
+    <!-- Qunit -->
+    <script src="../lib/qunit/jquery.js"></script>
+    <link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen"/>
+    <script type="text/javascript" src="../lib/qunit/qunit.js"></script>
+    <!-- Lib -->
+    <script src="../lib/wef/build/wef.js"></script>
+    <script src="../lib/wef/build/cssParser.wef.js"></script>
+    <!-- Src -->
+    <script src="../src/templateLayout.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {
-            var text = "body {display: \"abcd\"} h1 {position: d} h2 {position: c} h3 {position: b} h4 {position: a}";
+            var text = "#parent {display: \"abcd\"} #child1 {position: d} #child2 {position: c} #child3 {position: b} #child4 {position: a}";
             templateLayout(text).transform();
+
+            <!-- Test code -->
+            test("width", function() {
+                equal($("#parent").width(), $("#child1").width() + $("#child2").width() + $("#child3").width() + $("#child4").width(), "parentWidth = child_1_Width + ...+ child_n_Width");
+            })
         }
     </script>
     <title></title>
 </head>
 <body>
-<h1>Primero</h1>
-<h2>Segundo</h2>
-<h3>Tercero</h3>
-<h4>Cuarto</h4>
+<!-- Qunit code -->
+<div>
+    <div id="qunit-header">CSS Template Layout test - One row layout</div>
+    <div id="qunit-banner"></div>
+    <div id="qunit-testrunner-toolbar"></div>
+    <div id="qunit-userAgent"></div>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+    <div style="margin: 50px"></div>
+</div>
+<!-- Test -->
+<div id="parent">
+    <h1 id="child1">Primero</h1>
+
+    <h2 id="child2">Segundo</h2>
+
+    <h3 id="child3">Tercero</h3>
+    <h4 id="child4">Cuarto</h4>
+</div>
 </body>
 </html>
