@@ -10,7 +10,7 @@ var templateLayout = (function () {
         lastEvent = null,
         buffer = {},
         tom,
-        parser = wef.fn.cssParser,
+        parser = wef.cssParser(),
         compiler = defaultCompiler(),
         generator = htmlGenerator();
 
