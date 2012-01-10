@@ -3,7 +3,7 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
-var templateLayout = (function () {
+window.templateLayout = (function () {
 
     var log = wef.logger("templateLayout"),
         templateLayout,
@@ -15,95 +15,90 @@ var templateLayout = (function () {
         generator = htmlGenerator();
 
     templateLayout = function (templateSource) {
-        return new templateLayout.fn.init(arguments);
+        return new templateLayout.prototype.init(arguments);
+    };
+
+    templateLayout.prototype = {
+        constructor:templateLayout,
+        version:"0.0.1",
+        templateSources:[],
+        constants:{
+            DISPLAY:"display",
+            POSITION:"position"},
+        OperationNotSupportedException:Error,
+        InvalidArgumentException:Error,
+
+        //templateLayout(), templateLayout(""), templateLayout("", "", ...)
+        init:function (templateSources) {
+            log.info("creating templateLayout...");
+            var args = Array.prototype.slice.call(templateSources), firstSource = args[0];
+
+            //templateLayout()
+            if (!firstSource) {
+                //TODO: load style & inline css
+                log.info("templateLayout OK");
+                this.templateSources[0] = {
+                    type:"inherited",
+                    sourceText:""
+                };
+                return this;
+            }
+
+            //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
+            if (args.length >= 1 && args.every(isString)) {
+                this.templateSources = args.map(getContent);
+                log.info("templateLayout OK");
+                return this;
+            }
+
+            log.error("Invalid argument");
+            throw new this.InvalidArgumentException("Invalid argument");
+        },
+        transform:function () {
+            log.debug("transforming...");
+            var options = parseTransformOptions(arguments);
+
+            if (options.parse) {
+                log.debug("transforming template ...");
+                parser.whenStart(parserStarts);
+                parser.whenStart(propertyFound);
+                parser.whenStart(parserDone);
+
+                //TODO: FIXME multiple sources
+                parser.parse(this.templateSources[0].sourceText);
+
+                //TODO: remove callbacks???
+                //document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
+                //document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+                //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
+            }
+            if (options.compile) {
+                tom = compiler.compile(buffer);
+                // log.info("TOM: ", tom);
+            }
+            if (options.generate) {
+                generator.patchDOM(tom);
+            }
+
+            log.debug("template transformed OK");
+            return this;
+        },
+        //only for testing purposes
+        getLastEvent:function () {
+            return lastEvent;
+        },
+        getBuffer:function () {
+            return buffer;
+        },
+        getTOM:function () {
+            return tom;
+        }
     };
 
     templateLayout.fn = templateLayout.prototype;
 
-    templateLayout.prototype.constructor = templateLayout;
-
-    //templateLayout(), templateLayout(""), templateLayout("", "", ...)
-    templateLayout.prototype.init = function (templateSources) {
-        log.info("creating templateLayout...");
-        var args = Array.prototype.slice.call(templateSources), firstSource = args[0];
-
-        //templateLayout()
-        if (!firstSource) {
-            //TODO: load style & inline css
-            log.info("templateLayout OK");
-            this.templateSources[0] = {
-                type:"inherited",
-                sourceText:""
-            };
-            return this;
-        }
-
-        //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
-        if (args.length >= 1 && args.every(isString)) {
-            this.templateSources = args.map(getContent);
-            log.info("templateLayout OK");
-            return this;
-        }
-
-        log.error("Invalid argument");
-        throw new this.InvalidArgumentException("Invalid argument");
-    };
-
-    templateLayout.prototype.version = "0.0.1";
-
-    templateLayout.prototype.templateSources = [];
-
-    templateLayout.prototype.constants = {
-        DISPLAY:"display",
-        POSITION:"position"};
-
-    templateLayout.prototype.OperationNotSupportedException = Error;
-
-    templateLayout.prototype.InvalidArgumentException = Error;
-
-    templateLayout.prototype.transform = function () {
-        log.debug("transforming...");
-        var options = parseTransformOptions(arguments);
-
-        if (options.parse) {
-            log.debug("transforming template ...");
-            parser.whenStart(parserStarts);
-            parser.whenStart(propertyFound);
-            parser.whenStart(parserDone);
-
-            //TODO: FIXME multiple sources
-            parser.parse(this.templateSources[0].sourceText);
-
-            //TODO: remove callbacks???
-            //document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
-            //document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-            //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
-        }
-        if (options.compile) {
-            tom = compiler.compile(buffer);
-            // log.info("TOM: ", tom);
-        }
-        if (options.generate) {
-            generator.patchDOM(tom);
-        }
-
-        log.debug("template transformed OK");
-        return this;
-    };
-
-    templateLayout.prototype.getTOM = function () {
-        return tom;
-    };
-
     templateLayout.fn.init.prototype = templateLayout.fn;
 
-    //only for testing purposes
-    templateLayout.prototype.getLastEvent = function () {
-        return lastEvent;
-    };
-    templateLayout.prototype.getBuffer = function () {
-        return buffer;
-    };
 
     function isString(element) {
         return typeof element == "string";
