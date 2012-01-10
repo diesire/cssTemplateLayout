@@ -65,16 +65,17 @@ var templateLayout = (function () {
 
         if (options.parse) {
             log.debug("transforming template ...");
-            document.addEventListener(parser.events.PARSER_START, parserStarts, false);
-            document.addEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-            document.addEventListener(parser.events.PARSER_DONE, parserDone, false);
+            parser.whenStart(parserStarts);
+            parser.whenStart(propertyFound);
+            parser.whenStart(parserDone);
 
             //TODO: FIXME multiple sources
             parser.parse(this.templateSources[0].sourceText);
 
-            document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
-            document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-            document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
+            //TODO: remove callbacks???
+            //document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
+            //document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
+            //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
         }
         if (options.compile) {
             tom = compiler.compile(buffer);
