@@ -3,7 +3,7 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
-window.templateLayout = (function () {
+(function (global) {
 
     var log = wef.logger("templateLayout"),
         templateLayout,
@@ -544,5 +544,5 @@ window.templateLayout = (function () {
         return false;
     }
 
-    return templateLayout;
-})();
+    global.templateLayout = templateLayout;
+})(window);
