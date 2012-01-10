@@ -5,9 +5,8 @@
  */
 var templateLayout = (function () {
 
-    var log = wef.logger("templateLayout"), templateLayout = function (templateSource) {
-        return new templateLayout.fn.init(arguments);
-    },
+    var log = wef.logger("templateLayout"),
+        templateLayout,
         lastEvent = null,
         buffer = {},
         tom,
@@ -15,23 +14,26 @@ var templateLayout = (function () {
         compiler = defaultCompiler(),
         generator = htmlGenerator();
 
+    templateLayout = function (templateSource) {
+        return new templateLayout.fn.init(arguments);
+    };
+
     templateLayout.fn = templateLayout.prototype;
 
     templateLayout.prototype.constructor = templateLayout;
 
     //templateLayout(), templateLayout(""), templateLayout("", "", ...)
-    templateLayout.prototype.init = function(templateSources) {
+    templateLayout.prototype.init = function (templateSources) {
         log.info("creating templateLayout...");
-        var args = Array.prototype.slice.call(templateSources);
-        var firstSource = args[0];
+        var args = Array.prototype.slice.call(templateSources), firstSource = args[0];
 
         //templateLayout()
         if (!firstSource) {
             //TODO: load style & inline css
             log.info("templateLayout OK");
             this.templateSources[0] = {
-                type: "inherited",
-                sourceText: ""
+                type:"inherited",
+                sourceText:""
             };
             return this;
         }
@@ -59,7 +61,7 @@ var templateLayout = (function () {
 
     templateLayout.prototype.InvalidArgumentException = Error;
 
-    templateLayout.prototype.transform = function() {
+    templateLayout.prototype.transform = function () {
         log.debug("transforming...");
         var options = parseTransformOptions(arguments);
 
@@ -91,7 +93,7 @@ var templateLayout = (function () {
 
     templateLayout.prototype.getTOM = function () {
         return tom;
-    }
+    };
 
     templateLayout.fn.init.prototype = templateLayout.fn;
 
@@ -108,9 +110,7 @@ var templateLayout = (function () {
     }
 
     function getSourceType(templateSource) {
-        var rxHttp = /^http[s]?:\/\/.*\.css$/i,
-            rxFile = /^file:\/\/.*\.css$/i,
-            rxPath = /^(?!\s*.*(http[s]?|file))(\.){0,2}(\/.*)*.*\.css$/i;
+        var rxHttp = /^http[s]?:\/\/.*\.css$/i, rxFile = /^file:\/\/.*\.css$/i, rxPath = /^(?!\s*.*(http[s]?|file))(\.){0,2}(\/.*)*.*\.css$/i;
         if (rxHttp.exec(templateSource)) {
             return "http";
         }
@@ -124,14 +124,14 @@ var templateLayout = (function () {
         var type = getSourceType(templateSource);
         if (type == "http" || type == "file") {
             return {
-                type: type,
-                sourceText: readFile(templateSource)
+                type:type,
+                sourceText:readFile(templateSource)
             };
         }
         if (type == "css") {
             return {
-                type: type,
-                sourceText: templateSource
+                type:type,
+                sourceText:templateSource
             };
         } else {
             throw new this.OperationNotSupportedException("unknown sourceType");
@@ -140,8 +140,8 @@ var templateLayout = (function () {
 
     function defaultCompiler() {
         var that = {
-            compile: compile,
-            UnexpectedValueException: Error
+            compile:compile,
+            UnexpectedValueException:Error
         };
 
         function template(preProcessTemplate) {
@@ -149,7 +149,7 @@ var templateLayout = (function () {
                 log.info("creating new slot...");
 
                 var that = {
-                    slotText: slotText
+                    slotText:slotText
                 };
 
                 log.info("slot: ", that);
@@ -160,13 +160,13 @@ var templateLayout = (function () {
                 log.info("creating new row...");
 
                 var that = {
-                    rowText: rowText,
-                    slotIdentifier: [],
-                    length: rowText.length
+                    rowText:rowText,
+                    slotIdentifier:[],
+                    length:rowText.length
                 };
 
                 (function init() {
-                    that.slotIdentifier = Array.prototype.map.call(rowText, function(slot) {
+                    that.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
                         return gridSlot(slot.charAt(0));
                     });
                 })();
@@ -178,18 +178,17 @@ var templateLayout = (function () {
             function grid(display) {
                 log.info("creating new grid...");
 
-                var slots = {};
-                var that = {
-                    rows: [],
-                    slots: slots,
+                var slots = {}, that = {
+                    rows:[],
+                    slots:slots,
                     //getTemplate
-                    setTemplate: setTemplate
+                    setTemplate:setTemplate
                 };
 
 
                 (function init() {
-                    if (display.grid != null) {
-                        that.rows = display.grid.map(function(row) {
+                    if (display.grid !== null) {
+                        that.rows = display.grid.map(function (row) {
                             return gridRow(row);
                         });
                     }
@@ -197,16 +196,17 @@ var templateLayout = (function () {
 
                 function hasSlot(slotIdentifier) {
                     log.debug("hasSlot ? ", slotIdentifier);
-                    return that.rows.some(function(row) {
+                    return that.rows.some(function (row) {
                         var regExp = new RegExp(slotIdentifier);
                         return regExp.exec(row.rowText);
-                    })
+                    });
                 }
 
                 function setTemplate(aTemplate) {
+                    var slot, tmp;
                     if (hasSlot(aTemplate.position.position)) {
                         log.debug("insert here");
-                        var tmp = slots[aTemplate.position.position] || new Array();
+                        tmp = slots[aTemplate.position.position] || [];
                         tmp.push(aTemplate);
                         slots[aTemplate.position.position] = tmp;
                         log.debug("at ", slots[aTemplate.position.position]);
@@ -214,7 +214,7 @@ var templateLayout = (function () {
                     }
 
                     //forEach non leaf template in slots
-                    for (var slot in slots) {
+                    for (slot in slots) {
                         if (slots[slot].some(function (currentTemplate) {
                             return !currentTemplate.isLeaf() && currentTemplate.insert(currentTemplate);
                         })) {
@@ -231,14 +231,14 @@ var templateLayout = (function () {
             }
 
             var that = {
-                parentTemplate: null,
-                selectorText: preProcessTemplate.selectorText,
-                selector: null,
-                display: preProcessTemplate.display,
-                position: preProcessTemplate.position,
-                grid: null,
-                isRoot: isRoot,
-                isLeaf: isLeaf,
+                parentTemplate:null,
+                selectorText:preProcessTemplate.selectorText,
+                selector:null,
+                display:preProcessTemplate.display,
+                position:preProcessTemplate.position,
+                grid:null,
+                isRoot:isRoot,
+                isLeaf:isLeaf,
                 insert:insert
             };
 
@@ -248,11 +248,11 @@ var templateLayout = (function () {
             })();
 
             function isLeaf() {
-                return that.display.grid == null;
+                return that.display.grid === null;
             }
 
             function isRoot() {
-                return that.position.position == null;
+                return that.position.position === null;
             }
 
             function insert(aTemplate) {
@@ -264,10 +264,10 @@ var templateLayout = (function () {
             return that;
         }
 
-        var rootTemplate = function() {
+        var rootTemplate = function () {
             var that = {
-                insert: insert,
-                rows: []
+                insert:insert,
+                rows:[]
             };
 
             function insert(preProcessTemplate) {
@@ -281,7 +281,7 @@ var templateLayout = (function () {
                 } else {
                     log.debug("searching parent: ", aTemplate.position.position);
                     //insert in children
-                    return that.rows.some(function(element, index, array) {
+                    return that.rows.some(function (element) {
                         return element.insert(aTemplate);
                     });
                 }
@@ -324,15 +324,13 @@ var templateLayout = (function () {
             log.info("compiling display...");
             log.debug("display source: ", displayValue);
             var displayMetadata = {
-                displayType: null,
-                grid: null
-            };
-            var displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig;
-            var stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
-            if (displayValue != undefined) {
+                displayType:null,
+                grid:null
+            }, displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig, stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
+            if (displayValue !== undefined) {
                 //TODO: check invalid values
                 displayMetadata.displayType = displayValue.match(displayTypeRegExp);
-                displayMetadata.grid = displayValue.match(stringRegExp).map(function(element) {
+                displayMetadata.grid = displayValue.match(stringRegExp).map(function (element) {
                     return element.replace(/"/g, "").replace(/\s*/, "");
                 });
             }
@@ -353,13 +351,13 @@ var templateLayout = (function () {
             log.info("compiling position...");
             log.debug("position source: ", positionValue);
             var positionMetadata = {
-                position: null
+                position:null
             };
             var matched;
             var positionRegExp = /^\s*([a-zA-Z0-9]+|same)\s*/i;
-            if (positionValue != undefined) {
+            if (positionValue !== undefined) {
                 matched = positionValue.match(positionRegExp);
-                if (matched == null) {
+                if (matched === null) {
                     log.error("Error: unexpected value at ", positionValue);
                     throw new that.UnexpectedValueException("Error: unexpected value at ", positionValue);
                 }
@@ -389,13 +387,14 @@ var templateLayout = (function () {
         function compile(buffer) {
             log.info("compiling...");
             log.debug("source: ", buffer);
+            var selectorText, preProcessTemplate, inserted;
 
-            for (var selectorText in buffer) {
+            for (selectorText in buffer) {
                 log.debug("next element: ", selectorText);
-                var preProcessTemplate = parseProperties(buffer[selectorText]);
+                preProcessTemplate = parseProperties(buffer[selectorText]);
                 log.debug("result: ", preProcessTemplate);
 
-                var inserted = rootTemplate.insert(preProcessTemplate);
+                inserted = rootTemplate.insert(preProcessTemplate);
                 log.warn("insertion: ", inserted);
             }
             log.debug("compiling ... OK");
@@ -448,7 +447,7 @@ var templateLayout = (function () {
                         rowDiv.style.display = "table-row";
                         rootElement.appendChild(rowDiv);
 
-                        row.slotIdentifier.forEach(function(slotId) {
+                        row.slotIdentifier.forEach(function (slotId) {
                             log.warn("slot ", slotId.slotText);
                             //each slot can have multiple elements
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
@@ -473,8 +472,8 @@ var templateLayout = (function () {
     }
 
     function parseTransformOptions(args) {
-        var options = {parse:true, compile:true, generate:true}
-        if (args.length == 0) {
+        var options = {parse:true, compile:true, generate:true};
+        if (args.length === 0) {
             return options;
         }
         if (args[0].action == "none") {
