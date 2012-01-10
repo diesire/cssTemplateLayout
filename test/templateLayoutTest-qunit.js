@@ -60,7 +60,7 @@ test("transform options", function() {
     var templateSource = "body {display: \"ab\"} h1 {position: a} h2 {position: b}";
     templateLayout(templateSource).transform({action:"none"});
     var result = templateLayout(templateSource).transform({action:"parse"}).getBuffer();
-    wef.log.info("buffer: ", result);
+    wef.logger().info("buffer: ", result);
     var result = templateLayout(templateSource).transform({action:"compile"}).getTOM();
-    wef.log.info("TOM: ", result);
+    wef.logger().info("TOM: ", result);
 });
