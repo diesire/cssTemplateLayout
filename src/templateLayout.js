@@ -5,7 +5,7 @@
  */
 var templateLayout = (function () {
 
-    var templateLayout = function (templateSource) {
+    var log = wef.logger("templateLayout"), templateLayout = function (templateSource) {
         return new templateLayout.fn.init(arguments);
     },
         lastEvent = null,
@@ -21,14 +21,14 @@ var templateLayout = (function () {
 
     //templateLayout(), templateLayout(""), templateLayout("", "", ...)
     templateLayout.prototype.init = function(templateSources) {
-        wef.log.info("creating templateLayout...");
+        log.info("creating templateLayout...");
         var args = Array.prototype.slice.call(templateSources);
         var firstSource = args[0];
 
         //templateLayout()
         if (!firstSource) {
             //TODO: load style & inline css
-            wef.log.info("templateLayout OK");
+            log.info("templateLayout OK");
             this.templateSources[0] = {
                 type: "inherited",
                 sourceText: ""
@@ -39,11 +39,11 @@ var templateLayout = (function () {
         //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
         if (args.length >= 1 && args.every(isString)) {
             this.templateSources = args.map(getContent);
-            wef.log.info("templateLayout OK");
+            log.info("templateLayout OK");
             return this;
         }
 
-        wef.log.error("Invalid argument");
+        log.error("Invalid argument");
         throw new this.InvalidArgumentException("Invalid argument");
     };
 
@@ -58,13 +58,13 @@ var templateLayout = (function () {
     templateLayout.prototype.OperationNotSupportedException = Error;
 
     templateLayout.prototype.InvalidArgumentException = Error;
-    
+
     templateLayout.prototype.transform = function() {
-        wef.log.debug("transforming...");
+        log.debug("transforming...");
         var options = parseTransformOptions(arguments);
 
         if (options.parse) {
-            wef.log.debug("transforming template ...");
+            log.debug("transforming template ...");
             document.addEventListener(parser.events.PARSER_START, parserStarts, false);
             document.addEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
             document.addEventListener(parser.events.PARSER_DONE, parserDone, false);
@@ -78,13 +78,13 @@ var templateLayout = (function () {
         }
         if (options.compile) {
             tom = compiler.compile(buffer);
-            // wef.log.info("TOM: ", tom);
+            // log.info("TOM: ", tom);
         }
         if (options.generate) {
             generator.patchDOM(tom);
         }
 
-        wef.log.debug("template transformed OK");
+        log.debug("template transformed OK");
         return this;
     };
 
@@ -145,18 +145,18 @@ var templateLayout = (function () {
 
         function template(preProcessTemplate) {
             function gridSlot(slotText) {
-                wef.log.info("creating new slot...");
+                log.info("creating new slot...");
 
                 var that = {
                     slotText: slotText
                 };
 
-                wef.log.info("slot: ", that);
+                log.info("slot: ", that);
                 return that;
             }
 
             function gridRow(rowText) {
-                wef.log.info("creating new row...");
+                log.info("creating new row...");
 
                 var that = {
                     rowText: rowText,
@@ -170,12 +170,12 @@ var templateLayout = (function () {
                     });
                 })();
 
-                wef.log.info("row: ", that);
+                log.info("row: ", that);
                 return that;
             }
 
             function grid(display) {
-                wef.log.info("creating new grid...");
+                log.info("creating new grid...");
 
                 var slots = {};
                 var that = {
@@ -195,7 +195,7 @@ var templateLayout = (function () {
                 })();
 
                 function hasSlot(slotIdentifier) {
-                    wef.log.debug("hasSlot ? ", slotIdentifier);
+                    log.debug("hasSlot ? ", slotIdentifier);
                     return that.rows.some(function(row) {
                         var regExp = new RegExp(slotIdentifier);
                         return regExp.exec(row.rowText);
@@ -204,11 +204,11 @@ var templateLayout = (function () {
 
                 function setTemplate(aTemplate) {
                     if (hasSlot(aTemplate.position.position)) {
-                        wef.log.debug("insert here");
+                        log.debug("insert here");
                         var tmp = slots[aTemplate.position.position] || new Array();
                         tmp.push(aTemplate);
                         slots[aTemplate.position.position] = tmp;
-                        wef.log.debug("at ", slots[aTemplate.position.position]);
+                        log.debug("at ", slots[aTemplate.position.position]);
                         return true;
                     }
 
@@ -221,11 +221,11 @@ var templateLayout = (function () {
                         }
                     }
 
-                    wef.log.debug("parent template not found");
+                    log.debug("parent template not found");
                     return false;
                 }
 
-                wef.log.info("grid: ", that);
+                log.info("grid: ", that);
                 return that;
             }
 
@@ -242,7 +242,7 @@ var templateLayout = (function () {
             };
 
             (function init() {
-                wef.log.debug("creating template...");
+                log.debug("creating template...");
                 that.grid = grid(preProcessTemplate.display);
             })();
 
@@ -255,11 +255,11 @@ var templateLayout = (function () {
             }
 
             function insert(aTemplate) {
-                wef.log.debug("trying to insert into ", that);
+                log.debug("trying to insert into ", that);
                 return that.grid.setTemplate(aTemplate);
             }
 
-            wef.log.info("new template:  ", that);
+            log.info("new template:  ", that);
             return that;
         }
 
@@ -270,15 +270,15 @@ var templateLayout = (function () {
             };
 
             function insert(preProcessTemplate) {
-                wef.log.warn("inserting ", preProcessTemplate.selectorText);
+                log.warn("inserting ", preProcessTemplate.selectorText);
                 var aTemplate = template(preProcessTemplate);
 
                 if (aTemplate.isRoot()) {
-                    wef.log.debug("inserting at root", aTemplate);
+                    log.debug("inserting at root", aTemplate);
                     that.rows.push(aTemplate);
                     return true;
                 } else {
-                    wef.log.debug("searching parent: ", aTemplate.position.position);
+                    log.debug("searching parent: ", aTemplate.position.position);
                     //insert in children
                     return that.rows.some(function(element, index, array) {
                         return element.insert(aTemplate);
@@ -290,7 +290,7 @@ var templateLayout = (function () {
         }();
 
         (function init() {
-            wef.log.info("new compiler created");
+            log.info("new compiler created");
         })();
 
         function parseDisplay(displayValue) {
@@ -320,8 +320,8 @@ var templateLayout = (function () {
              * * (asterisk.) All columns with a ‘*’ have the same width. See the algorithm below.
              * max-content, min-content, minmax(p,q), fit-content
              */
-            wef.log.info("compiling display...");
-            wef.log.debug("display source: ", displayValue);
+            log.info("compiling display...");
+            log.debug("display source: ", displayValue);
             var displayMetadata = {
                 displayType: null,
                 grid: null
@@ -335,7 +335,7 @@ var templateLayout = (function () {
                     return element.replace(/"/g, "").replace(/\s*/, "");
                 });
             }
-            wef.log.info("display result: ", displayMetadata);
+            log.info("display result: ", displayMetadata);
             return displayMetadata;
         }
 
@@ -349,8 +349,8 @@ var templateLayout = (function () {
              * <letter> must be a single letter or digit, with category Lu, Ll, Lt or Nd in Unicode [UNICODE]),
              * or a “@” symbol
              */
-            wef.log.info("compiling position...");
-            wef.log.debug("position source: ", positionValue);
+            log.info("compiling position...");
+            log.debug("position source: ", positionValue);
             var positionMetadata = {
                 position: null
             };
@@ -359,45 +359,45 @@ var templateLayout = (function () {
             if (positionValue != undefined) {
                 matched = positionValue.match(positionRegExp);
                 if (matched == null) {
-                    wef.log.error("Error: unexpected value at ", positionValue);
+                    log.error("Error: unexpected value at ", positionValue);
                     throw new that.UnexpectedValueException("Error: unexpected value at ", positionValue);
                 }
                 positionMetadata.position = matched[1];
             }
-            wef.log.info("position result: ", positionMetadata);
+            log.info("position result: ", positionMetadata);
             return positionMetadata;
         }
 
         function parseProperties(rule) {
             var preProcessTemplate = {};
-            wef.log.info("compiling properties...");
-            wef.log.debug("properties source: ", rule);
+            log.info("compiling properties...");
+            log.debug("properties source: ", rule);
 
             preProcessTemplate.selectorText = rule.selectorText;
 
-            //wef.log.debug("* ", templateLayout.fn.constants.DISPLAY, rule.declaration[templateLayout.fn.constants.DISPLAY]);
+            //log.debug("* ", templateLayout.fn.constants.DISPLAY, rule.declaration[templateLayout.fn.constants.DISPLAY]);
             preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.fn.constants.DISPLAY]);
 
-            //wef.log.debug("* ", templateLayout.fn.constants.POSITION, rule.declaration[templateLayout.fn.constants.POSITION]);
+            //log.debug("* ", templateLayout.fn.constants.POSITION, rule.declaration[templateLayout.fn.constants.POSITION]);
             preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.fn.constants.POSITION]);
 
-            wef.log.info("properties result: ", preProcessTemplate);
+            log.info("properties result: ", preProcessTemplate);
             return preProcessTemplate;
         }
 
         function compile(buffer) {
-            wef.log.info("compiling...");
-            wef.log.debug("source: ", buffer);
+            log.info("compiling...");
+            log.debug("source: ", buffer);
 
             for (var selectorText in buffer) {
-                wef.log.debug("next element: ", selectorText);
+                log.debug("next element: ", selectorText);
                 var preProcessTemplate = parseProperties(buffer[selectorText]);
-                wef.log.debug("result: ", preProcessTemplate);
+                log.debug("result: ", preProcessTemplate);
 
                 var inserted = rootTemplate.insert(preProcessTemplate);
-                wef.log.warn("insertion: ", inserted);
+                log.warn("insertion: ", inserted);
             }
-            wef.log.debug("compiling ... OK");
+            log.debug("compiling ... OK");
             return rootTemplate;
         }
 
@@ -411,8 +411,8 @@ var templateLayout = (function () {
 
         function patchDOM(tom) {
             var tom = tom;
-            wef.log.info("patching ........");
-            wef.log.debug("source: ", tom);
+            log.info("patching ........");
+            log.debug("source: ", tom);
 
             tom.rows.forEach(generateRootTemplate);
         }
@@ -423,7 +423,7 @@ var templateLayout = (function () {
             //else traverse TOM
 
             function generateLeaf(template, parentHtmlNode) {
-                wef.log.warn("leaf   ", template.selectorText, parentHtmlNode.localName);
+                log.warn("leaf   ", template.selectorText, parentHtmlNode.localName);
                 var childElement = document.querySelector(template.selectorText);
                 childElement.style.display = "table-cell";
                 //childElement.parentNode.removeChild(childElement);
@@ -435,23 +435,23 @@ var templateLayout = (function () {
                 if (template.isLeaf()) {
                     generateLeaf(template, parentHtmlNode);
                 } else {
-                    wef.log.warn("no leaf   ", template.selectorText, parentHtmlNode.localName);
+                    log.warn("no leaf   ", template.selectorText, parentHtmlNode.localName);
                     var rootElement = document.querySelector(template.selectorText);
                     rootElement.style.display = "table";
                     parentHtmlNode.appendChild(rootElement);
 
                     template.grid.rows.forEach(function (row) {
-                        wef.log.warn("row ", row.rowText);
+                        log.warn("row ", row.rowText);
                         var rowDiv = document.createElement("div");
                         rowDiv.className = "templateLayoutDiv";
                         rowDiv.style.display = "table-row";
                         rootElement.appendChild(rowDiv);
 
                         row.slotIdentifier.forEach(function(slotId) {
-                            wef.log.warn("slot ", slotId.slotText);
+                            log.warn("slot ", slotId.slotText);
                             //each slot can have multiple elements
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                                wef.log.warn("slotELEMENT ", templateInSlot.selectorText);
+                                log.warn("slotELEMENT ", templateInSlot.selectorText);
                                 generateTemplate(templateInSlot, rowDiv);
                             });
                         });
@@ -460,7 +460,7 @@ var templateLayout = (function () {
                     //rootElement.parentNode.removeChild(rootElement);
                     //parentHtmlNode.appendChild(rootElement);
                 }
-                wef.log.debug("template generated: ", template);
+                log.debug("template generated: ", template);
             }
 
             var rootElement = document.querySelector(template.selectorText);
@@ -489,13 +489,13 @@ var templateLayout = (function () {
     }
 
     function parserStarts(e) {
-        wef.log.info("templateLayout listens: start parsing");
+        log.info("templateLayout listens: start parsing");
         lastEvent = e;
         buffer = {};
     }
 
     function propertyFound(e) {
-        wef.log.info("templateLayout listens: property found");
+        log.info("templateLayout listens: property found");
         lastEvent = e;
         if (isSupportedProperty(e.data)) {
             store(e.data);
@@ -503,7 +503,7 @@ var templateLayout = (function () {
     }
 
     function parserDone(e) {
-        wef.log.info("templateLayout listens: parsing done");
+        log.info("templateLayout listens: parsing done");
         lastEvent = e;
     }
 
@@ -513,17 +513,17 @@ var templateLayout = (function () {
             var request = new XMLHttpRequest();
             request.open("get", url, false);
             request.send("");
-            wef.log.info("request status: ", request.statusText);
+            log.info("request status: ", request.statusText);
             return request.responseText;
         }
 
         try {
-            wef.log.info("reading file...");
+            log.info("reading file...");
             var templateText = ajaxReadFile(url);
-            wef.log.info("template loaded OK");
+            log.info("template loaded OK");
             return templateText;
         } catch (e) {
-            wef.log.error("Operation not supported", e);
+            log.error("Operation not supported", e);
             throw new that.OperationNotSupportedException(e);
         }
     }
@@ -536,13 +536,13 @@ var templateLayout = (function () {
             };
         }
         buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
-        wef.log.info("property stored: ", rule.declaration.property);
+        log.info("property stored: ", rule.declaration.property);
     }
 
     function isSupportedProperty(rule) {
         for (var iterator in templateLayout.fn.constants) {
             if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
-                wef.log.info("supported property found: ", rule.declaration.property);
+                log.info("supported property found: ", rule.declaration.property);
                 return true;
             }
         }
