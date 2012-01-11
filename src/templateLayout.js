@@ -4,7 +4,6 @@
  * MIT Licensed
  */
 (function (global) {
-
     var log = wef.logger("templateLayout"),
         templateLayout,
         lastEvent = null,
@@ -15,6 +14,7 @@
         generator;
 
     templateLayout = function (templateSource) {
+        log.info("create templateLayout...");
         return new templateLayout.prototype.init(arguments);
     };
 
@@ -30,27 +30,35 @@
 
         //templateLayout(), templateLayout(""), templateLayout("", "", ...)
         init:function (templateSources) {
-            log.info("creating templateLayout...");
-            var args = Array.prototype.slice.call(templateSources), firstSource = args[0];
+            var args, firstSource;
+            log.debug("sources:", templateSources);
+
+            log.debug("init subsystems...");
             parser = wef.cssParser();
             compiler = defaultCompiler();
             generator = htmlGenerator();
+            log.debug("subsystems... [OK]");
+
+            args = Array.prototype.slice.call(templateSources);
+            firstSource = args[0];
 
             //templateLayout()
             if (!firstSource) {
                 //TODO: load style & inline css
-                log.info("templateLayout OK");
+                log.warn("no external template loaded!!!");
+
                 this.templateSources[0] = {
                     type:"inherited",
                     sourceText:""
                 };
+                log.info("templateLayout... [OK]");
                 return this;
             }
 
             //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
             if (args.length >= 1 && args.every(isString)) {
                 this.templateSources = args.map(getContent);
-                log.info("templateLayout OK");
+                log.info("templateLayout... [OK]");
                 return this;
             }
 
@@ -58,14 +66,14 @@
             throw new this.InvalidArgumentException("Invalid argument");
         },
         transform:function () {
-            log.debug("transforming...");
+            log.debug("transform...");
             var options = parseTransformOptions(arguments);
 
             if (options.parse) {
-                log.debug("transforming template ...");
+                log.info("Step 1: parse");
                 parser.whenStart(parserStarts);
-                parser.whenStart(propertyFound);
-                parser.whenStart(parserDone);
+                parser.whenProperty(propertyFound);
+                parser.whenStop(parserDone);
 
                 //TODO: FIXME multiple sources
                 parser.parse(this.templateSources[0].sourceText);
@@ -76,14 +84,16 @@
                 //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
             }
             if (options.compile) {
+                log.info("Step 2: compile");
                 tom = compiler.compile(buffer);
                 // log.info("TOM: ", tom);
             }
             if (options.generate) {
+                log.info("Step 3: generate");
                 generator.patchDOM(tom);
             }
 
-            log.debug("template transformed OK");
+            log.info("transform... [OK]");
             return this;
         },
         //only for testing purposes
@@ -486,7 +496,7 @@
         return options;
     }
 
-    function parserStarts(e) {
+    function parserStarts(o) {
         log.info("templateLayout listens: start parsing");
         lastEvent = e;
         buffer = {};
@@ -500,7 +510,7 @@
         }
     }
 
-    function parserDone(e) {
+    function parserDone(o) {
         log.info("templateLayout listens: parsing done");
         lastEvent = e;
     }
