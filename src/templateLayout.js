@@ -10,9 +10,9 @@
         lastEvent = null,
         buffer = {},
         tom,
-        parser = wef.cssParser(),
-        compiler = defaultCompiler(),
-        generator = htmlGenerator();
+        parser,
+        compiler,
+        generator;
 
     templateLayout = function (templateSource) {
         return new templateLayout.prototype.init(arguments);
@@ -32,6 +32,9 @@
         init:function (templateSources) {
             log.info("creating templateLayout...");
             var args = Array.prototype.slice.call(templateSources), firstSource = args[0];
+            parser = wef.cssParser();
+            compiler = defaultCompiler();
+            generator = htmlGenerator();
 
             //templateLayout()
             if (!firstSource) {
