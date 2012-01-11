@@ -6,7 +6,6 @@
 (function (global) {
     var log = wef.logger("templateLayout"),
         templateLayout,
-        lastEvent = null,
         buffer = {},
         tom,
         parser,
@@ -97,9 +96,6 @@
             return this;
         },
         //only for testing purposes
-        getLastEvent:function () {
-            return lastEvent;
-        },
         getBuffer:function () {
             return buffer;
         },
@@ -498,13 +494,11 @@
 
     function parserStarts(o) {
         log.info("templateLayout listens: start parsing");
-        lastEvent = e;
         buffer = {};
     }
 
     function propertyFound(e) {
         log.info("templateLayout listens: property found");
-        lastEvent = e;
         if (isSupportedProperty(e.data)) {
             store(e.data);
         }
@@ -512,7 +506,6 @@
 
     function parserDone(o) {
         log.info("templateLayout listens: parsing done");
-        lastEvent = e;
     }
 
     function readFile(url) {
