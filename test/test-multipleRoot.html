@@ -3,22 +3,22 @@
 <html>
 <head>
     <!-- Qunit -->
-    <script src="../lib/qunit/jquery.js"></script>
-    <link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen"/>
-    <script type="text/javascript" src="../lib/qunit/qunit.js"></script>
+    <script src="qunit/jquery.js"></script>
+    <link rel="stylesheet" href="qunit/qunit.css" type="text/css"
+          media="screen"/>
+    <script type="text/javascript" src="qunit/qunit.js"></script>
     <!-- Lib -->
     <script src="../lib/wef/build/wef.js"></script>
-    <script src="../lib/wef/build/cssParser.wef.js"></script>
     <!-- Src -->
     <script src="../src/templateLayout.js"></script>
 
     <script type="text/javascript">
-        window.onload = function() {
+        window.onload = function () {
             var text = "#id11{display: \"ab\"} #id21{display: \"cd\"} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
             templateLayout(text).transform();
 
             <!-- Test code -->
-            test("root elements", function() {
+            test("root elements", function () {
                 equal(2, $("#parent").children().length, "there are 2 root templates");
                 equal($("#id11").attr("id"), $("#parent").children().get(0).id, "child_1 == template1");
                 equal($("#id21").attr("id"), $("#parent").children().get(1).id, "child_2 == template2");
@@ -30,7 +30,9 @@
 <body>
 <!-- Qunit code -->
 <div>
-    <div id="qunit-header">CSS Template Layout test - Multiple root level layouts</div>
+    <div id="qunit-header">CSS Template Layout test - Multiple root level
+        layouts
+    </div>
     <div id="qunit-banner"></div>
     <div id="qunit-testrunner-toolbar"></div>
     <div id="qunit-userAgent"></div>
