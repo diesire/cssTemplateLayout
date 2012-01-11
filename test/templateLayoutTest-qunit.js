@@ -49,7 +49,6 @@ test("public methods", function () {
     equal(templateLayout().compile, undefined, "compile no longer supported");
 
     //testing
-    notEqual(templateLayout().getLastEvent, undefined, "getLastEvent");
     notEqual(templateLayout().getBuffer, undefined, "getBuffer");
 
     //new ones
