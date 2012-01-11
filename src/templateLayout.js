@@ -70,6 +70,7 @@
 
             if (options.parse) {
                 log.info("Step 1: parse");
+                log.group();
                 parser.whenStart(parserStarts);
                 parser.whenProperty(propertyFound);
                 parser.whenStop(parserDone);
@@ -81,15 +82,23 @@
                 //document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
                 //document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
                 //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
+                log.groupEnd();
+                log.info("Step 1: parse... [OK]");
             }
             if (options.compile) {
                 log.info("Step 2: compile");
+                log.group();
                 tom = compiler.compile(buffer);
                 // log.info("TOM: ", tom);
+                log.groupEnd();
+                log.info("Step 2: compile... [OK]");
             }
             if (options.generate) {
                 log.info("Step 3: generate");
+                log.group();
                 generator.patchDOM(tom);
+                log.groupEnd();
+                log.info("Step 1: generate... [OK]");
             }
 
             log.info("transform... [OK]");
@@ -493,19 +502,19 @@
     }
 
     function parserStarts(o) {
-        log.info("templateLayout listens: start parsing");
+        log.info("start parsing at", new Date(o.time).toLocaleTimeString());
         buffer = {};
     }
 
-    function propertyFound(e) {
+    function propertyFound(property) {
         log.info("templateLayout listens: property found");
-        if (isSupportedProperty(e.data)) {
-            store(e.data);
+        if (isSupportedProperty(property)) {
+            store(property);
         }
     }
 
     function parserDone(o) {
-        log.info("templateLayout listens: parsing done");
+        log.info("parsing done at", new Date(o.time).toLocaleTimeString());
     }
 
     function readFile(url) {
