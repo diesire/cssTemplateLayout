@@ -423,7 +423,6 @@
         };
 
         function patchDOM(tom) {
-            var tom = tom;
             log.info("patching ........");
             log.debug("source: ", tom);
 
