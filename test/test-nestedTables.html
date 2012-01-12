@@ -14,14 +14,39 @@
 
     <script type="text/javascript">
         window.onload = function () {
-            var text = "#parent {display: \"xz\"} #id11{display: \"ab\" position: x} #id21{display: \"cd\"; position: z} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
+            var text =
+                    "#parent {display: \"xz\"} #id11{display: \"ab\"; position: x} #id21{display: \"cd\"; position: z} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
             templateLayout(text).transform();
 
             <!-- Test code -->
             test("root elements", function () {
-                equal(2, $("#parent").children().length, "there are 2 root templates");
-                equal($("#id11").attr("id"), $("#parent").children().get(0).id, "child_1 == template1");
-                equal($("#id21").attr("id"), $("#parent").children().get(1).id, "child_2 == template2");
+                equal(1, $("#parent").children().length,
+                      "there are 1 root templates");
+                //parent->table->row->cell->child = 4 x children()
+                equal($("#id11").attr("id"),
+                      $("#parent").children().children().children().children().get(0).id,
+                      "#parent[x] == #id11");
+                equal($("#id21").attr("id"),
+                      $("#parent").children().children().children().children().get(1).id,
+                      "#parent[y] == #id21");
+
+                equal($("#id11").children().children().children().children().length, 2,
+                      "#id11 has 2 children");
+                equal($("#id22b").attr("id"),
+                      $("#id11").children().children().children().children().get(0).id,
+                      "#id11[a] == #id22b");
+                equal($("#id22a").attr("id"),
+                      $("#id11").children().children().children().children().get(1).id,
+                      "#id11[b] == #id22a");
+
+                equal($("#id21").children().children().children().children().length, 2,
+                      "#id21 has 2 children");
+                equal($("#id12b").attr("id"),
+                      $("#id21").children().children().children().children().get(0).id,
+                      "#id21[a] == #id12b");
+                equal($("#id12a").attr("id"),
+                      $("#id21").children().children().children().children().get(1).id,
+                      "#id21[b] == #id12a");
             })
         }
     </script>
@@ -42,24 +67,12 @@
 </div>
 <!-- Test -->
 <div id="parent">
-    <div id="id11">
-        one
-    </div>
-    <div id="id12a">
-        two
-    </div>
-    <div id="id12b">
-        three
-    </div>
-    <div id="id21">
-        four
-    </div>
-    <div id="id22a">
-        five
-    </div>
-    <div id="id22b">
-        six
-    </div>
+    <div id="id11">one</div>
+    <div id="id12a">two</div>
+    <div id="id12b">three</div>
+    <div id="id21">four</div>
+    <div id="id22a">five</div>
+    <div id="id22b">six</div>
 </div>
 </body>
 </html>

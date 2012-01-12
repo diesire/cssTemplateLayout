@@ -19,7 +19,10 @@
 
             <!-- Test code -->
             test("width", function () {
-                equal($("#parent").width(), $("#child1").width() + $("#child2").width() + $("#child3").width() + $("#child4").width(), "parentWidth = child_1_Width + ...+ child_n_Width");
+                equal($("#parent").children().width(),
+                      $("#child1").width() + $("#child2").width() +
+                      $("#child3").width() + $("#child4").width(),
+                      "parentWidth = child_1_Width + ...+ child_n_Width");
             })
         }
     </script>

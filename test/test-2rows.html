@@ -19,7 +19,8 @@
 
             <!-- Test code -->
             test("width", function () {
-                equal($("#parent").width(), Math.max($("#child1").width() + $("#child2").width(), $("#child3").width() + $("#child4").width()), "parentWidth = max(childRow_1_Width, ..., childRow_n_Width)");
+                equal($("#parent").children().width(),
+                      Math.max($("#child1").width() + $("#child2").width(), $("#child3").width() + $("#child4").width()), "parentWidth = max(childRow_1_Width, ..., childRow_n_Width)");
             })
         }
     </script>
