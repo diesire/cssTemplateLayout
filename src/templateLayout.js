@@ -438,8 +438,6 @@
             function generateLeaf(template, parentHtmlNode) {
                 log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                 var childElement = document.querySelector(template.selectorText);
-                childElement.style.display = "table-cell";
-                //childElement.parentNode.removeChild(childElement);
                 parentHtmlNode.appendChild(childElement);
             }
 
@@ -450,22 +448,35 @@
                 } else {
                     log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                     var rootElement = document.querySelector(template.selectorText);
-                    rootElement.style.display = "table";
                     parentHtmlNode.appendChild(rootElement);
+                    //create container
+                    var tableDiv = document.createElement("div");
+                    tableDiv.className = "templateLayoutDiv templateLayoutTable";
+                    tableDiv.style.display = "table";
+                    //append container to parent
+                    rootElement.appendChild(tableDiv);
 
                     template.grid.rows.forEach(function (row) {
                         log.info("row:", row.rowText);
+                        //create container
                         var rowDiv = document.createElement("div");
-                        rowDiv.className = "templateLayoutDiv";
+                        rowDiv.className = "templateLayoutDiv templateLayoutRow";
                         rowDiv.style.display = "table-row";
-                        rootElement.appendChild(rowDiv);
+                        //append to parent
+                        tableDiv.appendChild(rowDiv);
 
                         row.slotIdentifier.forEach(function (slotId) {
                             log.info("slot:", slotId.slotText);
                             //each slot can have multiple elements
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                                generateTemplate(templateInSlot, rowDiv);
                                 log.info("slotELEMENT ", templateInSlot.selectorText);
+                                //create container
+                                var cellDiv = document.createElement("div");
+                                cellDiv.className = "templateLayoutDiv templateLayoutCell";
+                                cellDiv.style.display = "table-cell";
+                                rowDiv.appendChild(cellDiv);
+                                //generate children and append to this container
+                                generateTemplate(templateInSlot, cellDiv);
                             });
                         });
                         //rootElement.appendChild(rowDiv);
