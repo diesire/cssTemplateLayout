@@ -84,7 +84,7 @@
             if (options.compile) {
                 log.info("Step 2: compile");
                 log.group();
-                tom = this.compiler.compile(buffer);
+                tom = this.compiler().compile(buffer);
                 // log.info("TOM: ", tom);
                 log.groupEnd();
                 log.info("Step 2: compile... [OK]");
@@ -92,7 +92,7 @@
             if (options.generate) {
                 log.info("Step 3: generate");
                 log.group();
-                this.generator.patchDOM(tom);
+                this.generator().patchDOM(tom);
                 log.groupEnd();
                 log.info("Step 3: generate... [OK]");
             }

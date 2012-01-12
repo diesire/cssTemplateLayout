@@ -66,10 +66,13 @@
     }
 
     generator = function () {
-        return this;
+        return new generator.prototype.init();
     };
 
     generator.prototype = {
+        init: function() {
+            return this;
+        },
         patchDOM:function (tom) {
             log.info("patch DOM...");
             log.debug("TOM: ", tom);
@@ -77,7 +80,10 @@
         }
     };
 
-    templateLayout.fn.generator = new generator();
+    generator.fn = generator.prototype;
+    generator.prototype.init.prototype = generator.prototype;
+
+    templateLayout.fn.generator = generator;
 
     log.info("generator module load... [OK]");
 

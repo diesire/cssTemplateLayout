@@ -242,10 +242,16 @@
     }
 
     compiler = function () {
-        return this;
+        return new compiler.prototype.init();
     };
 
+    compiler.fn = compiler.prototype;
+
     compiler.prototype = {
+        constructor: compiler,
+        init: function() {
+            return this;
+        },
         compile:function (buffer) {
             var selectorText, preProcessTemplate, inserted;
             log.info("compile...");
@@ -266,7 +272,9 @@
         }
     };
 
-    templateLayout.fn.compiler = new compiler();
+    compiler.prototype.init.prototype = compiler.prototype;
+
+    templateLayout.fn.compiler = compiler;
 
     log.info("compiler module load... [OK]");
 
