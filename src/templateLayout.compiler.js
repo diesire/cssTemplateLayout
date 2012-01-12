@@ -19,17 +19,28 @@
 
         function gridRow(rowText) {
             log.info("creating new row...");
+            function markColSpan(id) {
+                return "+";
+            }
 
             var that = {
                 rowText:rowText,
                 slotIdentifier:[],
-                length:rowText.length
+                length:rowText.length,
+                colspan:1
             };
 
             (function init() {
+                var lastId={}, currentId, colspan = 1;
                 that.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
-                    return gridSlot(slot.charAt(0));
+                    currentId = gridSlot(slot.charAt(0));
+                    if(lastId && lastId.slotText === currentId.slotText) {
+                        colspan++;
+                    }
+                    lastId.slotText = currentId.slotText;
+                    return markColSpan(currentId.slotText);
                 });
+                that.colspan = colspan;
             })();
 
             log.info("row: ", that);
