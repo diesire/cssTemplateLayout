@@ -44,7 +44,7 @@
             //templateLayout()
             if (!firstSource) {
                 //TODO: load style & inline css
-                log.warn("no external template loaded!!!");
+                log.info("no external template loaded!!!");
 
                 this.templateSources[0] = {
                     type:"inherited",
@@ -98,7 +98,7 @@
                 log.group();
                 generator.patchDOM(tom);
                 log.groupEnd();
-                log.info("Step 1: generate... [OK]");
+                log.info("Step 3: generate... [OK]");
             }
 
             log.info("transform... [OK]");
@@ -284,7 +284,7 @@
             };
 
             function insert(preProcessTemplate) {
-                log.warn("inserting ", preProcessTemplate.selectorText);
+                log.info("inserting ", preProcessTemplate.selectorText);
                 var aTemplate = template(preProcessTemplate);
 
                 if (aTemplate.isRoot()) {
@@ -398,19 +398,20 @@
         }
 
         function compile(buffer) {
-            log.info("compiling...");
-            log.debug("source: ", buffer);
             var selectorText, preProcessTemplate, inserted;
+            log.info("compile...");
+            log.debug("buffer: ", buffer);
 
             for (selectorText in buffer) {
-                log.debug("next element: ", selectorText);
+                log.debug("next buffer element: ", selectorText);
+                log.group();
                 preProcessTemplate = parseProperties(buffer[selectorText]);
-                log.debug("result: ", preProcessTemplate);
-
+                log.debug("preProcess: ", preProcessTemplate);
                 inserted = rootTemplate.insert(preProcessTemplate);
-                log.warn("insertion: ", inserted);
+                log.groupEnd();
+                log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
             }
-            log.debug("compiling ... OK");
+            log.debug("compile... OK");
             return rootTemplate;
         }
 
@@ -423,8 +424,8 @@
         };
 
         function patchDOM(tom) {
-            log.info("patching ........");
-            log.debug("source: ", tom);
+            log.info("patch DOM...");
+            log.debug("TOM: ", tom);
 
             tom.rows.forEach(generateRootTemplate);
         }
@@ -435,7 +436,7 @@
             //else traverse TOM
 
             function generateLeaf(template, parentHtmlNode) {
-                log.warn("leaf   ", template.selectorText, parentHtmlNode.localName);
+                log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                 var childElement = document.querySelector(template.selectorText);
                 childElement.style.display = "table-cell";
                 //childElement.parentNode.removeChild(childElement);
@@ -447,24 +448,24 @@
                 if (template.isLeaf()) {
                     generateLeaf(template, parentHtmlNode);
                 } else {
-                    log.warn("no leaf   ", template.selectorText, parentHtmlNode.localName);
+                    log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                     var rootElement = document.querySelector(template.selectorText);
                     rootElement.style.display = "table";
                     parentHtmlNode.appendChild(rootElement);
 
                     template.grid.rows.forEach(function (row) {
-                        log.warn("row ", row.rowText);
+                        log.info("row:", row.rowText);
                         var rowDiv = document.createElement("div");
                         rowDiv.className = "templateLayoutDiv";
                         rowDiv.style.display = "table-row";
                         rootElement.appendChild(rowDiv);
 
                         row.slotIdentifier.forEach(function (slotId) {
-                            log.warn("slot ", slotId.slotText);
+                            log.info("slot:", slotId.slotText);
                             //each slot can have multiple elements
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                                log.warn("slotELEMENT ", templateInSlot.selectorText);
                                 generateTemplate(templateInSlot, rowDiv);
+                                log.info("slotELEMENT ", templateInSlot.selectorText);
                             });
                         });
                         //rootElement.appendChild(rowDiv);
@@ -529,7 +530,7 @@
         try {
             log.info("reading file...");
             var templateText = ajaxReadFile(url);
-            log.info("template loaded OK");
+            log.info("template loaded... [OK]");
             return templateText;
         } catch (e) {
             log.error("Operation not supported", e);
