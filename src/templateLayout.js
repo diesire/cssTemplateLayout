@@ -36,8 +36,6 @@
 
             log.debug("init subsystems...");
             parser = wef.cssParser();
-            //compiler = defaultCompiler();
-            //generator = htmlGenerator();
             log.debug("subsystems... [OK]");
 
             args = Array.prototype.slice.call(templateSources);
@@ -80,10 +78,6 @@
                 //TODO: FIXME multiple sources
                 parser.parse(this.templateSources[0].sourceText);
 
-                //TODO: remove callbacks???
-                //document.removeEventListener(parser.events.PARSER_START, parserStarts, false);
-                //document.removeEventListener(parser.events.PROPERTY_FOUND, propertyFound, false);
-                //document.removeEventListener(parser.events.PARSER_DONE, parserDone, false);
                 log.groupEnd();
                 log.info("Step 1: parse... [OK]");
             }
