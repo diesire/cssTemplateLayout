@@ -229,7 +229,7 @@
                     //forEach non leaf template in slots
                     for (slot in slots) {
                         if (slots[slot].some(function (currentTemplate) {
-                            return !currentTemplate.isLeaf() && currentTemplate.insert(currentTemplate);
+                            return !currentTemplate.isLeaf() && currentTemplate.insert(aTemplate);
                         })) {
                             return true;
                         }
