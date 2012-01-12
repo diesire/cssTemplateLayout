@@ -26,6 +26,8 @@
             POSITION:"position"},
         OperationNotSupportedException:Error,
         InvalidArgumentException:Error,
+        compiler: null,
+        generator: null,
 
         //templateLayout(), templateLayout(""), templateLayout("", "", ...)
         init:function (templateSources) {
@@ -35,7 +37,7 @@
             log.debug("init subsystems...");
             parser = wef.cssParser();
             compiler = defaultCompiler();
-            generator = htmlGenerator();
+            //generator = htmlGenerator();
             log.debug("subsystems... [OK]");
 
             args = Array.prototype.slice.call(templateSources);
@@ -96,7 +98,7 @@
             if (options.generate) {
                 log.info("Step 3: generate");
                 log.group();
-                generator.patchDOM(tom);
+                this.generator.patchDOM(tom);
                 log.groupEnd();
                 log.info("Step 3: generate... [OK]");
             }
@@ -413,83 +415,6 @@
             }
             log.debug("compile... OK");
             return rootTemplate;
-        }
-
-        return that;
-    }
-
-    function htmlGenerator() {
-        var that = {
-            patchDOM:patchDOM
-        };
-
-        function patchDOM(tom) {
-            log.info("patch DOM...");
-            log.debug("TOM: ", tom);
-
-            tom.rows.forEach(generateRootTemplate);
-        }
-
-        function generateRootTemplate(template) {
-            //here is document
-            //if template.isLeaf() creates DOM and append to parentDOM
-            //else traverse TOM
-
-            function generateLeaf(template, parentHtmlNode) {
-                log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-                var childElement = document.querySelector(template.selectorText);
-                parentHtmlNode.appendChild(childElement);
-            }
-
-            function generateTemplate(template, parentHtmlNode) {
-
-                if (template.isLeaf()) {
-                    generateLeaf(template, parentHtmlNode);
-                } else {
-                    log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-                    var rootElement = document.querySelector(template.selectorText);
-                    parentHtmlNode.appendChild(rootElement);
-                    //create container
-                    var tableDiv = document.createElement("div");
-                    tableDiv.className = "templateLayoutDiv templateLayoutTable";
-                    tableDiv.style.display = "table";
-                    //append container to parent
-                    rootElement.appendChild(tableDiv);
-
-                    template.grid.rows.forEach(function (row) {
-                        log.info("row:", row.rowText);
-                        //create container
-                        var rowDiv = document.createElement("div");
-                        rowDiv.className = "templateLayoutDiv templateLayoutRow";
-                        rowDiv.style.display = "table-row";
-                        //append to parent
-                        tableDiv.appendChild(rowDiv);
-
-                        row.slotIdentifier.forEach(function (slotId) {
-                            log.info("slot:", slotId.slotText);
-                            //each slot can have multiple elements
-                            template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                                log.info("slotELEMENT ", templateInSlot.selectorText);
-                                //create container
-                                var cellDiv = document.createElement("div");
-                                cellDiv.className = "templateLayoutDiv templateLayoutCell";
-                                cellDiv.style.display = "table-cell";
-                                rowDiv.appendChild(cellDiv);
-                                //generate children and append to this container
-                                generateTemplate(templateInSlot, cellDiv);
-                            });
-                        });
-                        //rootElement.appendChild(rowDiv);
-                    });
-                    //rootElement.parentNode.removeChild(rootElement);
-                    //parentHtmlNode.appendChild(rootElement);
-                }
-                log.debug("template generated: ", template);
-            }
-
-            var rootElement = document.querySelector(template.selectorText);
-            generateTemplate(template, rootElement.parentElement);
-            //document.body.appendChild(rootElement);
         }
 
         return that;
