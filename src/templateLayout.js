@@ -92,7 +92,7 @@
             if (options.generate) {
                 log.info("Step 3: generate");
                 log.group();
-                this.generator().patchDOM(tom);
+                this.generator(tom).patchDOM();
                 log.groupEnd();
                 log.info("Step 3: generate... [OK]");
             }

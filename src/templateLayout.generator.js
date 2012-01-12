@@ -65,18 +65,21 @@
         generateTemplate(template, rootElement.parentElement);
     }
 
-    generator = function () {
-        return new generator.prototype.init();
+    generator = function (tom) {
+        //TODO: assert(tom)
+        return new generator.prototype.init(tom);
     };
 
     generator.prototype = {
-        init: function() {
+        tom: undefined,
+        init: function(tom) {
+            this.tom = tom
             return this;
         },
-        patchDOM:function (tom) {
+        patchDOM:function () {
             log.info("patch DOM...");
-            log.debug("TOM: ", tom);
-            tom.rows.forEach(generateRootTemplate);
+            log.debug("TOM: ", this.tom);
+            this.tom.rows.forEach(generateRootTemplate);
         }
     };
 
