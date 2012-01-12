@@ -18,7 +18,7 @@
         }
 
         function generateTemplate(template, parentHtmlNode) {
-            var currentNode, tableDiv, rowDiv, cellDiv;
+            var currentNode;
 
             if (template.isLeaf()) {
                 generateLeaf(template, parentHtmlNode);
@@ -27,33 +27,22 @@
                 currentNode = document.querySelector(template.selectorText);
                 parentHtmlNode.appendChild(currentNode);
 
-                //create container
-                tableDiv = document.createElement("table");
-                tableDiv.className = "templateLayoutDiv templateLayoutTable";
-                //append container to parent
-                currentNode.appendChild(tableDiv);
+                currentNode = generator.fn.generateGrid(currentNode);
 
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
 
-                    //create container
-                    rowDiv = document.createElement("tr");
-                    rowDiv.className = "templateLayoutDiv templateLayoutRow";
-                    //append to parent
-                    tableDiv.appendChild(rowDiv);
+                    currentNode = generator.fn.generateRow(currentNode);
 
                     row.slotIdentifier.forEach(function (slotId) {
                         log.info("slot:", slotId.slotText);
+                        currentNode = generator.fn.generateCell(currentNode);
                         //each slot can have multiple elements or none
-                        //create container
-                        cellDiv = document.createElement("td");
-                        cellDiv.className = "templateLayoutDiv templateLayoutCell";
-                        rowDiv.appendChild(cellDiv);
                         if (template.grid.slots[slotId.slotText]) {
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
                                 log.info("slotELEMENT ", templateInSlot.selectorText);
                                 //generate children and append to this container
-                                generateTemplate(templateInSlot, cellDiv);
+                                generateTemplate(templateInSlot, currentNode);
                             });
                         }
                     });
@@ -72,8 +61,8 @@
     };
 
     generator.prototype = {
-        tom: undefined,
-        init: function(tom) {
+        tom:undefined,
+        init:function (tom) {
             this.tom = tom
             return this;
         },
@@ -81,6 +70,30 @@
             log.info("patch DOM...");
             log.debug("TOM: ", this.tom);
             this.tom.rows.forEach(generateRootTemplate);
+        },
+        generateGrid:function (parentNode) {
+            //create container
+            var gridNode = document.createElement("table");
+            gridNode.className = "templateLayoutDiv templateLayoutTable";
+            //append container to parent
+            parentNode.appendChild(gridNode);
+            return gridNode;
+        },
+        generateRow:function (parentNode) {
+            //create container
+            var rowNode = document.createElement("tr");
+            rowNode.className = "templateLayoutDiv templateLayoutRow";
+            //append to parent
+            parentNode.appendChild(rowNode);
+            return rowNode;
+        },
+        generateCell:function (parentNode) {
+            //create container
+            var cellNode = document.createElement("td");
+            cellNode.className = "templateLayoutDiv templateLayoutCell";
+            //append to parent
+            parentNode.appendChild(cellNode);
+            return cellNode;
         }
     };
 
@@ -91,4 +104,5 @@
 
     log.info("generator module load... [OK]");
 
-})(window.templateLayout);
+})
+    (window.templateLayout);
