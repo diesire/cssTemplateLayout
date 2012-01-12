@@ -27,9 +27,8 @@
                 parentHtmlNode.appendChild(rootElement);
 
                 //create container
-                tableDiv = document.createElement("div");
+                tableDiv = document.createElement("table");
                 tableDiv.className = "templateLayoutDiv templateLayoutTable";
-                tableDiv.style.display = "table";
                 //append container to parent
                 rootElement.appendChild(tableDiv);
 
@@ -37,9 +36,8 @@
                     log.info("row:", row.rowText);
 
                     //create container
-                    rowDiv = document.createElement("div");
+                    rowDiv = document.createElement("tr");
                     rowDiv.className = "templateLayoutDiv templateLayoutRow";
-                    rowDiv.style.display = "table-row";
                     //append to parent
                     tableDiv.appendChild(rowDiv);
 
@@ -50,13 +48,12 @@
                             log.info("slotELEMENT ", templateInSlot.selectorText);
 
                             //create container
-                            cellDiv = document.createElement("div");
                             cellDiv.className = "templateLayoutDiv templateLayoutCell";
-                            cellDiv.style.display = "table-cell";
                             rowDiv.appendChild(cellDiv);
                             //generate children and append to this container
                             generateTemplate(templateInSlot, cellDiv);
                         });
+                        cellDiv = document.createElement("td");
                         if (template.grid.slots[slotId.slotText]) {
                         }
                     });
