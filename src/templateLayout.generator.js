@@ -57,6 +57,8 @@
                             //generate children and append to this container
                             generateTemplate(templateInSlot, cellDiv);
                         });
+                        if (template.grid.slots[slotId.slotText]) {
+                        }
                     });
                 });
             }
