@@ -3,12 +3,13 @@
     var generator, log;
     log = wef.logger("templateLayout.generator");
 
-    log.info("load generator module");
+    log.info("load generator module...");
 
     function generateRootTemplate(template) {
         //here is document
         //if template.isLeaf() creates DOM and append to parentDOM
         //else traverse TOM
+        var rootElement;
 
         function generateLeaf(template, parentHtmlNode) {
             log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
@@ -17,20 +18,20 @@
         }
 
         function generateTemplate(template, parentHtmlNode) {
-            var rootElement, tableDiv, rowDiv, cellDiv;
+            var currentNode, tableDiv, rowDiv, cellDiv;
 
             if (template.isLeaf()) {
                 generateLeaf(template, parentHtmlNode);
             } else {
                 log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-                rootElement = document.querySelector(template.selectorText);
-                parentHtmlNode.appendChild(rootElement);
+                currentNode = document.querySelector(template.selectorText);
+                parentHtmlNode.appendChild(currentNode);
 
                 //create container
                 tableDiv = document.createElement("table");
                 tableDiv.className = "templateLayoutDiv templateLayoutTable";
                 //append container to parent
-                rootElement.appendChild(tableDiv);
+                currentNode.appendChild(tableDiv);
 
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
@@ -61,7 +62,7 @@
             log.debug("template generated: ", template);
         }
 
-        var rootElement = document.querySelector(template.selectorText);
+        rootElement = document.querySelector(template.selectorText);
         generateTemplate(template, rootElement.parentElement);
     }
 
