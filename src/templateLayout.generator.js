@@ -43,18 +43,17 @@
 
                     row.slotIdentifier.forEach(function (slotId) {
                         log.info("slot:", slotId.slotText);
-                        //each slot can have multiple elements
-                        template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                            log.info("slotELEMENT ", templateInSlot.selectorText);
-
-                            //create container
-                            cellDiv.className = "templateLayoutDiv templateLayoutCell";
-                            rowDiv.appendChild(cellDiv);
-                            //generate children and append to this container
-                            generateTemplate(templateInSlot, cellDiv);
-                        });
+                        //each slot can have multiple elements or none
+                        //create container
                         cellDiv = document.createElement("td");
+                        cellDiv.className = "templateLayoutDiv templateLayoutCell";
+                        rowDiv.appendChild(cellDiv);
                         if (template.grid.slots[slotId.slotText]) {
+                            template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
+                                log.info("slotELEMENT ", templateInSlot.selectorText);
+                                //generate children and append to this container
+                                generateTemplate(templateInSlot, cellDiv);
+                            });
                         }
                     });
                 });
