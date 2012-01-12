@@ -26,14 +26,10 @@
                 log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                 currentNode = document.querySelector(template.selectorText);
                 parentHtmlNode.appendChild(currentNode);
-
                 currentNode = generator.fn.generateGrid(currentNode);
-
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
-
                     currentNode = generator.fn.generateRow(currentNode);
-
                     row.slotIdentifier.forEach(function (slotId) {
                         log.info("slot:", slotId.slotText);
                         currentNode = generator.fn.generateCell(currentNode);
