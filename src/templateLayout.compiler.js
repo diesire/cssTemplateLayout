@@ -7,18 +7,22 @@
 
     function template(preProcessTemplate) {
         function gridSlot(slotText) {
-            log.info("creating new slot...");
+            log.debug("slot...");
 
             var that = {
-                slotText:slotText
+                slotText:slotText,
+                toString: function() {
+                    return slotText;
+                }
             };
 
-            log.info("slot: ", that);
+            log.debug("slot " + that + "... [OK]");
             return that;
         }
 
         function gridRow(rowText) {
-            log.info("creating new row...");
+            log.debug("row...");
+
             function markColSpan(id) {
                 return "+";
             }
