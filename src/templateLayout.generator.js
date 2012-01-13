@@ -44,8 +44,11 @@
                                 generateTemplate(templateInSlot, currentNode);
                             });
                         }
+                        currentNode = currentNode.parentElement;
                     });
+                    currentNode = currentNode.parentElement;
                 });
+                currentNode = currentNode.parentElement;
             }
             log.debug("template generated: ", template);
         }
