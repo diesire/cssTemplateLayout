@@ -36,16 +36,20 @@
             };
 
             (function init() {
-                var lastId={}, currentId, colspan = 1;
-                that.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
+                var lastId = {}, currentId, colspan = 1;
+
+                Array.prototype.forEach.call(rowText, function (slot, index, array) {
                     currentId = gridSlot(slot.charAt(0));
-                    if(lastId && lastId.slotText === currentId.slotText) {
+                    if (lastId && lastId.slotText === currentId.slotText) {
                         colspan++;
+                        that.slotIdentifier.push(markColSpan(currentId));
+                        that.slotIdentifier[index-(colspan-1)].colspan++;
+                        return;
                     }
+                    colspan = 1;
                     lastId.slotText = currentId.slotText;
-                    return markColSpan(currentId.slotText);
+                    that.slotIdentifier.push(currentId);
                 });
-                that.colspan = colspan;
             })();
 
             log.info("row: ", that);
@@ -264,8 +268,8 @@
     compiler.fn = compiler.prototype;
 
     compiler.prototype = {
-        constructor: compiler,
-        init: function() {
+        constructor:compiler,
+        init:function () {
             return this;
         },
         compile:function (buffer) {
