@@ -21,40 +21,62 @@
 //            return that;
 //        }
 
-        function gridRow(rowText) {
-            log.debug("row...");
-
-            function markColSpan(id) {
-                id.slotText = "+";
-                return id;
-            }
-
-            var that = {
-                rowText:rowText,
-                slotIdentifier:[],
-                length:rowText.length
-            };
-
-            (function init() {
-                var lastId = {}, currentId, colspan = 1;
-
-                Array.prototype.forEach.call(rowText, function (slot, index, array) {
-                    currentId = gridSlot(slot.charAt(0));
-                    if (lastId && lastId.slotText === currentId.slotText) {
-                        colspan++;
-                        that.slotIdentifier.push(markColSpan(currentId));
-                        that.slotIdentifier[index-(colspan-1)].colspan++;
-                        return;
-                    }
-                    colspan = 1;
-                    lastId.slotText = currentId.slotText;
-                    that.slotIdentifier.push(currentId);
-                });
-            })();
-
-            log.info("row: ", that);
-            return that;
-        }
+//        function gridRow(rowText) {
+//            log.debug("row...");
+//
+//            function markColSpan(id) {
+//                id.slotText = "+";
+//                return id;
+//            }
+//
+//            var that = {
+//                rowText:rowText,
+//                slotIdentifier:[],
+//                length:rowText.length
+//            };
+//
+//            (function init() {
+////                var lastId = {}, currentId, colspan = 1;
+////
+////                Array.prototype.forEach.call(rowText, function (slot, index, array) {
+////                    currentId = gridSlot(slot.charAt(0));
+////                    //search insertedList:
+////                    // if no match -> new one, insert, ok
+////                    // if match -> posible row/col span, check, mark or error
+////                    if (lastId && lastId.slotText === currentId.slotText) {
+////                        colspan++;
+////                        that.slotIdentifier.push(markColSpan(currentId));
+////                        that.slotIdentifier[index - (colspan - 1)].colspan++;
+////                        return;
+////                    }
+////                    colspan = 1;
+////                    lastId.slotText = currentId.slotText;
+////                    that.slotIdentifier.push(currentId);
+////                });
+//
+//
+//                var lastId = {}, currentId, colspan = 1, saved = {};
+//                that.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
+//                    currentId = compiler.fn.gridSlotZZZ(slot.charAt(0));
+//                    if (saved[currentId.slotText]) {
+//
+//                    } else {
+//                        saved[currentId.slotText] = currentId;
+//                    }
+//
+//                    if (lastId && lastId.slotText === currentId.slotText) {
+//                        colspan++;
+//                    }
+//                    lastId.slotText = currentId.slotText;
+//                    //return markColSpan(currentId);
+//                    return currentId;
+//                });
+//                that.colspan = colspan;
+//            })();
+//
+//            log.info("row: ", that);
+//            return that;
+//        }
 
         function grid(display) {
             log.info("creating new grid...");
@@ -321,6 +343,51 @@
 
         global.gridSlotZZZ = gridSlotZZZ;
         log.info("load gridSlotZZZ module... [OK]");
+    })(compiler.fn);
+
+    (function (global) {
+        var gridRowZZZ;
+        log.info("load gridRowZZZ module...");
+        gridRowZZZ = function (rowText) {
+            log.debug("rowZZZ...");
+            return new gridRowZZZ.prototype.init(rowText);
+        };
+        //TODO: length
+        gridRowZZZ.prototype = {
+            constructor:gridRowZZZ,
+            rowText:undefined,
+            slotIdentifier:[],
+            length:0,
+            init:function (rowText) {
+
+                var lastId = {}, currentId, colspan = 1, saved = {};
+
+                this.rowText = rowText;
+                this.length = this.rowText.length;
+                this.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
+                    currentId = compiler.fn.gridSlotZZZ(slot.charAt(0));
+                    if (saved[currentId.slotText]) {
+
+                    } else {
+                        saved[currentId.slotText] = currentId;
+                    }
+
+                    if (lastId && lastId.slotText === currentId.slotText) {
+                        colspan++;
+                    }
+                    lastId.slotText = currentId.slotText;
+                    //return markColSpan(currentId);
+                    return currentId;
+                });
+                //that.colspan = colspan;
+            }
+        };
+
+        gridRowZZZ.fn = gridRowZZZ.prototype;
+        gridRowZZZ.prototype.init.prototype = gridRowZZZ.prototype;
+
+        global.gridRowZZZ = gridRowZZZ;
+        log.info("load gridRowZZZ module... [OK]");
     })(compiler.fn);
 
     log.info("compiler module load... [OK]");
