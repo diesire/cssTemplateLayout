@@ -25,7 +25,8 @@
             log.debug("row...");
 
             function markColSpan(id) {
-                return "+";
+                id.slotText = "+";
+                return id;
             }
 
             var that = {
