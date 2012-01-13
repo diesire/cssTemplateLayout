@@ -6,20 +6,20 @@
     log.info("load compiler module");
 
     function template(preProcessTemplate) {
-        function gridSlot(slotText) {
-            log.debug("slot...");
-
-            var that = {
-                slotText:slotText,
-                colspan:1,
-                toString:function () {
-                    return slotText;
-                }
-            };
-
-            log.debug("slot " + that + "... [OK]");
-            return that;
-        }
+//        function gridSlot(slotText) {
+//            log.debug("slot...");
+//
+//            var that = {
+//                slotText:slotText,
+//                colspan:1,
+//                toString:function () {
+//                    return slotText;
+//                }
+//            };
+//
+//            log.debug("slot " + that + "... [OK]");
+//            return that;
+//        }
 
         function gridRow(rowText) {
             log.debug("row...");
@@ -295,6 +295,33 @@
     compiler.prototype.init.prototype = compiler.prototype;
 
     templateLayout.fn.compiler = compiler;
+
+    (function (global) {
+        var gridSlotZZZ;
+        log.info("load gridSlotZZZ module...");
+        gridSlotZZZ = function (slotText) {
+            log.debug("slotZZZ...");
+            return new gridSlotZZZ.prototype.init(slotText);
+        };
+
+        gridSlotZZZ.prototype = {
+            constructor:gridSlotZZZ,
+            slotText:undefined,
+            colSpan:1,
+            init:function (slotText) {
+                this.slotText = slotText;
+            },
+            toString:function () {
+                return String(this.slotText, "cols:", this.colSpan);
+            }
+        };
+
+        gridSlotZZZ.fn = gridSlotZZZ.prototype;
+        gridSlotZZZ.prototype.init.prototype = gridSlotZZZ.prototype;
+
+        global.gridSlotZZZ = gridSlotZZZ;
+        log.info("load gridSlotZZZ module... [OK]");
+    })(compiler.fn);
 
     log.info("compiler module load... [OK]");
 
