@@ -11,7 +11,8 @@
 
             var that = {
                 slotText:slotText,
-                toString: function() {
+                colspan:1,
+                toString:function () {
                     return slotText;
                 }
             };
@@ -30,8 +31,7 @@
             var that = {
                 rowText:rowText,
                 slotIdentifier:[],
-                length:rowText.length,
-                colspan:1
+                length:rowText.length
             };
 
             (function init() {
