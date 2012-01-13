@@ -18,10 +18,11 @@
         window.onload = function () {
             var text =
                     "#tl-parent {display: \"aa\" \"bc\" \"bd\";}" +
+                    " #tl-logo {position:a;}" +
                     " #tl-header {position: a;}" +
                     " #tl-navbar {position:b;}" +
                     " #tl-top {position:c;}" +
-                    " #tl-bottom {position:d;}"
+                    " #tl-bottom {position:d;}";
             templateLayout(text).transform();
 
             <!-- Test code -->
@@ -30,6 +31,12 @@
             })
         }
     </script>
+    <!-- Example style -->
+    <style type="text/css">
+        .templateLayoutTable {-background-color:rgb(43,129,175);}
+        .templateLayoutRow {background-color:rgb(210,224,230);}
+        .templateLayoutCell:hover {background-color:rgb(198,231,70);}
+    </style>
     <title></title>
 </head>
 <body>
@@ -47,7 +54,8 @@
 </div>
 <!-- Test -->
 <div id="tl-parent">
-    <p id="tl-header">Lorem ipsum</p>
+    <p id="tl-header" style="display: inline;">Lorem
+        ipsum</p>
 
     <div class="breakingnews" id="tl-top">
         <p>Lorem ipsum dolor sit amet,
@@ -95,6 +103,10 @@
             </li>
         </ul>
     </div>
+    <img id="tl-logo" src="resources/cc.png" alt="Creative Commons"
+         width="100"
+         height="100"
+            />
 </div>
 </body>
 </html>
