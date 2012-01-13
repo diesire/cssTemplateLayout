@@ -32,7 +32,10 @@
                     currentNode = generator.fn.generateRow(currentNode);
                     row.slotIdentifier.forEach(function (slotId, index, array) {
                         log.info("slot:", slotId.slotText);
-                        currentNode = generator.fn.generateCell(currentNode);
+                        if(slotId.slotText === "+") {
+                            return;
+                        }
+                        currentNode = generator.fn.generateCell(currentNode, {colspan:slotId.colspan});
                         //each slot can have multiple elements or none
                         if (template.grid.slots[slotId.slotText]) {
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
@@ -83,9 +86,12 @@
             parentNode.appendChild(rowNode);
             return rowNode;
         },
-        generateCell:function (parentNode) {
+        generateCell:function (parentNode, options) {
             //create container
             var cellNode = document.createElement("td");
+            if(options && options.colspan) {
+                cellNode.colSpan=options.colspan;
+            }
             cellNode.className = "templateLayoutDiv templateLayoutCell";
             //append to parent
             parentNode.appendChild(cellNode);
