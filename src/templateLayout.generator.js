@@ -30,7 +30,7 @@
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
                     currentNode = generator.fn.generateRow(currentNode);
-                    row.slotIdentifier.forEach(function (slotId) {
+                    row.slotIdentifier.forEach(function (slotId, index, array) {
                         log.info("slot:", slotId.slotText);
                         currentNode = generator.fn.generateCell(currentNode);
                         //each slot can have multiple elements or none
