@@ -13,11 +13,25 @@
     <script src="../src/templateLayout.js"></script>
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
+    <!-- Example style -->
+    <style type="text/css">
+        .templateLayoutTable {
+            -background-color: rgb(43, 129, 175);
+        }
+
+        .templateLayoutRow {
+            background-color: rgb(210, 224, 230);
+        }
+
+        .templateLayoutCell:hover {
+            background-color: rgb(198, 231, 70);
+        }
+    </style>
 
     <script type="text/javascript">
         window.onload = function () {
             var text =
-                    "#parent {display: \"xz\"} #id11{display: \"ab\"; position: x} #id21{display: \"cd\"; position: z} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
+                    "#parent {display: \"xy\"} #id11{display: \"ab\"; position: x} #id21{display: \"cd\"; position: y} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
             templateLayout(text).transform();
 
             <!-- Test code -->
