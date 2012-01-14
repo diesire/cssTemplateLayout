@@ -5,41 +5,6 @@
 
     log.info("load compiler module");
 
-    function template(preProcessTemplate) {
-        var that = {
-            parentTemplate:null,
-            selectorText:preProcessTemplate.selectorText,
-            selector:null,
-            display:preProcessTemplate.display,
-            position:preProcessTemplate.position,
-            grid:null,
-            isRoot:isRoot,
-            isLeaf:isLeaf,
-            insert:insert
-        };
-
-        (function init() {
-            log.debug("creating template...");
-            that.grid = compiler.fn.grid(preProcessTemplate.display);
-        })();
-
-        function isLeaf() {
-            return that.display.grid === null;
-        }
-
-        function isRoot() {
-            return that.position.position === null;
-        }
-
-        function insert(aTemplate) {
-            log.debug("trying to insert into ", that);
-            return that.grid.setTemplate(aTemplate);
-        }
-
-        log.info("new template:  ", that);
-        return that;
-    }
-
     rootTemplate = function () {
         var that = {
             insert:insert,
@@ -48,7 +13,8 @@
 
         function insert(preProcessTemplate) {
             log.info("inserting ", preProcessTemplate.selectorText);
-            var aTemplate = template(preProcessTemplate);
+//            var aTemplate = template(preProcessTemplate);
+            var aTemplate = compiler.fn.template(preProcessTemplate);
 
             if (aTemplate.isRoot()) {
                 log.debug("inserting at root", aTemplate);
@@ -340,6 +306,48 @@
         global.grid = grid;
         log.info("load grid module... [OK]");
     })(compiler.fn);
+
+    (function (global) {
+        var template;
+        log.info("load template module...");
+        template = function (preProcessTemplate) {
+            log.debug("template...");
+            return new template.prototype.init(preProcessTemplate);
+        };
+
+        template.prototype = {
+            constructor:template,
+            parentTemplate:undefined,
+            selectorText:undefined,
+            selector:undefined,
+            display:undefined,
+            position:undefined,
+            grid:undefined,
+            isRoot:function () {
+                return this.position.position === null;
+            },
+            isLeaf:function () {
+                return this.display.grid === null;
+            },
+            insert:function (aTemplate) {
+                log.debug("trying to insert into ", this);
+                return this.grid.setTemplate(aTemplate);
+            },
+            init:function (preProcessTemplate) {
+                this.selectorText = preProcessTemplate.selectorText;
+                this.display = preProcessTemplate.display;
+                this.position = preProcessTemplate.position;
+                this.grid = compiler.fn.grid(preProcessTemplate.display);
+            }
+        };
+
+        template.fn = template.prototype;
+        template.prototype.init.prototype = template.prototype;
+
+        global.template = template;
+        log.info("load template module... [OK]");
+    })(compiler.fn);
+
 
     log.info("compiler module load... [OK]");
 
