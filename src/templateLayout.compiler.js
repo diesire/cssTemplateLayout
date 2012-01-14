@@ -6,133 +6,6 @@
     log.info("load compiler module");
 
     function template(preProcessTemplate) {
-//        function gridSlot(slotText) {
-//            log.debug("slot...");
-//
-//            var that = {
-//                slotText:slotText,
-//                colspan:1,
-//                toString:function () {
-//                    return slotText;
-//                }
-//            };
-//
-//            log.debug("slot " + that + "... [OK]");
-//            return that;
-//        }
-
-//        function gridRow(rowText) {
-//            log.debug("row...");
-//
-//            function markColSpan(id) {
-//                id.slotText = "+";
-//                return id;
-//            }
-//
-//            var that = {
-//                rowText:rowText,
-//                slotIdentifier:[],
-//                length:rowText.length
-//            };
-//
-//            (function init() {
-////                var lastId = {}, currentId, colspan = 1;
-////
-////                Array.prototype.forEach.call(rowText, function (slot, index, array) {
-////                    currentId = gridSlot(slot.charAt(0));
-////                    //search insertedList:
-////                    // if no match -> new one, insert, ok
-////                    // if match -> posible row/col span, check, mark or error
-////                    if (lastId && lastId.slotText === currentId.slotText) {
-////                        colspan++;
-////                        that.slotIdentifier.push(markColSpan(currentId));
-////                        that.slotIdentifier[index - (colspan - 1)].colspan++;
-////                        return;
-////                    }
-////                    colspan = 1;
-////                    lastId.slotText = currentId.slotText;
-////                    that.slotIdentifier.push(currentId);
-////                });
-//
-//
-//                var lastId = {}, currentId, colspan = 1, saved = {};
-//                that.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
-//                    currentId = compiler.fn.gridSlotZZZ(slot.charAt(0));
-//                    if (saved[currentId.slotText]) {
-//
-//                    } else {
-//                        saved[currentId.slotText] = currentId;
-//                    }
-//
-//                    if (lastId && lastId.slotText === currentId.slotText) {
-//                        colspan++;
-//                    }
-//                    lastId.slotText = currentId.slotText;
-//                    //return markColSpan(currentId);
-//                    return currentId;
-//                });
-//                that.colspan = colspan;
-//            })();
-//
-//            log.info("row: ", that);
-//            return that;
-//        }
-
-        function grid(display) {
-            log.info("creating new grid...");
-
-            var slots = {}, that = {
-                rows:[],
-                slots:slots,
-                //getTemplate
-                setTemplate:setTemplate
-            };
-
-
-            (function init() {
-                if (display.grid !== null) {
-                    that.rows = display.grid.map(function (row) {
-                        return gridRow(row);
-                    });
-                }
-            })();
-
-            function hasSlot(slotIdentifier) {
-                log.debug("hasSlot ? ", slotIdentifier);
-                return that.rows.some(function (row) {
-                    var regExp = new RegExp(slotIdentifier);
-                    return regExp.exec(row.rowText);
-                });
-            }
-
-            function setTemplate(aTemplate) {
-                var slot, tmp;
-                if (hasSlot(aTemplate.position.position)) {
-                    log.debug("insert here");
-                    tmp = slots[aTemplate.position.position] || [];
-                    tmp.push(aTemplate);
-                    slots[aTemplate.position.position] = tmp;
-                    log.debug("at ", slots[aTemplate.position.position]);
-                    return true;
-                }
-
-                //forEach non leaf template in slots
-                for (slot in slots) {
-                    if (slots[slot].some(function (currentTemplate) {
-                        return !currentTemplate.isLeaf() && currentTemplate.insert(aTemplate);
-                    })) {
-                        return true;
-                    }
-                }
-
-                log.debug("parent template not found");
-                return false;
-            }
-
-            log.info("grid: ", that);
-            return that;
-        }
-
         var that = {
             parentTemplate:null,
             selectorText:preProcessTemplate.selectorText,
@@ -147,7 +20,7 @@
 
         (function init() {
             log.debug("creating template...");
-            that.grid = grid(preProcessTemplate.display);
+            that.grid = compiler.fn.gridZZZ(preProcessTemplate.display);
         })();
 
         function isLeaf() {
@@ -388,6 +261,78 @@
 
         global.gridRowZZZ = gridRowZZZ;
         log.info("load gridRowZZZ module... [OK]");
+    })(compiler.fn);
+
+    (function (global) {
+        var gridZZZ;
+        log.info("load gridZZZ module...");
+        gridZZZ = function (display) {
+            log.debug("gridZZZ...");
+            return new gridZZZ.prototype.init(display);
+        };
+
+        gridZZZ.prototype = {
+            constructor:gridZZZ,
+            rows:[],
+            slots:{},
+            init:function (display) {
+                this.rows = [];
+                this.slots = {};
+                if (display.grid !== null) {
+                    this.rows = display.grid.map(function (row) {
+                        return compiler.fn.gridRowZZZ(row);
+                    });
+                }
+            },
+            hasSlot:function hasSlot(slotIdentifier) {
+                var result;
+                result = this.rows.some(function (row) {
+                    var regExp = new RegExp(slotIdentifier);
+                    return regExp.exec(row.rowText);
+                });
+                log.debug("hasSlot " + slotIdentifier + "?", result ? "yes" : "no");
+                return result;
+            },
+            setTemplate:function (aTemplate) {
+                var row, tmp, result;
+                if (this.hasSlot(aTemplate.position.position)) {
+                    //push template
+                    tmp = this.slots[aTemplate.position.position] || [];
+                    tmp.push(aTemplate);
+                    this.slots[aTemplate.position.position] = tmp;
+                    log.debug("grid [" + aTemplate.position.position + "] =", aTemplate);
+                    return true;
+                } else {
+                    result = this.rows.some(function (row) {
+                        var result;
+                        result = row.slotIdentifier.some(function (slotId) {
+                            var result;
+                            result = this.slots[slotId] && this.slots[slotId].some(function (currentTemplate) {
+                                return !currentTemplate.isLeaf() && currentTemplate.insert(aTemplate);
+                            }, this);
+                            if (!result) {
+                                log.debug("not found, try another slot");
+                            }
+                            return result;
+                        }, this);
+                        if (!result) {
+                            log.debug("not found, try another row");
+                        }
+                        return result;
+                    }, this);
+                    if (!result) {
+                        log.debug("not found, try another branch");
+                    }
+                    return result;
+                }
+            }
+        };
+
+        gridZZZ.fn = gridZZZ.prototype;
+        gridZZZ.prototype.init.prototype = gridZZZ.prototype;
+
+        global.gridZZZ = gridZZZ;
+        log.info("load gridZZZ module... [OK]");
     })(compiler.fn);
 
     log.info("compiler module load... [OK]");
