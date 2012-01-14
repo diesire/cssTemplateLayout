@@ -194,17 +194,22 @@
     (function (global) {
         var gridSlotZZZ;
         log.info("load gridSlotZZZ module...");
-        gridSlotZZZ = function (slotText) {
+        gridSlotZZZ = function (slotText, colIndex, rowIndex) {
             log.debug("slotZZZ...");
-            return new gridSlotZZZ.prototype.init(slotText);
+            return new gridSlotZZZ.prototype.init(slotText, colIndex, rowIndex);
         };
 
         gridSlotZZZ.prototype = {
             constructor:gridSlotZZZ,
             slotText:undefined,
+            rowIndex:undefined,
+            colIndex:undefined,
             colSpan:1,
-            init:function (slotText) {
+            init:function (slotText, rowIndex, colIndex) {
                 this.slotText = slotText;
+                this.rowIndex = rowIndex;
+                this.colIndex = colIndex;
+
             },
             toString:function () {
                 return String(this.slotText, "cols:", this.colSpan);
@@ -221,24 +226,25 @@
     (function (global) {
         var gridRowZZZ;
         log.info("load gridRowZZZ module...");
-        gridRowZZZ = function (rowText) {
+        gridRowZZZ = function (rowText, rowIndex) {
             log.debug("rowZZZ...");
-            return new gridRowZZZ.prototype.init(rowText);
+            return new gridRowZZZ.prototype.init(rowText, rowIndex);
         };
-        //TODO: length
         gridRowZZZ.prototype = {
             constructor:gridRowZZZ,
             rowText:undefined,
+            rowIndex:undefined,
             slotIdentifier:[],
-            length:0,
-            init:function (rowText) {
+            length:undefined,
+            init:function (rowText, rowIndex) {
 
                 var lastId = {}, currentId, colspan = 1, saved = {};
 
                 this.rowText = rowText;
+                this.rowIndex = rowIndex;
                 this.length = this.rowText.length;
-                this.slotIdentifier = Array.prototype.map.call(rowText, function (slot) {
-                    currentId = compiler.fn.gridSlotZZZ(slot.charAt(0));
+                this.slotIdentifier = Array.prototype.map.call(rowText, function (slotText, colIndex) {
+                    currentId = compiler.fn.gridSlotZZZ(slotText.charAt(0), rowIndex, colIndex);
                     if (saved[currentId.slotText]) {
 
                     } else {
@@ -279,8 +285,8 @@
                 this.rows = [];
                 this.slots = {};
                 if (display.grid !== null) {
-                    this.rows = display.grid.map(function (row) {
-                        return compiler.fn.gridRowZZZ(row);
+                    this.rows = display.grid.map(function (rowText, rowIndex) {
+                        return compiler.fn.gridRowZZZ(rowText, rowIndex);
                     });
                 }
             },
