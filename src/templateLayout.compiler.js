@@ -20,7 +20,7 @@
 
         (function init() {
             log.debug("creating template...");
-            that.grid = compiler.fn.gridZZZ(preProcessTemplate.display);
+            that.grid = compiler.fn.grid(preProcessTemplate.display);
         })();
 
         function isLeaf() {
@@ -192,15 +192,15 @@
     templateLayout.fn.compiler = compiler;
 
     (function (global) {
-        var gridSlotZZZ;
-        log.info("load gridSlotZZZ module...");
-        gridSlotZZZ = function (slotText, colIndex, rowIndex) {
-            log.debug("slotZZZ...");
-            return new gridSlotZZZ.prototype.init(slotText, colIndex, rowIndex);
+        var gridSlot;
+        log.info("load gridSlot module...");
+        gridSlot = function (slotText, colIndex, rowIndex) {
+            log.debug("slot...");
+            return new gridSlot.prototype.init(slotText, colIndex, rowIndex);
         };
 
-        gridSlotZZZ.prototype = {
-            constructor:gridSlotZZZ,
+        gridSlot.prototype = {
+            constructor:gridSlot,
             slotText:undefined,
             rowIndex:undefined,
             colIndex:undefined,
@@ -216,22 +216,22 @@
             }
         };
 
-        gridSlotZZZ.fn = gridSlotZZZ.prototype;
-        gridSlotZZZ.prototype.init.prototype = gridSlotZZZ.prototype;
+        gridSlot.fn = gridSlot.prototype;
+        gridSlot.prototype.init.prototype = gridSlot.prototype;
 
-        global.gridSlotZZZ = gridSlotZZZ;
-        log.info("load gridSlotZZZ module... [OK]");
+        global.gridSlot = gridSlot;
+        log.info("load gridSlot module... [OK]");
     })(compiler.fn);
 
     (function (global) {
-        var gridRowZZZ;
-        log.info("load gridRowZZZ module...");
-        gridRowZZZ = function (rowText, rowIndex) {
-            log.debug("rowZZZ...");
-            return new gridRowZZZ.prototype.init(rowText, rowIndex);
+        var gridRow;
+        log.info("load gridRow module...");
+        gridRow = function (rowText, rowIndex) {
+            log.debug("row...");
+            return new gridRow.prototype.init(rowText, rowIndex);
         };
-        gridRowZZZ.prototype = {
-            constructor:gridRowZZZ,
+        gridRow.prototype = {
+            constructor:gridRow,
             rowText:undefined,
             rowIndex:undefined,
             slotIdentifier:[],
@@ -244,7 +244,7 @@
                 this.rowIndex = rowIndex;
                 this.length = this.rowText.length;
                 this.slotIdentifier = Array.prototype.map.call(rowText, function (slotText, colIndex) {
-                    currentId = compiler.fn.gridSlotZZZ(slotText.charAt(0), rowIndex, colIndex);
+                    currentId = compiler.fn.gridSlot(slotText.charAt(0), rowIndex, colIndex);
                     if (saved[currentId.slotText]) {
 
                     } else {
@@ -262,23 +262,23 @@
             }
         };
 
-        gridRowZZZ.fn = gridRowZZZ.prototype;
-        gridRowZZZ.prototype.init.prototype = gridRowZZZ.prototype;
+        gridRow.fn = gridRow.prototype;
+        gridRow.prototype.init.prototype = gridRow.prototype;
 
-        global.gridRowZZZ = gridRowZZZ;
-        log.info("load gridRowZZZ module... [OK]");
+        global.gridRow = gridRow;
+        log.info("load gridRow module... [OK]");
     })(compiler.fn);
 
     (function (global) {
-        var gridZZZ;
-        log.info("load gridZZZ module...");
-        gridZZZ = function (display) {
-            log.debug("gridZZZ...");
-            return new gridZZZ.prototype.init(display);
+        var grid;
+        log.info("load grid module...");
+        grid = function (display) {
+            log.debug("grid...");
+            return new grid.prototype.init(display);
         };
 
-        gridZZZ.prototype = {
-            constructor:gridZZZ,
+        grid.prototype = {
+            constructor:grid,
             rows:[],
             slots:{},
             init:function (display) {
@@ -286,7 +286,7 @@
                 this.slots = {};
                 if (display.grid !== null) {
                     this.rows = display.grid.map(function (rowText, rowIndex) {
-                        return compiler.fn.gridRowZZZ(rowText, rowIndex);
+                        return compiler.fn.gridRow(rowText, rowIndex);
                     });
                 }
             },
@@ -334,11 +334,11 @@
             }
         };
 
-        gridZZZ.fn = gridZZZ.prototype;
-        gridZZZ.prototype.init.prototype = gridZZZ.prototype;
+        grid.fn = grid.prototype;
+        grid.prototype.init.prototype = grid.prototype;
 
-        global.gridZZZ = gridZZZ;
-        log.info("load gridZZZ module... [OK]");
+        global.grid = grid;
+        log.info("load grid module... [OK]");
     })(compiler.fn);
 
     log.info("compiler module load... [OK]");
