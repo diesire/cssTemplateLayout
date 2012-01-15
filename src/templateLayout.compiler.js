@@ -291,9 +291,9 @@
     (function (global) {
         var template;
         log.info("load template module...");
-        template = function (preProcessTemplate) {
+        template = function (selectorText, position, display, grid) {
             log.debug("template...");
-            return new template.prototype.init(preProcessTemplate);
+            return new template.prototype.init(selectorText, position, display, grid);
         };
 
         template.prototype = {
@@ -304,6 +304,12 @@
             display:undefined,
             position:undefined,
             grid:undefined,
+            init:function (selectorText, position, display, grid) {
+                this.selectorText = selectorText;
+                this.display = display;
+                this.position = position;
+                this.grid = grid;
+            },
             isRoot:function () {
                 return this.position.position === null;
             },
@@ -313,12 +319,6 @@
             insert:function (aTemplate) {
                 log.debug("trying to insert into ", this);
                 return this.grid.setTemplate(aTemplate);
-            },
-            init:function (preProcessTemplate) {
-                this.selectorText = preProcessTemplate.selectorText;
-                this.display = preProcessTemplate.display;
-                this.position = preProcessTemplate.position;
-                this.grid = compiler.fn.grid(preProcessTemplate.display);
             }
         };
 
