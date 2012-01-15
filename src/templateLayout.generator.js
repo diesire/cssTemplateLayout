@@ -27,7 +27,7 @@
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
                     currentNode = generator.fn.generateRow(currentNode);
-                    row.slotIdentifier.forEach(function (slotId, index, array) {
+                    row.slotIdentifier.forEach(function (slotId) {
                         log.info("slot:", slotId.slotText);
                         currentNode = generator.fn.generateCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
                         //each slot can have multiple elements or none
@@ -59,7 +59,7 @@
     generator.prototype = {
         tom:undefined,
         init:function (tom) {
-            this.tom = tom
+            this.tom = tom;
             return this;
         },
         patchDOM:function () {

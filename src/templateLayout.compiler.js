@@ -73,6 +73,7 @@
     }
 
     function parsePosition(positionValue) {
+        var positionMetadata, matched, positionRegExp;
         /**
          * Name:    position
          * New value:    <letter> | same
@@ -84,16 +85,15 @@
          */
         log.info("compiling position...");
         log.debug("position source: ", positionValue);
-        var positionMetadata = {
+        positionMetadata = {
             position:null
         };
-        var matched;
-        var positionRegExp = /^\s*([a-zA-Z0-9]+|same)\s*/i;
+        positionRegExp = /^\s*([a-zA-Z0-9]+|same)\s*/i;
         if (positionValue !== undefined) {
             matched = positionValue.match(positionRegExp);
             if (matched === null) {
-                log.error("Error: unexpected value at ", positionValue);
-                throw new that.UnexpectedValueException("Error: unexpected value at ", positionValue);
+                log.error("Unexpected value at ", positionValue);
+                throw new Error("Unexpected value at ", positionValue);
             }
             positionMetadata.position = matched[1];
         }
@@ -131,14 +131,17 @@
             log.debug("buffer: ", buffer);
 
             for (selectorText in buffer) {
-                log.debug("next buffer element: ", selectorText);
-                log.group();
-                preProcessTemplate = parseProperties(buffer[selectorText]);
-                log.debug("preProcess: ", preProcessTemplate);
-                template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
-                inserted = rootTemplate.insert(template);
-                log.groupEnd();
-                log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
+
+                if (buffer.hasOwnProperty(selectorText)) {
+                    log.debug("next buffer element: ", selectorText);
+                    log.group();
+                    preProcessTemplate = parseProperties(buffer[selectorText]);
+                    log.debug("preProcess: ", preProcessTemplate);
+                    template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
+                    inserted = rootTemplate.insert(template);
+                    log.groupEnd();
+                    log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
+                }
             }
             log.debug("compile... OK");
             return rootTemplate;

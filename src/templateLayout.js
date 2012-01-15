@@ -8,9 +8,7 @@
         templateLayout,
         buffer = {},
         tom,
-        parser,
-        compiler,
-        generator;
+        parser;
 
     templateLayout = function (templateSource) {
         log.info("create templateLayout...");
@@ -23,11 +21,10 @@
         templateSources:[],
         constants:{
             DISPLAY:"display",
-            POSITION:"position"},
-        OperationNotSupportedException:Error,
-        InvalidArgumentException:Error,
-        compiler: null,
-        generator: null,
+            POSITION:"position"
+        },
+        compiler:null,
+        generator:null,
 
         //templateLayout(), templateLayout(""), templateLayout("", "", ...)
         init:function (templateSources) {
@@ -62,7 +59,7 @@
             }
 
             log.error("Invalid argument");
-            throw new this.InvalidArgumentException("Invalid argument");
+            throw new Error("Invalid argument");
         },
         transform:function () {
             log.debug("transform...");
@@ -142,7 +139,7 @@
                 sourceText:templateSource
             };
         } else {
-            throw new this.OperationNotSupportedException("unknown sourceType");
+            throw new Error("unknown sourceType");
         }
     }
 
@@ -196,7 +193,7 @@
             return templateText;
         } catch (e) {
             log.error("Operation not supported", e);
-            throw new that.OperationNotSupportedException(e);
+            throw new Error(e);
         }
     }
 
@@ -212,11 +209,15 @@
     }
 
     function isSupportedProperty(rule) {
-        for (var iterator in templateLayout.fn.constants) {
-            if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
-                log.info("supported property found: ", rule.declaration.property);
-                return true;
+        var iterator;
+        for (iterator in templateLayout.fn.constants) {
+            if (templateLayout.fn.constants.hasOwnProperty(iterator)) {
+                if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
+                    log.info("supported property found: ", rule.declaration.property);
+                    return true;
+                }
             }
+
         }
         return false;
     }
