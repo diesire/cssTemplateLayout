@@ -329,6 +329,107 @@
         log.info("load template module... [OK]");
     })(compiler.fn);
 
+    (function (global) {
+        var templateBuilder;
+        log.info("load templateBuilder module...");
+
+        function Slots() {
+            this.used = {};
+            this.rows = [];
+        }
+
+        Slots.prototype = {
+            constructor:Slots,
+            used:{},
+            rows:[],
+            add:function (slot) {
+                this.used[slot.slotText] = slot;
+                if (!Array.isArray(this.rows[slot.rowIndex])) {
+                    this.rows[slot.rowIndex] = [];
+                }
+                this.rows[slot.rowIndex][slot.colIndex] = slot;
+            },
+            getSlot:function (id) {
+                return this.used[id];
+            },
+            getRows:function () {
+                return this.rows;
+            },
+            deleteSlot:function (id) {
+                delete this.used[id];
+                this.rows[id.rowIndex].splice(id.colIndex, 1);
+            }
+        };
+
+        templateBuilder = function () {
+            log.debug("templateBuilder...");
+            return new templateBuilder.prototype.init();
+        };
+
+        templateBuilder.prototype = {
+            constructor:templateBuilder,
+            slots:undefined,
+            init:function () {
+                this.slots = new Slots();
+            },
+            createTemplate:function (source) {
+                var display, grid, gridRows;
+
+                display = source.display;
+                grid = null;
+                if (display.grid !== null) {
+                    this._addGrid(source.display);
+                    gridRows = this.slots.getRows().map(function (row, index) {
+                        return compiler.fn.gridRow(source.display.grid[index], index, row);
+                    }, this);
+                    grid = compiler.fn.grid(gridRows);
+                }
+
+                return compiler.fn.template(source.selectorText, source.position, display, grid);
+            },
+            _addGrid:function (display) {
+                //TODO: grid !== null ???
+                if (display.grid !== null) {
+                    display.grid.forEach(function (rowText, rowIndex) {
+                        this._addGridRow(rowText, rowIndex);
+                    }, this);
+                }
+            },
+            _addGridRow:function (rowText, rowIndex) {
+                var identifiers;
+                identifiers = Array.prototype.map.call(rowText, function (substring) {
+                    return substring.charAt(0);
+                });
+
+                identifiers.forEach(function (slotText, colIndex) {
+                    var slot;
+                    if (!this.slots.getSlot(slotText)) {
+                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1);
+                    } else {
+                    }
+
+                    slot = this.slots.getSlot(slotText);
+                    //validate row stub
+                    //TODO: aba
+                    slot.colSpan = (colIndex - slot.colIndex) + 1;
+                    this.slots.add(slot);
+                    //validate col stub
+                    slot.rowSpan = (rowIndex - slot.rowIndex) + 1;
+                    this.slots.add(slot);
+                    //TODO: validate multiple
+                }, this);
+            },
+            _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
+                this.slots.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, rowSpan, colSpan));
+            }
+        };
+
+        templateBuilder.fn = templateBuilder.prototype;
+        templateBuilder.prototype.init.prototype = templateBuilder.prototype;
+
+        global.templateBuilder = templateBuilder;
+        log.info("load templateBuilder module... [OK]");
+    })(compiler.fn);
 
     log.info("compiler module load... [OK]");
 
