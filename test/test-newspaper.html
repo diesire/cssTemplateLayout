@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <!-- Qunit -->
+    <script src="qunit/jquery.js"></script>
+    <link rel="stylesheet" href="qunit/qunit.css" type="text/css"
+          media="screen"/>
+    <script type="text/javascript" src="qunit/qunit.js"></script>
+    <!-- Lib -->
+    <script src="../lib/wef/build/wef.js"></script>
+    <!-- Src -->
+    <script src="../src/templateLayout.js"></script>
+    <script src="../src/templateLayout.compiler.js"></script>
+    <script src="../src/templateLayout.generator.js"></script>
+    <!-- Example style -->
+    <style type="text/css">
+        .templateLayoutCell:hover {
+            border: solid 1px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            var text =
+                    "#tl-parent {display: \"aaa\" \"bcc\" \"ddd\";}" +
+                    " .tl-header {position:a; display:\"122\"}" +
+                    " .tl-logo {position: 1;}" +
+                    " .tl-title {position: 2;}" +
+                    " .tl-navbar {position:b; display:\"3\" \"4\" \"5\"}" +
+                    " .tl-navbar-header {position:3;}" +
+                    " .tl-navbar-body {position:4;}" +
+                    " .tl-navbar-footer {position:5;}" +
+                    " .tl-news {position:c; display:\"xxx\" \"yyz\" \"tuz\"}" +
+                    " .tl-news-breaking1 {position:x;}" +
+                    " .tl-news-breaking2 {position:y;}" +
+                    " .tl-news-breaking3 {position:z;}" +
+                    " .tl-news-breaking4 {position:t;}" +
+                    " .tl-news-breaking5 {position:u;}" +
+                    " .tl-footer {position:d;}";
+            templateLayout(text).transform();
+
+            <!-- Test code -->
+            test("root elements", function () {
+                ok(true);
+            })
+        }
+    </script>
+
+    <title></title>
+</head>
+<body>
+<!-- Qunit code -->
+<div>
+    <div id="qunit-header">CSS Template Layout test - Nested templates
+        handling
+    </div>
+    <div id="qunit-banner"></div>
+    <div id="qunit-testrunner-toolbar"></div>
+    <div id="qunit-userAgent"></div>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+    <div style="margin: 50px"></div>
+</div>
+<!-- Test -->
+<div id="tl-parent">
+    <div class="tl-title">
+        Lorem ipsum Times
+    </div>
+    <div class="tl-footer">
+        Lorem ipsum
+        Lorem ipsum
+    </div>
+    <div class="tl-news-breaking2">
+        <p>Lorem ipsum dolor</p>
+
+        <p>Lorem ipsum dolor sit amet,
+            consectetuer adipiscing
+            elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
+            natoque penatibus et magnis dis parturient montes, nascetur
+            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
+            pretium quis, sem. Nulla consequat massa quis enim. Donec pede
+            justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim
+            justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+            dictum felis eu pede mollis pretium. Integer tincidunt. Cras
+            dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend
+            tellus.
+        </p>
+    </div>
+    <div class="tl-news-breaking1">
+        <p>Aenean leo ligula</p>
+
+        <p>Aenean leo ligula, porttitor
+            eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus
+            in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut
+            metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam
+            ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam
+            eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum
+            rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed
+            ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id,
+            lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae
+            sapien ut libero venenatis faucibus.</p>
+
+        <p>Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt.
+            Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis
+            magna. Sed consequat, leo eget bibendum sodales, augue velit cursus
+            nunc, quis gravida magna mi a libero. Fusce vulputate eleifend
+            sapien. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy
+            id, metus. Nullam accumsan lorem in dui. Cras ultricies mi eu turpis
+            hendrerit fringilla. Vestibulum ante ipsum primis in faucibus orci
+            luctus et ultrices posuere cubilia Curae; In ac dui quis mi
+            consectetuer lacinia. Nam pretium turpis et arcu.</p>
+    </div>
+    <div class="tl-news-breaking3">
+        <p>Lorem ipsum dolor</p>
+
+        <p>Lorem ipsum dolor sit amet,
+            consectetuer adipiscing
+            elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
+            natoque penatibus et magnis dis parturient montes, nascetur
+            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
+            pretium quis, sem. Nulla consequat massa quis enim. Donec pede
+            justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim
+            justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+            dictum felis eu pede mollis pretium. Integer tincidunt. Cras
+            dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend
+            tellus.
+        </p>
+    </div>
+    <div class="tl-news-breaking4">
+        <p>Nullam quis ante</p>
+
+        <p>Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt.
+            Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis
+            magna. Sed consequat, leo eget bibendum sodales, augue velit cursus
+            nunc, quis gravida magna mi a libero. Fusce vulputate eleifend
+            sapien. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy
+            id, metus. Nullam accumsan lorem in dui. Cras ultricies mi eu turpis
+            hendrerit fringilla. Vestibulum ante ipsum primis in faucibus orci
+            luctus et ultrices posuere cubilia Curae; In ac dui quis mi
+            consectetuer lacinia. Nam pretium turpis et arcu.</p>
+    </div>
+    <div class="tl-news-breaking5">
+        <p>Lorem ipsum dolor</p>
+
+        <p>Lorem ipsum dolor sit amet,
+            consectetuer adipiscing
+            elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
+            natoque penatibus et magnis dis parturient montes, nascetur
+            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu,
+            pretium quis, sem. Nulla consequat massa quis enim. Donec pede
+            justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim
+            justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+            dictum felis eu pede mollis pretium. Integer tincidunt. Cras
+            dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend
+            tellus.
+        </p>
+    </div>
+    <div class="tl-navbar-body">
+        <ul>
+            <li>
+                Lorem
+            </li>
+            <li>
+                ipsum
+            </li>
+        </ul>
+    </div>
+    <div class="tl-navbar-header">
+        Contenidos
+    </div>
+    <div class="tl-navbar-footer">
+        <img src="resources/cc.png" alt="Creative Commons"
+             width="50"
+             height="50"
+                />
+    </div>
+    <img class="tl-logo" src="resources/cc.png" alt="Creative Commons"
+         width="100"
+         height="100"
+            />
+</div>
+</body>
+</html>
