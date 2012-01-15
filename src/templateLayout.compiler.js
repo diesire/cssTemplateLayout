@@ -195,9 +195,9 @@
     (function (global) {
         var gridRow;
         log.info("load gridRow module...");
-        gridRow = function (rowText, rowIndex) {
+        gridRow = function (rowText, rowIndex, slots) {
             log.debug("row...");
-            return new gridRow.prototype.init(rowText, rowIndex);
+            return new gridRow.prototype.init(rowText, rowIndex, slots);
         };
         gridRow.prototype = {
             constructor:gridRow,
@@ -205,29 +205,12 @@
             rowIndex:undefined,
             slotIdentifier:[],
             length:undefined,
-            init:function (rowText, rowIndex) {
-
-                var lastId = {}, currentId, colspan = 1, saved = {};
-
+            init:function (rowText, rowIndex, slots) {
                 this.rowText = rowText;
                 this.rowIndex = rowIndex;
                 this.length = this.rowText.length;
-                this.slotIdentifier = Array.prototype.map.call(rowText, function (slotText, colIndex) {
-                    currentId = compiler.fn.gridSlot(slotText.charAt(0), rowIndex, colIndex);
-                    if (saved[currentId.slotText]) {
-
-                    } else {
-                        saved[currentId.slotText] = currentId;
-                    }
-
-                    if (lastId && lastId.slotText === currentId.slotText) {
-                        colspan++;
-                    }
-                    lastId.slotText = currentId.slotText;
-                    //return markColSpan(currentId);
-                    return currentId;
-                });
-                //that.colspan = colspan;
+                //valid reference if slots is not reused
+                this.slotIdentifier = slots;
             }
         };
 
