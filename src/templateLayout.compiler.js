@@ -14,12 +14,11 @@
         function insert(aTemplate) {
             log.info("add template ", aTemplate.selectorText);
             if (aTemplate.isRoot()) {
-                log.debug("inserting at root", aTemplate);
+                log.debug("insert as root", aTemplate);
                 that.rows.push(aTemplate);
                 return true;
             } else {
-                log.debug("searching parent: ", aTemplate.position.position);
-                //insert in children
+                log.debug("search position :", aTemplate.position.position);
                 return that.rows.some(function (element) {
                     return element.insert(aTemplate);
                 });
@@ -108,11 +107,7 @@
         log.debug("properties source: ", rule);
 
         preProcessTemplate.selectorText = rule.selectorText;
-
-        //log.debug("* ", templateLayout.fn.constants.DISPLAY, rule.declaration[templateLayout.fn.constants.DISPLAY]);
         preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.fn.constants.DISPLAY]);
-
-        //log.debug("* ", templateLayout.fn.constants.POSITION, rule.declaration[templateLayout.fn.constants.POSITION]);
         preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.fn.constants.POSITION]);
 
         log.info("properties result: ", preProcessTemplate);
