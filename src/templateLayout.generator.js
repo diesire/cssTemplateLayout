@@ -35,7 +35,7 @@
                         if(slotId.slotText === "+") {
                             return;
                         }
-                        currentNode = generator.fn.generateCell(currentNode, {colspan:slotId.colspan});
+                        currentNode = generator.fn.generateCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
                         //each slot can have multiple elements or none
                         if (template.grid.slots[slotId.slotText]) {
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
@@ -92,6 +92,9 @@
         generateCell:function (parentNode, options) {
             //create container
             var cellNode = document.createElement("td");
+            if (options && options.rowSpan) {
+                cellNode.rowSpan = options.rowSpan;
+            }
             if (options && options.colSpan) {
                 cellNode.colSpan = options.colSpan;
             }
