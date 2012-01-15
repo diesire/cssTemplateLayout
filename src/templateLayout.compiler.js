@@ -224,23 +224,18 @@
     (function (global) {
         var grid;
         log.info("load grid module...");
-        grid = function (display) {
+        grid = function (rows) {
             log.debug("grid...");
-            return new grid.prototype.init(display);
+            return new grid.prototype.init(rows);
         };
 
         grid.prototype = {
             constructor:grid,
-            rows:[],
-            slots:{},
-            init:function (display) {
-                this.rows = [];
+            rows:undefined,
+            slots:undefined,
+            init:function (rows) {
+                this.rows = rows;
                 this.slots = {};
-                if (display.grid !== null) {
-                    this.rows = display.grid.map(function (rowText, rowIndex) {
-                        return compiler.fn.gridRow(rowText, rowIndex);
-                    });
-                }
             },
             hasSlot:function hasSlot(slotIdentifier) {
                 var result;
