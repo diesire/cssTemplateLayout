@@ -32,9 +32,6 @@
                     currentNode = generator.fn.generateRow(currentNode);
                     row.slotIdentifier.forEach(function (slotId, index, array) {
                         log.info("slot:", slotId.slotText);
-                        if(slotId.slotText === "+") {
-                            return;
-                        }
                         currentNode = generator.fn.generateCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
                         //each slot can have multiple elements or none
                         if (template.grid.slots[slotId.slotText]) {
