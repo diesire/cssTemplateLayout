@@ -10,8 +10,7 @@
 
         function generateLeaf(template, parentHtmlNode) {
             log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-            var childElement = document.querySelector(template.selectorText);
-            parentHtmlNode.appendChild(childElement);
+            generator.fn.appendTemplate(template, parentHtmlNode);
         }
 
         function generateTemplate(template, parentHtmlNode) {
@@ -21,15 +20,15 @@
                 generateLeaf(template, parentHtmlNode);
             } else {
                 log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-                currentNode = document.querySelector(template.selectorText);
-                parentHtmlNode.appendChild(currentNode);
-                currentNode = generator.fn.generateGrid(currentNode);
+                //if template selector not found in DOM, create new DIV???
+                currentNode = generator.fn.appendTemplate(template, parentHtmlNode);
+                currentNode = generator.fn.appendGrid(currentNode);
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
-                    currentNode = generator.fn.generateRow(currentNode);
+                    currentNode = generator.fn.appendRow(currentNode);
                     row.slotIdentifier.forEach(function (slotId) {
                         log.info("slot:", slotId.slotText);
-                        currentNode = generator.fn.generateCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
+                        currentNode = generator.fn.appendCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
                         //each slot can have multiple elements or none
                         if (template.grid.slots[slotId.slotText]) {
                             template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
@@ -38,17 +37,17 @@
                                 generateTemplate(templateInSlot, currentNode);
                             });
                         }
-                        currentNode = currentNode.parentElement;
+                        currentNode = currentNode.parentNode;
                     });
-                    currentNode = currentNode.parentElement;
+                    currentNode = currentNode.parentNode;
                 });
-                currentNode = currentNode.parentElement;
+                currentNode = currentNode.parentNode;
             }
             log.debug("template generated: ", template);
         }
 
         rootElement = document.querySelector(template.selectorText);
-        generateTemplate(template, rootElement.parentElement);
+        generateTemplate(template, rootElement.parentNode);
     }
 
     generator = function (tom) {
@@ -67,23 +66,23 @@
             log.debug("TOM: ", this.tom);
             this.tom.rows.forEach(generateRootTemplate);
         },
-        generateGrid:function (parentNode) {
+        appendGrid:function (parentNode) {
             //create container
             var gridNode = document.createElement("table");
-            gridNode.className = "templateLayoutDiv templateLayoutTable";
+            gridNode.className = "templateLayoutTable";
             //append container to parent
             parentNode.appendChild(gridNode);
             return gridNode;
         },
-        generateRow:function (parentNode) {
+        appendRow:function (parentNode) {
             //create container
             var rowNode = document.createElement("tr");
-            rowNode.className = "templateLayoutDiv templateLayoutRow";
+            rowNode.className = "templateLayoutRow";
             //append to parent
             parentNode.appendChild(rowNode);
             return rowNode;
         },
-        generateCell:function (parentNode, options) {
+        appendCell:function (parentNode, options) {
             //create container
             var cellNode = document.createElement("td");
             if (options && options.rowSpan) {
@@ -92,10 +91,21 @@
             if (options && options.colSpan) {
                 cellNode.colSpan = options.colSpan;
             }
-            cellNode.className = "templateLayoutDiv templateLayoutCell";
+            cellNode.className = "templateLayoutCell";
             //append to parent
             parentNode.appendChild(cellNode);
             return cellNode;
+        },
+        appendVirtualNode:function (parentNode) {
+            var extraNode = document.createElement("div");
+            extraNode.className = "templateLayoutExtra";
+            parentNode.appendChild(extraNode);
+            return extraNode;
+        },
+        appendTemplate:function (template, parentNode) {
+            var templateNode = document.querySelector(template.selectorText) || generator.fn.appendVirtualNode(parentNode);
+            parentNode.appendChild(templateNode);
+            return templateNode;
         }
     };
 
