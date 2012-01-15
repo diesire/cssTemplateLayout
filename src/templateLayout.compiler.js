@@ -160,9 +160,9 @@
     (function (global) {
         var gridSlot;
         log.info("load gridSlot module...");
-        gridSlot = function (slotText, colIndex, rowIndex) {
+        gridSlot = function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
             log.debug("slot...");
-            return new gridSlot.prototype.init(slotText, colIndex, rowIndex);
+            return new gridSlot.prototype.init(slotText, rowIndex, colIndex, rowSpan, colSpan);
         };
 
         gridSlot.prototype = {
@@ -170,11 +170,14 @@
             slotText:undefined,
             rowIndex:undefined,
             colIndex:undefined,
-            colSpan:1,
-            init:function (slotText, rowIndex, colIndex) {
+            rowSpan:undefined,
+            colSpan:undefined,
+            init:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
                 this.slotText = slotText;
                 this.rowIndex = rowIndex;
                 this.colIndex = colIndex;
+                this.rowSpan = rowSpan;
+                this.colSpan = colSpan;
 
             },
             toString:function () {
