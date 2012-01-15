@@ -11,11 +11,8 @@
             rows:[]
         };
 
-        function insert(preProcessTemplate) {
-            log.info("inserting ", preProcessTemplate.selectorText);
-//            var aTemplate = template(preProcessTemplate);
-            var aTemplate = compiler.fn.template(preProcessTemplate);
-
+        function insert(aTemplate) {
+            log.info("add template ", aTemplate.selectorText);
             if (aTemplate.isRoot()) {
                 log.debug("inserting at root", aTemplate);
                 that.rows.push(aTemplate);
@@ -134,7 +131,7 @@
             return this;
         },
         compile:function (buffer) {
-            var selectorText, preProcessTemplate, inserted;
+            var selectorText, preProcessTemplate, inserted, template;
             log.info("compile...");
             log.debug("buffer: ", buffer);
 
@@ -143,7 +140,8 @@
                 log.group();
                 preProcessTemplate = parseProperties(buffer[selectorText]);
                 log.debug("preProcess: ", preProcessTemplate);
-                inserted = rootTemplate.insert(preProcessTemplate);
+                template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
+                inserted = rootTemplate.insert(template);
                 log.groupEnd();
                 log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
             }
