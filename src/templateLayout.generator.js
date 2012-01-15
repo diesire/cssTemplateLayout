@@ -92,8 +92,8 @@
         generateCell:function (parentNode, options) {
             //create container
             var cellNode = document.createElement("td");
-            if(options && options.colspan) {
-                cellNode.colSpan=options.colspan;
+            if (options && options.colSpan) {
+                cellNode.colSpan = options.colSpan;
             }
             cellNode.className = "templateLayoutDiv templateLayoutCell";
             //append to parent
