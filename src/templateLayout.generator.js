@@ -6,9 +6,6 @@
     log.info("load generator module...");
 
     function generateRootTemplate(template) {
-        //here is document
-        //if template.isLeaf() creates DOM and append to parentDOM
-        //else traverse TOM
         var rootElement;
 
         function generateLeaf(template, parentHtmlNode) {
@@ -109,5 +106,4 @@
 
     log.info("generator module load... [OK]");
 
-})
-    (window.templateLayout);
+})(window.templateLayout);
