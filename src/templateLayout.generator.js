@@ -22,19 +22,19 @@
                 log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
                 //if template selector not found in DOM, create new DIV???
                 currentNode = generator.fn.appendTemplate(template, parentHtmlNode);
-                currentNode = generator.fn.appendGrid(currentNode);
+                currentNode = generator.fn.appendGrid(template.grid, currentNode);
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
-                    currentNode = generator.fn.appendRow(currentNode);
-                    row.slotIdentifier.forEach(function (slotId) {
-                        log.info("slot:", slotId.slotText);
-                        currentNode = generator.fn.appendCell(currentNode, {rowSpan:slotId.rowSpan, colSpan:slotId.colSpan});
+                    currentNode = generator.fn.appendRow(row, currentNode);
+                    row.slots.forEach(function (slot) {
+                        log.info("slot:", slot.slotText);
+                        currentNode = generator.fn.appendSlot(slot, currentNode);
                         //each slot can have multiple elements or none
-                        if (template.grid.slots[slotId.slotText]) {
-                            template.grid.slots[slotId.slotText].forEach(function (templateInSlot) {
-                                log.info("slotELEMENT ", templateInSlot.selectorText);
+                        if (template.grid.filledSlots[slot.slotText]) {
+                            template.grid.filledSlots[slot.slotText].forEach(function (childTemplate) {
+                                log.info("slotELEMENT ", childTemplate.selectorText);
                                 //generate children and append to this container
-                                generateTemplate(templateInSlot, currentNode);
+                                generateTemplate(childTemplate, currentNode);
                             });
                         }
                         currentNode = currentNode.parentNode;
@@ -64,10 +64,9 @@
         patchDOM:function () {
             log.info("patch DOM...");
             log.debug("TOM: ", this.tom);
+            generator.fn.resetCSS();
             this.tom.rows.forEach(generateRootTemplate);
         },
-        appendGrid:function (parentNode) {
-            //create container
         resetCSS:function () {
             var head = document.getElementsByTagName('head')[0],
                 cssstring = [
@@ -88,37 +87,72 @@
             head.appendChild(styletag);
             styletag.innerHTML = cssstring;
         },
+        appendGrid:function (grid, parentNode) {
             var gridNode = document.createElement("table");
-            gridNode.className = "templateLayoutTable";
-            //append container to parent
+            gridNode.className = "templateLayout templateLayoutTable";
             parentNode.appendChild(gridNode);
+
+            if (grid.widths) {
+                gridNode.style.tableLayout = "fixed";
+                generator.fn.appendCol(gridNode, {widths:grid.widths});
+            } else {
+                gridNode.style.width = "100%";
+            }
+
             return gridNode;
         },
-        appendRow:function (parentNode) {
-            //create container
+        appendCol:function (parentNode, options) {
+            if (options && options.widths) {
+                options.widths.forEach(function (width) {
+                    var colNode = document.createElement("col");
+                    colNode.className = "templateLayout templateLayoutCol";
+                    colNode.style.width = width;
+                    colNode.style.maxWidth = width;
+                    //append to parent
+                    parentNode.appendChild(colNode);
+                });
+            }
+        },
+        appendRow:function (row, parentNode) {
             var rowNode = document.createElement("tr");
-            rowNode.className = "templateLayoutRow";
-            //append to parent
+            rowNode.className = "templateLayout templateLayoutRow";
             parentNode.appendChild(rowNode);
+
+            if (row.height) {
+                rowNode.style.height = row.height;
+                rowNode.style.maxHeight = row.height;
+            }
             return rowNode;
         },
-        appendCell:function (parentNode, options) {
+        appendSlot:function (slot, parentNode) {
             //create container
             var cellNode = document.createElement("td");
-            if (options && options.rowSpan) {
-                cellNode.rowSpan = options.rowSpan;
-            }
-            if (options && options.colSpan) {
-                cellNode.colSpan = options.colSpan;
-            }
-            cellNode.className = "templateLayoutCell";
-            //append to parent
+            cellNode.className = "templateLayout templateLayoutCell";
             parentNode.appendChild(cellNode);
+
+            if (slot.rowSpan > 1) {
+                cellNode.rowSpan = slot.rowSpan;
+            }
+            if (slot.colSpan > 1) {
+                cellNode.colSpan = slot.colSpan;
+            }
+            if (slot.height) {
+                cellNode.style.height = slot.height;
+                cellNode.style.maxHeight = slot.height;
+                cellNode.style.overflow = "hidden";
+            }
+            if (slot.width) {
+                cellNode.style.width = slot.width;
+                cellNode.style.maxWidth = slot.width;
+                cellNode.style.overflow = "hidden";
+            }
+
             return cellNode;
         },
         appendVirtualNode:function (parentNode) {
             var extraNode = document.createElement("div");
-            extraNode.className = "templateLayoutExtra";
+            extraNode.className = "templateLayout templateLayoutExtra";
+            extraNode.style.width = "100%";
             parentNode.appendChild(extraNode);
             return extraNode;
         },
