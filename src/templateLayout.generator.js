@@ -1,6 +1,6 @@
 (function (templateLayout) {
 
-    var generator, log;
+    var generator, log, lastCalculateWidths = {};
     log = wef.logger("templateLayout.generator");
 
     log.info("load generator module...");
@@ -87,14 +87,55 @@
             head.appendChild(styletag);
             styletag.innerHTML = cssstring;
         },
+        calculateWidths:function (widths, parentnode) {
+            var fixedWidths = widths, parentWidth, flexibleColCounter = 0, fixedColSum = 0, found, flexibleWidth;
+
+            if (fixedWidths && parentnode) {
+                parentWidth = parentnode.offsetWidth;
+                fixedWidths.forEach(function (width, index) {
+                    if (width === "*") {
+                        flexibleColCounter++;
+                    } else {
+                        found = width.match(/(\d+)(px|%)/);
+                        if (found[2] !== "%") {
+                            fixedColSum += parseInt(found[1], 10);
+                        } else {
+                            fixedWidths[index] = String(parseInt(found[1], 10) * parentWidth / 100) + "px";
+                            fixedColSum += parseInt(found[1], 10) * parentWidth / 100;
+                        }
+                    }
+                });
+                flexibleWidth = (flexibleColCounter > 0) ? parseInt((parentWidth - fixedColSum) / flexibleColCounter, 10) : 0;
+                lastCalculateWidths.parentWidth = parentWidth;
+                lastCalculateWidths.widths = fixedWidths.map(function (width) {
+                    if (width === "*") {
+                        return "" + flexibleWidth + "px";
+                    }
+                    if (width === "auto") {
+                        return "auto";
+                    }
+                    if (/(\d+)(px|%)/.test(width)) {
+                        return width;
+                    }
+                    //no more use cases
+
+                });
+                return lastCalculateWidths;
+            }
+            if (!fixedWidths && !parentnode) {
+                return lastCalculateWidths;
+            }
+        },
         appendGrid:function (grid, parentNode) {
-            var gridNode = document.createElement("table");
+            var fixedWidths, gridNode = document.createElement("table");
             gridNode.className = "templateLayout templateLayoutTable";
             parentNode.appendChild(gridNode);
 
-            if (grid.widths) {
+            if (grid.widths.length !== 0) {
+                fixedWidths = generator.fn.calculateWidths(grid.widths, parentNode);
                 gridNode.style.tableLayout = "fixed";
-                generator.fn.appendCol(gridNode, {widths:grid.widths});
+                gridNode.style.width = fixedWidths.parentWidth;
+                generator.fn.appendCol(gridNode, {widths:fixedWidths.widths});
             } else {
                 gridNode.style.width = "100%";
             }
@@ -126,7 +167,7 @@
         },
         appendSlot:function (slot, parentNode) {
             //create container
-            var cellNode = document.createElement("td");
+            var width, cellNode = document.createElement("td");
             cellNode.className = "templateLayout templateLayoutCell";
             parentNode.appendChild(cellNode);
 
@@ -142,8 +183,9 @@
                 cellNode.style.overflow = "hidden";
             }
             if (slot.width) {
-                cellNode.style.width = slot.width;
-                cellNode.style.maxWidth = slot.width;
+                width = generator.fn.calculateWidths().widths[slot.colIndex]
+                cellNode.style.width = width;
+                cellNode.style.maxWidth = width;
                 cellNode.style.overflow = "hidden";
             }
 
