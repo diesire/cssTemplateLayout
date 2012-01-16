@@ -68,6 +68,26 @@
         },
         appendGrid:function (parentNode) {
             //create container
+        resetCSS:function () {
+            var head = document.getElementsByTagName('head')[0],
+                cssstring = [
+                    ".templateLayout {" +
+                    "margin: 0;" +
+                    "padding: 0;" +
+                    "border: 0;" +
+                    "font-size: 100%;" +
+                    "font: inherit;" +
+                    "vertical-align: baseline;" +
+                    "line-height: 1;" +
+                    "border-collapse: collapse;" +
+                    "border-spacing: 0;" +
+                    "}"
+                ],
+                styletag = document.createElement('style');
+            styletag.setAttribute('type', 'text/css');
+            head.appendChild(styletag);
+            styletag.innerHTML = cssstring;
+        },
             var gridNode = document.createElement("table");
             gridNode.className = "templateLayoutTable";
             //append container to parent
