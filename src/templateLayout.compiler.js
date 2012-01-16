@@ -1,8 +1,6 @@
 (function (templateLayout) {
-
     var compiler, log, rootTemplate;
     log = wef.logger("templateLayout.compiler");
-
     log.info("load compiler module");
 
     rootTemplate = function () {
@@ -58,15 +56,52 @@
         log.info("compiling display...");
         log.debug("display source: ", displayValue);
         var displayMetadata = {
-            displayType:null,
-            grid:null
-        }, displayTypeRegExp = /^\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?/ig, stringRegExp = /\s*"([a-zA-Z0-9.@ ])+"/ig;
+            displayType:undefined,
+            grid:[],
+            widths:[]
+        },
+            allRefExp = /\s*(none)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/(\*|\d+(:?em|px|%)))?)\s*((:?(:?(:?\d+(:?em|px|%))|\*) *)*)/gi,
+            found,
+            displayTypeFound,
+            gridNotFound,
+            completed;
+        //all without displayType   (:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/(\*|\d+(:?em|px|%)))?\s*)((:?(:?(:?\d+(:?em|px|%))|\*) *)*)
+        // /\s*(inline|block|list-item|inline-block|table|inline-table|table-row-group|table-header-group|table-footer-group|table-row|table-column-group|table-column|table-cell|table-caption|none)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/(\*|\d+(:?em|px|%)))?\s*)((:?(:?(:?\d+(:?em|px|%))|\*) *)*)/g
         if (displayValue !== undefined) {
-            //TODO: check invalid values
-            displayMetadata.displayType = displayValue.match(displayTypeRegExp);
-            displayMetadata.grid = displayValue.match(stringRegExp).map(function (element) {
-                return element.replace(/"/g, "").replace(/\s*/, "");
-            });
+            while ((found = allRefExp.exec(displayValue)) !== null) {
+                if (completed) {
+                    log.error("Invalid template, invalid width definition");
+                    throw new Error("Invalid template, width  definition");
+                }
+                if (found[1]) {
+                    if (displayTypeFound) {
+                        log.error("Invalid template, multiple display type");
+                        throw new Error("Invalid template, multiple display type");
+                    }
+                    displayMetadata.displayType = found[1];
+                    displayTypeFound = true;
+                }
+                if (found[3]) {
+                    if (gridNotFound) {
+                        log.error("Invalid template, invalid grid definition");
+                        throw new Error("Invalid template, invalid grid definition");
+                    }
+                    displayMetadata.grid.push({rowText:found[3].replace(/"/g, "").replace(/\s*/, ""), height:undefined});
+                } else {
+                    gridNotFound = true;
+                }
+                if (found[5]) {
+                    if (!displayMetadata.grid[found.index]) {
+                        log.error("Invalid template, invalid height definition");
+                        throw new Error("Invalid template, height definition");
+                    }
+                    displayMetadata.grid[found.index].height = found[5];
+                }
+                if (found[7]) {
+                    displayMetadata.widths = found[7].split(/ /);
+                    completed = true;
+                }
+            }
         }
         log.info("display result: ", displayMetadata);
         return displayMetadata;
@@ -105,11 +140,9 @@
         var preProcessTemplate = {};
         log.info("compiling properties...");
         log.debug("properties source: ", rule);
-
         preProcessTemplate.selectorText = rule.selectorText;
         preProcessTemplate.display = parseDisplay(rule.declaration[templateLayout.fn.constants.DISPLAY]);
         preProcessTemplate.position = parsePosition(rule.declaration[templateLayout.fn.constants.POSITION]);
-
         log.info("properties result: ", preProcessTemplate);
         return preProcessTemplate;
     }
@@ -131,7 +164,6 @@
             log.debug("buffer: ", buffer);
 
             for (selectorText in buffer) {
-
                 if (buffer.hasOwnProperty(selectorText)) {
                     log.debug("next buffer element: ", selectorText);
                     log.group();
@@ -145,7 +177,6 @@
             }
             log.debug("compile... OK");
             return rootTemplate;
-
         }
     };
 
@@ -156,9 +187,9 @@
     (function (global) {
         var gridSlot;
         log.info("load gridSlot module...");
-        gridSlot = function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
+        gridSlot = function (slotText, rowIndex, colIndex, options) {
             log.debug("slot...");
-            return new gridSlot.prototype.init(slotText, rowIndex, colIndex, rowSpan, colSpan);
+            return new gridSlot.prototype.init(slotText, rowIndex, colIndex, options);
         };
 
         gridSlot.prototype = {
@@ -168,16 +199,18 @@
             colIndex:undefined,
             rowSpan:undefined,
             colSpan:undefined,
-            init:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
+            width:undefined,
+            height:undefined,
+            init:function (slotText, rowIndex, colIndex, options) {
                 this.slotText = slotText;
                 this.rowIndex = rowIndex;
                 this.colIndex = colIndex;
-                this.rowSpan = rowSpan;
-                this.colSpan = colSpan;
-
-            },
-            toString:function () {
-                return String(this.slotText, "cols:", this.colSpan);
+                //options
+                this.rowSpan = 1;
+                this.colSpan = 1;
+                this.height = undefined;
+                this.width = undefined;
+                wef.extend(this, options, ["rowSpan", "colSpan", "width", "height"]);
             }
         };
 
@@ -191,25 +224,29 @@
     (function (global) {
         var gridRow;
         log.info("load gridRow module...");
-        gridRow = function (rowText, rowIndex, slots) {
+        gridRow = function (rowText, rowIndex, slots, options) {
             log.debug("row...");
-            return new gridRow.prototype.init(rowText, rowIndex, slots);
+            return new gridRow.prototype.init(rowText, rowIndex, slots, options);
         };
         gridRow.prototype = {
             constructor:gridRow,
             rowText:undefined,
             rowIndex:undefined,
-            slotIdentifier:[],
+            slots:[],
             length:undefined,
-            init:function (rowText, rowIndex, slots) {
+            height:undefined,
+            widths:[],
+            init:function (rowText, rowIndex, slots, options) {
                 this.rowText = rowText;
                 this.rowIndex = rowIndex;
+                this.slots = slots;
                 this.length = this.rowText.length;
-                //valid reference if slots is not reused
-                this.slotIdentifier = slots;
+                //options
+                this.height = undefined;
+                this.widths = [];
+                wef.extend(this, options, ["height", "widths"]);
             }
         };
-
         gridRow.fn = gridRow.prototype;
         gridRow.prototype.init.prototype = gridRow.prototype;
 
@@ -220,18 +257,22 @@
     (function (global) {
         var grid;
         log.info("load grid module...");
-        grid = function (rows) {
+        grid = function (rows, options) {
             log.debug("grid...");
-            return new grid.prototype.init(rows);
+            return new grid.prototype.init(rows, options);
         };
 
         grid.prototype = {
             constructor:grid,
             rows:undefined,
-            slots:undefined,
-            init:function (rows) {
+            filledSlots:undefined,
+            widths:[],
+            init:function (rows, options) {
                 this.rows = rows;
-                this.slots = {};
+                this.filledSlots = {};
+                //options
+                this.widths = [];
+                wef.extend(this, options, ["widths"]);
             },
             hasSlot:function hasSlot(slotIdentifier) {
                 var result;
@@ -246,17 +287,17 @@
                 var row, tmp, result;
                 if (this.hasSlot(aTemplate.position.position)) {
                     //push template
-                    tmp = this.slots[aTemplate.position.position] || [];
+                    tmp = this.filledSlots[aTemplate.position.position] || [];
                     tmp.push(aTemplate);
-                    this.slots[aTemplate.position.position] = tmp;
+                    this.filledSlots[aTemplate.position.position] = tmp;
                     log.debug("grid [" + aTemplate.position.position + "] =", aTemplate);
                     return true;
                 } else {
                     result = this.rows.some(function (row) {
                         var result;
-                        result = row.slotIdentifier.some(function (slotId) {
+                        result = row.slots.some(function (slotId) {
                             var result;
-                            result = this.slots[slotId] && this.slots[slotId].some(function (currentTemplate) {
+                            result = this.filledSlots[slotId] && this.filledSlots[slotId].some(function (currentTemplate) {
                                 return !currentTemplate.isLeaf() && currentTemplate.insert(aTemplate);
                             }, this);
                             if (!result) {
@@ -310,14 +351,13 @@
                 return this.position.position === null;
             },
             isLeaf:function () {
-                return this.display.grid === null;
+                return this.display.grid.length === 0;
             },
             insert:function (aTemplate) {
                 log.debug("trying to insert into ", this);
                 return this.grid.setTemplate(aTemplate);
             }
         };
-
         template.fn = template.prototype;
         template.prototype.init.prototype = template.prototype;
 
@@ -329,31 +369,31 @@
         var templateBuilder;
         log.info("load templateBuilder module...");
 
-        function Slots() {
-            this.used = {};
-            this.rows = [];
+        function GridBuffer() {
+            this._used = {};
+            this._rows = [];
         }
 
-        Slots.prototype = {
-            constructor:Slots,
-            used:{},
-            rows:[],
+        GridBuffer.prototype = {
+            constructor:GridBuffer,
+            _used:{},
+            _rows:[],
             add:function (slot) {
-                this.used[slot.slotText] = slot;
-                if (!Array.isArray(this.rows[slot.rowIndex])) {
-                    this.rows[slot.rowIndex] = [];
+                this._used[slot.slotText] = slot;
+                if (!Array.isArray(this._rows[slot.rowIndex])) {
+                    this._rows[slot.rowIndex] = [];
                 }
-                this.rows[slot.rowIndex][slot.colIndex] = slot;
+                this._rows[slot.rowIndex][slot.colIndex] = slot;
             },
             getSlot:function (id) {
-                return this.used[id];
+                return this._used[id];
             },
             getRows:function () {
-                return this.rows;
+                return this._rows;
             },
             deleteSlot:function (id) {
-                delete this.used[id];
-                this.rows[id.rowIndex].splice(id.colIndex, 1);
+                delete this._used[id];
+                this._rows[id.rowIndex].splice(id.colIndex, 1);
             }
         };
 
@@ -364,59 +404,59 @@
 
         templateBuilder.prototype = {
             constructor:templateBuilder,
-            slots:undefined,
+            buffer:undefined,
             init:function () {
-                this.slots = new Slots();
+                this.buffer = new GridBuffer();
             },
             createTemplate:function (source) {
                 var display, grid, gridRows;
 
                 display = source.display;
                 grid = null;
-                if (display.grid !== null) {
+                if (display.grid.length > 0) {
                     this._addGrid(source.display);
-                    gridRows = this.slots.getRows().map(function (row, index) {
-                        return compiler.fn.gridRow(source.display.grid[index], index, row);
+                    gridRows = this.buffer.getRows().map(function (row, index) {
+                        return compiler.fn.gridRow(source.display.grid[index].rowText, index, row, {height:source.display.grid[index].height});
                     }, this);
-                    grid = compiler.fn.grid(gridRows);
+                    grid = compiler.fn.grid(gridRows, {widths:source.display.widths});
                 }
 
                 return compiler.fn.template(source.selectorText, source.position, display, grid);
             },
             _addGrid:function (display) {
                 //TODO: grid !== null ???
-                if (display.grid !== null) {
-                    display.grid.forEach(function (rowText, rowIndex) {
-                        this._addGridRow(rowText, rowIndex);
+                if (display.grid.length > 0) {
+                    display.grid.forEach(function (row, rowIndex) {
+                        this._addGridRow(row, rowIndex, display.widths);
                     }, this);
                 }
             },
-            _addGridRow:function (rowText, rowIndex) {
+            _addGridRow:function (row, rowIndex, widths) {
                 var identifiers;
-                identifiers = Array.prototype.map.call(rowText, function (substring) {
+                identifiers = Array.prototype.map.call(row.rowText, function (substring) {
                     return substring.charAt(0);
                 });
 
                 identifiers.forEach(function (slotText, colIndex) {
                     var slot;
-                    if (!this.slots.getSlot(slotText)) {
-                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1);
+                    if (!this.buffer.getSlot(slotText)) {
+                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1, row.height, widths[colIndex]);
                     } else {
                     }
 
-                    slot = this.slots.getSlot(slotText);
+                    slot = this.buffer.getSlot(slotText);
                     //validate row stub
                     //TODO: aba
                     slot.colSpan = (colIndex - slot.colIndex) + 1;
-                    this.slots.add(slot);
+                    this.buffer.add(slot);
                     //validate col stub
                     slot.rowSpan = (rowIndex - slot.rowIndex) + 1;
-                    this.slots.add(slot);
+                    this.buffer.add(slot);
                     //TODO: validate multiple
                 }, this);
             },
-            _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
-                this.slots.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, rowSpan, colSpan));
+            _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
+                this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, {rowSpan:rowSpan, colSpan:colSpan, height:height, width:width}));
             }
         };
 
