@@ -297,7 +297,7 @@
                         var result;
                         result = row.slots.some(function (slotId) {
                             var result;
-                            result = this.filledSlots[slotId] && this.filledSlots[slotId].some(function (currentTemplate) {
+                            result = this.filledSlots[slotId.slotText] && this.filledSlots[slotId.slotText].some(function (currentTemplate) {
                                 return !currentTemplate.isLeaf() && currentTemplate.insert(aTemplate);
                             }, this);
                             if (!result) {
