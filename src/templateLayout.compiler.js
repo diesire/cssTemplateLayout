@@ -91,11 +91,11 @@
                     gridNotFound = true;
                 }
                 if (found[5]) {
-                    if (!displayMetadata.grid[found.index]) {
+                    if (!displayMetadata.grid[displayMetadata.grid.length - 1]) {
                         log.error("Invalid template, invalid height definition");
                         throw new Error("Invalid template, height definition");
                     }
-                    displayMetadata.grid[found.index].height = found[5];
+                    displayMetadata.grid[displayMetadata.grid.length - 1].height = found[5];
                 }
                 if (found[7]) {
                     displayMetadata.widths = found[7].split(/ /);
@@ -123,12 +123,13 @@
         positionMetadata = {
             position:null
         };
-        positionRegExp = /^\s*([a-zA-Z0-9]+|same)\s*/i;
+        positionRegExp = /^\s*(same|[a-zA-Z0-9])\s*$/i;
         if (positionValue !== undefined) {
             matched = positionValue.match(positionRegExp);
             if (matched === null) {
-                log.error("Unexpected value at ", positionValue);
-                throw new Error("Unexpected value at ", positionValue);
+                log.info("Unexpected value at ", positionValue);
+                //throw new Error("Unexpected value at ", positionValue);
+                return positionMetadata;
             }
             positionMetadata.position = matched[1];
         }
@@ -168,15 +169,26 @@
                     log.debug("next buffer element: ", selectorText);
                     log.group();
                     preProcessTemplate = parseProperties(buffer[selectorText]);
-                    log.debug("preProcess: ", preProcessTemplate);
-                    template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
-                    inserted = rootTemplate.insert(template);
-                    log.groupEnd();
-                    log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
+                    if (this.isEmptyDisplay(preProcessTemplate.display) && this.isEmptyPosition(preProcessTemplate.position)) {
+                        log.groupEnd();
+                        log.info("preProcess: empty template", preProcessTemplate);
+                    } else {
+                        log.debug("preProcess:", preProcessTemplate);
+                        template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
+                        inserted = rootTemplate.insert(template);
+                        log.groupEnd();
+                        log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
+                    }
                 }
             }
             log.debug("compile... OK");
             return rootTemplate;
+        },
+        isEmptyDisplay:function (display) {
+            return display.grid.length === 0;
+        },
+        isEmptyPosition:function (position) {
+            return position.position === null;
         }
     };
 
@@ -419,6 +431,7 @@
                         return compiler.fn.gridRow(source.display.grid[index].rowText, index, row, {height:source.display.grid[index].height});
                     }, this);
                     grid = compiler.fn.grid(gridRows, {widths:source.display.widths});
+                } else {
                 }
 
                 return compiler.fn.template(source.selectorText, source.position, display, grid);
