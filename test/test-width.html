@@ -27,13 +27,31 @@
             background-color: rgb(198, 231, 70);
         }
     </style>
+    <style type="text/css">
+        #parent {
+            display: "abcd" /100px 10% * * *
+        }
+
+        #child1 {
+            position: d
+        }
+
+        #child2 {
+            position: c
+        }
+
+        #child3 {
+            position: b
+        }
+
+        #child4 {
+            position: a
+        }
+    </style>
 
     <script type="text/javascript">
         window.onload = function () {
-            var text =
-                    "#parent {display: \"abcd\" /100px 50px 70px * 110px}" +
-                    "#child1 {position: d} #child2 {position: c} #child3 {position: b} #child4 {position: a}";
-            templateLayout(text).transform();
+            templateLayout().transform();
 
             <!-- Test code -->
             test("width", function () {
@@ -60,7 +78,9 @@
 <!-- Test -->
 <div id="parent">
     <h1 id="child1">F i r s t</h1>
+
     <h2 id="child2">Second</h2>
+
     <h3 id="child3">T h i r d</h3>
     <h4 id="child4">F o u r t h</h4>
 </div>
