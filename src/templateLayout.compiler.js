@@ -60,7 +60,7 @@
             grid:[],
             widths:[]
         },
-            allRefExp = /\s*(none)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/(\*|\d+(:?em|px|%)))?)\s*((:?(:?(:?\d+(:?em|px|%))|\*) *)*)/gi,
+            allRefExp = /\s*(none)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/(\*|\d+(:?px|%)))?)\s*((:?(:?(:?\d+(:?px|%))|\*)\s*)*)/gi,
             found,
             displayTypeFound,
             gridNotFound,
@@ -98,7 +98,7 @@
                     displayMetadata.grid[displayMetadata.grid.length - 1].height = found[5];
                 }
                 if (found[7]) {
-                    displayMetadata.widths = found[7].split(/ /);
+                    displayMetadata.widths = found[7].split(/\s+/);
                     completed = true;
                 }
             }
