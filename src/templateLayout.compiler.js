@@ -447,6 +447,8 @@
                 if (display.grid.length > 0) {
                     display.grid.forEach(function (row, rowIndex) {
                         this._addGridRow(row, rowIndex, display.widths);
+
+                        //TODO: validate multiple groups
                     }, this);
                 }
             },
@@ -471,7 +473,6 @@
                     //validate col stub
                     slot.rowSpan = (rowIndex - slot.rowIndex) + 1;
                     this.buffer.add(slot);
-                    //TODO: validate multiple
                 }, this);
             },
             _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
