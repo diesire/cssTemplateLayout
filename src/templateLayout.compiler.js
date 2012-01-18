@@ -462,15 +462,11 @@
                     var slot;
                     if (!this.buffer.getSlot(slotText)) {
                         this._addGridSlot(slotText, rowIndex, colIndex, 1, 1, row.height, widths[colIndex]);
-                    } else {
                     }
 
+                    //TODO: add better span detection
                     slot = this.buffer.getSlot(slotText);
-                    //validate row stub
-                    //TODO: aba
                     slot.colSpan = (colIndex - slot.colIndex) + 1;
-                    this.buffer.add(slot);
-                    //validate col stub
                     slot.rowSpan = (rowIndex - slot.rowIndex) + 1;
                     this.buffer.add(slot);
                 }, this);
