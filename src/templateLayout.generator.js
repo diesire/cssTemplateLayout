@@ -228,7 +228,7 @@
                 cellNode.style.overflow = "hidden";
             }
             if (slot.width) {
-                for (i = 1; i < slot.colSpan; i++) {
+                for (i = 0; i < slot.colSpan; i++) {
                     width += generator.fn.calculateWidths().widths[slot.colIndex];
                 }
                 cellNode.style.width = width;
