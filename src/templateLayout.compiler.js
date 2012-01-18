@@ -437,7 +437,6 @@
                 return compiler.fn.template(source.selectorText, source.position, display, grid);
             },
             _addGrid:function (display) {
-                //TODO: grid !== null ???
                 if (display.grid.length > 0) {
                     display.grid.forEach(function (row, rowIndex) {
                         this._addGridRow(row, rowIndex, display.widths);
