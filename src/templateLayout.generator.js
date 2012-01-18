@@ -69,7 +69,7 @@
         },
         resetCSS:function () {
             var head = document.getElementsByTagName('head')[0],
-                cssstring = [
+                cssString = [
                     ".templateLayout {" +
                     "margin: 0;" +
                     "padding: 0;" +
@@ -82,16 +82,16 @@
                     "border-spacing: 0;" +
                     "}"
                 ],
-                styletag = document.createElement('style');
-            styletag.setAttribute('type', 'text/css');
-            head.appendChild(styletag);
-            styletag.innerHTML = cssstring;
+                styleTag = document.createElement('style');
+            styleTag.setAttribute('type', 'text/css');
+            head.appendChild(styleTag);
+            styleTag.innerHTML = cssString;
         },
-        calculateWidths:function (widths, parentnode) {
+        calculateWidths:function (widths, parentNode) {
             var fixedWidths = widths, parentWidth, flexibleColCounter = 0, fixedColSum = 0, found, flexibleWidth;
 
-            if (fixedWidths && parentnode) {
-                parentWidth = parentnode.offsetWidth;
+            if (fixedWidths && parentNode) {
+                parentWidth = parentNode.offsetWidth;
                 fixedWidths.forEach(function (width, index) {
                     if (width === "*") {
                         flexibleColCounter++;
@@ -122,15 +122,15 @@
                 });
                 return lastCalculateWidths;
             }
-            if (!fixedWidths && !parentnode) {
+            if (!fixedWidths && !parentNode) {
                 return lastCalculateWidths;
             }
         },
-        calculateHeights:function (heights, parentnode) {
-            var fixedHeights = heights, parentHeight, flexibleColCounter = 0, fixedColSum = 0, found, flexibleHeight;
+        calculateHeights:function (heights, parentNode) {
+            var fixedHeights = heights, parentHeight, flexibleRowCounter = 0, fixedRowSum = 0, found, flexibleHeight;
 
-            if (fixedHeights && parentnode) {
-                parentHeight = parentnode.offsetHeight;
+            if (fixedHeights && parentNode) {
+                parentHeight = parentNode.offsetHeight;
                 fixedHeights.forEach(function (height, index) {
                     if (height === "*") {
                         flexibleColCounter++;
@@ -161,7 +161,7 @@
                 });
                 return lastCalculateHeights;
             }
-            if (!fixedHeights && !parentnode) {
+            if (!fixedHeights && !parentNode) {
                 return lastCalculateHeights;
             }
         },
