@@ -204,7 +204,7 @@
             return templateText;
         } catch (e) {
             log.error("Operation not supported", e);
-            throw new Error(e);
+            throw new Error("Operation not supported", e);
         }
     }
 
