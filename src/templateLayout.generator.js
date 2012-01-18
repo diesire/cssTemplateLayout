@@ -126,6 +126,45 @@
                 return lastCalculateWidths;
             }
         },
+        calculateHeights:function (heights, parentnode) {
+            var fixedHeights = heights, parentHeight, flexibleColCounter = 0, fixedColSum = 0, found, flexibleHeight;
+
+            if (fixedHeights && parentnode) {
+                parentHeight = parentnode.offsetHeight;
+                fixedHeights.forEach(function (height, index) {
+                    if (height === "*") {
+                        flexibleColCounter++;
+                    } else {
+                        found = height.match(/(\d+)(px|%)/);
+                        if (found[2] !== "%") {
+                            fixedColSum += parseInt(found[1], 10);
+                        } else {
+                            fixedHeights[index] = String(parseInt(found[1], 10) * parentHeight / 100) + "px";
+                            fixedColSum += parseInt(found[1], 10) * parentHeight / 100;
+                        }
+                    }
+                });
+                flexibleHeight = (flexibleColCounter > 0) ? parseInt((parentHeight - fixedColSum) / flexibleColCounter, 10) : 0;
+                lastCalculateHeights.parentHeight = parentHeight;
+                lastCalculateHeights.heights = fixedHeights.map(function (height) {
+                    if (height === "*") {
+                        return "" + flexibleHeight + "px";
+                    }
+                    if (height === "auto") {
+                        return "auto";
+                    }
+                    if (/(\d+)(px|%)/.test(height)) {
+                        return height;
+                    }
+                    //no more use cases
+
+                });
+                return lastCalculateHeights;
+            }
+            if (!fixedHeights && !parentnode) {
+                return lastCalculateHeights;
+            }
+        },
         appendGrid:function (grid, parentNode) {
             var fixedWidths, gridNode = document.createElement("table");
             gridNode.className = "templateLayout templateLayoutTable";
@@ -167,7 +206,10 @@
         },
         appendSlot:function (slot, parentNode) {
             //create container
-            var width, cellNode = document.createElement("td");
+            var width = 0,
+                height = 0,
+                cellNode = document.createElement("td"),
+                i;
             cellNode.className = "templateLayout templateLayoutCell";
             parentNode.appendChild(cellNode);
 
@@ -178,12 +220,17 @@
                 cellNode.colSpan = slot.colSpan;
             }
             if (slot.height) {
-                cellNode.style.height = slot.height;
-                cellNode.style.maxHeight = slot.height;
+                for (i = 1; i < slot.rowSpan; i++) {
+                    height += generator.fn.calculateHeigths().height[slot.rowIndex];
+                }
+                cellNode.style.height = height;
+                cellNode.style.maxHeight = height;
                 cellNode.style.overflow = "hidden";
             }
             if (slot.width) {
-                width = generator.fn.calculateWidths().widths[slot.colIndex]
+                for (i = 1; i < slot.colSpan; i++) {
+                    width += generator.fn.calculateWidths().widths[slot.colIndex];
+                }
                 cellNode.style.width = width;
                 cellNode.style.maxWidth = width;
                 cellNode.style.overflow = "hidden";
