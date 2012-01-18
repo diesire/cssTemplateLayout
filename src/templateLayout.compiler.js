@@ -212,6 +212,8 @@
             rowSpan:undefined,
             colSpan:undefined,
             width:undefined,
+            minWidth:undefined,
+            preferredWidth:undefined,
             height:undefined,
             init:function (slotText, rowIndex, colIndex, options) {
                 this.slotText = slotText;
@@ -220,9 +222,14 @@
                 //options
                 this.rowSpan = 1;
                 this.colSpan = 1;
-                this.height = undefined;
-                this.width = undefined;
+                this.height = "auto";
+                this.width = "*";
+                this.minWidth = "0px";
+                this.preferredWidth = "99999px"; //TODO:magic
                 wef.extend(this, options, ["rowSpan", "colSpan", "width", "height"]);
+                if(this.width !== "*") {
+                    this.minWidth = this.preferredWidth = this.width;
+                }
             }
         };
 
