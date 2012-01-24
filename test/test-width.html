@@ -25,9 +25,7 @@
     </style>
     <style type="text/css">
         #parent {
-            display: "ab" /100px
-            "cd" /100px
-            10% *;
+            display: "aa" /200px "cd" /100px 10% 30%;
         }
 
         #child1 {
@@ -57,7 +55,7 @@
                       $("#child1").width() + $("#child2").width() +
                       $("#child3").width() + $("#child4").width(),
                       "parentWidth = child_1_Width + ...+ child_n_Width");
-            })
+            });
         }
     </script>
     <title></title>
@@ -75,12 +73,12 @@
 </div>
 <!-- Test -->
 <div id="parent">
+    Inner text
     <h1 id="child1">F i r s t</h1>
-
     <h2 id="child2">Second</h2>
-
     <h3 id="child3">T h i r d</h3>
     <h4 id="child4">F o u r t h</h4>
 </div>
+Outer text
 </body>
 </html>
