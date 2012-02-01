@@ -61,6 +61,41 @@
             log.debug("template generated: ", template);
         }
 
+        function resizeTemplateWidth(template, parentHtmlNode) {
+            var templateNode, gridNode, columnNode, rowNode, slotNode, availableWidth, computedWidths, availableHeight, computedHeights;
+            log.info("resize template - parentWidth:", parentHtmlNode.clientWidth);
+            templateNode = template.htmlNode;
+            availableWidth = templateNode.clientWidth;
+
+            if (!template.isLeaf()) {
+                computedWidths = generator.fn.computeColWidths(availableWidth, template);
+
+                gridNode = generator.fn.getGridNode(templateNode);
+                generator.fn.setGridNodeWidth(gridNode, computedWidths);
+
+                columnNode = generator.fn.getColumnNodes(gridNode, template.grid.colNumber);
+                generator.fn.setColNodeWidth(columnNode, computedWidths);
+
+                template.grid.rows.forEach(function (row, rowIndex) {
+                    log.info("resize row:", row.rowText);
+                    rowNode = generator.fn.getRowNode(gridNode, rowIndex, columnNode.length);
+                    row.slots.forEach(function (slot, colIndex) {
+                        log.info("resize slot:", slot.slotText);
+                        if (template.grid.filledSlots[slot.slotText]) {
+                            slotNode = slot.htmlNode;
+                            generator.fn.setSlotNodeWidth(slotNode, computedWidths, colIndex);
+                            template.grid.filledSlots[slot.slotText].forEach(function (childTemplate) {
+                                resizeTemplateWidth(childTemplate, slotNode);
+                            });
+                        }
+                    });
+                });
+            } else {
+                log.warn("leaf - no grid");
+            }
+            log.debug("template resize... [OK]");
+        }
+
         rootElement = document.querySelector(template.selectorText);
         generateTemplate(template, rootElement.parentNode);
     }
