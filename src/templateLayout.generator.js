@@ -31,34 +31,32 @@
         }
 
         function generateTemplate(template, parentHtmlNode) {
-            var currentNode;
-
-            if (template.isLeaf()) {
-                generateLeaf(template, parentHtmlNode);
-            } else {
-                log.info("no leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-                //if template selector not found in DOM, create new DIV???
-                currentNode = generator.fn.appendTemplate(template, parentHtmlNode);
-                currentNode = generator.fn.appendGrid(template.grid, currentNode);
+            var templateNode, gridNode, rowNode, slotNode, defaultSlot, defaultNode;
+            log.info("template:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
+            templateNode = generator.fn.appendTemplate(template, parentHtmlNode);
+            if (!template.isLeaf()) {
+                defaultSlot = template.grid.getDefaultSlot();
+                gridNode = generator.fn.appendGrid(template.grid, templateNode);
                 template.grid.rows.forEach(function (row) {
                     log.info("row:", row.rowText);
-                    currentNode = generator.fn.appendRow(row, currentNode);
+                    rowNode = generator.fn.appendRow(row, gridNode);
                     row.slots.forEach(function (slot) {
                         log.info("slot:", slot.slotText);
-                        currentNode = generator.fn.appendSlot(slot, currentNode);
+                        slotNode = generator.fn.appendSlot(slot, rowNode);
+                        if (defaultSlot.slotText === slot.slotText) {
+                            //mark currentNode as default
+                            defaultNode = slotNode;
+                        }
                         //each slot can have multiple elements or none
                         if (template.grid.filledSlots[slot.slotText]) {
                             template.grid.filledSlots[slot.slotText].forEach(function (childTemplate) {
-                                log.info("slotELEMENT ", childTemplate.selectorText);
-                                //generate children and append to this container
-                                generateTemplate(childTemplate, currentNode);
+                                log.info("slot contains:", childTemplate.selectorText);
+                                generateTemplate(childTemplate, slotNode);
                             });
                         }
-                        currentNode = currentNode.parentNode;
                     });
-                    currentNode = currentNode.parentNode;
                 });
-                currentNode = currentNode.parentNode;
+                appendFreeNodes(templateNode, defaultNode);
             }
             log.debug("template generated: ", template);
         }
