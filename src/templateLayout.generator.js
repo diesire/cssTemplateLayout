@@ -8,6 +8,26 @@
     function generateRootTemplate(template) {
         var rootElement;
 
+        function appendFreeNodes(currentNode, defaultNode) {
+            var i, className, candidates = [];
+            for (i = 0; i < currentNode.childNodes.length; i++) {
+                className = currentNode.childNodes[i].className;
+                if (className || className === "") {
+                    //HTMLElementNodes
+                    if (!/templateLayout/.test(className)) {
+                        console.log(className, currentNode.childNodes[i].tagName);
+                        candidates.push(currentNode.childNodes[i]);
+                    }
+                } else {
+                    //TextNodes
+                    console.log("text", currentNode.childNodes[i].textContent);
+                    //insert in template.grid.getDefaultNode()
+                    candidates.push(currentNode.childNodes[i]);
+                }
+            }
+            while (candidates.length > 0) {
+                defaultNode.appendChild(candidates.shift());
+            }
         }
 
         function generateTemplate(template, parentHtmlNode) {
