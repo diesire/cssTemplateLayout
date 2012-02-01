@@ -486,23 +486,44 @@
                     }, this);
                 }
             },
-            _addGridRow:function (row, rowIndex, widths) {
-                var identifiers;
+            _addGridRow:function (row, rowIndex) {
+                var identifiers, colSpan, rowSpan, regions;
                 identifiers = Array.prototype.map.call(row.rowText, function (substring) {
                     return substring.charAt(0);
                 });
 
                 identifiers.forEach(function (slotText, colIndex) {
-                    var slot;
-                    if (!this.buffer.getSlot(slotText)) {
-                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1, row.height, widths[colIndex]);
+                    //slot doesn't exist
+                    if (this.buffer.getSlot(slotText).length === 0) {
+                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1);
+                        return; //no span or region violations
                     }
 
-                    //TODO: add better span detection
-                    slot = this.buffer.getSlot(slotText);
-                    slot.colSpan = (colIndex - slot.colIndex) + 1;
-                    slot.rowSpan = (rowIndex - slot.rowIndex) + 1;
-                    this.buffer.add(slot);
+                    if (this.buffer.getSlot(slotText)[0].allowColSpan) {
+                        colSpan = this.checkColSpan(slotText, row, colIndex);
+                    } else {
+                        colSpan = false;
+                    }
+
+                    if (this.buffer.getSlot(slotText)[0].allowRowSpan) {
+                        rowSpan = this.checkRowSpan(slotText, rowIndex, colIndex);
+                    } else {
+                        rowSpan = false;
+                    }
+
+                    if (this.buffer.getSlot(slotText)[0].allowDisconnected) {
+                        //TODO: region check
+                        log.info("Slot allow disconnected regions");
+                        this._addGridSlot(slotText, rowIndex, colIndex, 1, 1);
+                        regions = true;
+                    } else {
+                        regions = false;
+                    }
+
+                    if (!colSpan && !rowSpan && !regions) {
+                        throw new Error("Invalid template definition at \"" + slotText + "\"");
+                    }
+
                 }, this);
             },
             _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
