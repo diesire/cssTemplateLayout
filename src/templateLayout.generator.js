@@ -8,9 +8,6 @@
     function generateRootTemplate(template) {
         var rootElement;
 
-        function generateLeaf(template, parentHtmlNode) {
-            log.info("leaf:", template.selectorText, "(parent:", parentHtmlNode.localName, ")");
-            generator.fn.appendTemplate(template, parentHtmlNode);
         }
 
         function generateTemplate(template, parentHtmlNode) {
