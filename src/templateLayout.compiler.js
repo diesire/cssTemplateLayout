@@ -286,12 +286,20 @@
             rows:undefined,
             filledSlots:undefined,
             widths:[],
+            minWidths:[],
+            preferredWidths:[],
+            rowNumber:undefined,
+            colNumber:undefined,
             init:function (rows, options) {
                 this.rows = rows;
                 this.filledSlots = {};
                 //options
                 this.widths = [];
-                wef.extend(this, options, ["widths"]);
+                this.minWidths = [];
+                this.preferredWidths = [];
+                wef.extend(this, options, ["widths", "minWidths", "preferredWidths"]);
+                this.colNumber = this.widths.length;
+                this.rowNumber = rows.length;
             },
             hasSlot:function hasSlot(slotIdentifier) {
                 var result;
@@ -301,6 +309,25 @@
                 });
                 log.debug("hasSlot " + slotIdentifier + "?", result ? "yes" : "no");
                 return result;
+            },
+            getDefaultSlot:function () {
+                var firstLetterSlot, definedDefaultSlot = false;
+                this.rows.forEach(function (row) {
+                    if (definedDefaultSlot) {
+                        return; //skip row
+                    }
+                    Array.prototype.some.call(row.rowText, function (slotText, slotIndex) {
+                        if (slotText === "@") {
+                            definedDefaultSlot = row.slots[slotIndex];
+                            return true;
+                        }
+                        if (!firstLetterSlot && slotText !== ".") {
+                            firstLetterSlot = row.slots[slotIndex];
+                            return false; //continue searching @
+                        }
+                    });
+                });
+                return definedDefaultSlot || firstLetterSlot;
             },
             setTemplate:function (aTemplate) {
                 var row, tmp, result;
