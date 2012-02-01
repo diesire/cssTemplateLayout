@@ -31,7 +31,13 @@
     <script type="text/javascript">
         window.onload = function () {
             var text =
-                    "#parent {display: \"xy\"} #id11{display: \"ab\"; position: x} #id21{display: \"cd\"; position: y} #id12a{position: d} #id12b{position: c} #id22a{position: b} #id22b{position: a}";
+                    "#parent {display: \"xy\"} " +
+                    "#id11{display: \"ab\" /100px 200px 300px; position: x} " +
+                    "#id21{display: \"cd\" /200px 200px 300px; position: y} " +
+                    "#id12a{position: d} " +
+                    "#id12b{position: c} " +
+                    "#id22a{position: b} " +
+                    "#id22b{position: a}";
             templateLayout(text).transform();
 
             <!-- Test code -->

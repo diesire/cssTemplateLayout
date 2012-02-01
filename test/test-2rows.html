@@ -18,14 +18,13 @@
         .templateLayoutTable {
             -background-color: rgb(43, 129, 175);
         }
-
         .templateLayoutRow {
             background-color: rgb(210, 224, 230);
         }
-
         .templateLayoutCell:hover {
             background-color: rgb(198, 231, 70);
         }
+        pre { font-family: "Ubuntu Mono", "Monaco"}
     </style>
 
     <script type="text/javascript">
@@ -54,13 +53,18 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<pre>
+    #parent {display: "ab" "cd"}
+    #child1 {position: d} //First
+    #child2 {position: c} //Second
+    #child3 {position: b} //Third
+    #child4 {position: a} //Fourth
+</pre>
 <div id="parent">
-    <h1 id="child1">Primero</h1>
-
-    <h2 id="child2">Segundo</h2>
-
-    <h3 id="child3">Tercero</h3>
-    <h4 id="child4">Cuarto</h4>
+    <h1 id="child1">First</h1>
+    <h2 id="child2">Second</h2>
+    <h3 id="child3">Third</h3>
+    <h4 id="child4">Fourth</h4>
 </div>
 </body>
 </html>

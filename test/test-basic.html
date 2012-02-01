@@ -55,14 +55,19 @@
     <div id="qunit-fixture">test markup, will be hidden</div>
     <div style="margin: 50px"></div>
 </div>
+<pre>
+    #parent {display: "abcd"}
+    #child1 {position: d} //First
+    #child2 {position: c} //Second
+    #child3 {position: b} //Third
+    #child4 {position: a} //Fourth
+</pre>
 <!-- Test -->
 <div id="parent">
-    <h1 id="child1">Primero</h1>
-
-    <h2 id="child2">Segundo</h2>
-
-    <h3 id="child3">Tercero</h3>
-    <h4 id="child4">Cuarto</h4>
+    <h1 id="child1">First</h1>
+    <h2 id="child2">Second</h2>
+    <h3 id="child3">Third</h3>
+    <h4 id="child4">Fourth</h4>
 </div>
 </body>
 </html>
