@@ -1,6 +1,6 @@
 (function (templateLayout) {
 
-    var generator, log, lastCalculateWidths = {};
+    var generator, log;
     log = wef.logger("templateLayout.generator");
 
     log.info("load generator module...");
@@ -183,130 +183,191 @@
             head.appendChild(styleTag);
             styleTag.innerHTML = cssString;
         },
-        calculateWidths:function (widths, parentNode) {
-            var fixedWidths = widths, parentWidth, flexibleColCounter = 0, fixedColSum = 0, found, flexibleWidth;
+        setGridNodeWidth:function (gridNode, computedWidths) {
+            gridNode.style.tableLayout = "fixed";
+            gridNode.width = computedWidths.totalWidth;
+        },
+        setGridNodeHeight:function (gridNode, computedHeights) {
+            gridNode.style.height = computedHeights.totalHeight + "px";
+            gridNode.style.maxHeight = computedHeights.totalHeight + "px";
+        },
+        setColNodeWidth:function (colNode, computedWidths) {
+            colNode.forEach(function (node, index) {
+                node.width = computedWidths.colWidth[index];
+                node.style.maxWidth = computedWidths.colWidth[index] + "px";
+            });
+        },
+        setRowNodeHeight:function (rowNode, computedHeights, rowIndex) {
+            rowNode.style.height = computedHeights.rowHeight[rowIndex] + "px";
+            rowNode.style.maxHeight = computedHeights.rowHeight[rowIndex] + "px";
+        },
+        setSlotNodeWidth:function (slotNode, computedWidths, colIndex) {
+            var i, width = 0;
+            for (i = 0; i < slotNode.colSpan; i++) {
+                width += computedWidths.colWidth[colIndex + i];
+            }
+            slotNode.style.width = width + "px";
+            slotNode.style.maxWidth = width + "px";
+        },
+        setSlotNodeHeight:function (slotNode, computedHeights, rowIndex) {
+            var i, height = 0;
+            for (i = 0; i < slotNode.rowSpan; i++) {
+                height += computedHeights.rowHeight[rowIndex + i];
+            }
+            slotNode.style.overflow = "auto";
 
-            if (fixedWidths && parentNode) {
-                parentWidth = parentNode.offsetWidth;
-                fixedWidths.forEach(function (width, index) {
-                    if (width === "*") {
-                        flexibleColCounter++;
-                    } else {
-                        found = width.match(/(\d+)(px|%)/);
-                        if (found[2] !== "%") {
-                            fixedColSum += parseInt(found[1], 10);
-                        } else {
-                            fixedWidths[index] = String(parseInt(found[1], 10) * parentWidth / 100) + "px";
-                            fixedColSum += parseInt(found[1], 10) * parentWidth / 100;
+            slotNode.childNodes[0].style.height = height + "px";
+            slotNode.childNodes[0].style.maxHeight = height + "px";
+            slotNode.childNodes[0].style.overflow = "auto";
+        },
+        getGridNode:function (templateNode) {
+            return templateNode.childNodes[0];
+        },
+        getColumnNodes:function (gridNode, columns) {
+            var i, columnNodes = [];
+            for (i = 0; i < columns; i++) {
+                columnNodes.push(gridNode.childNodes[i]);
+            }
+            return columnNodes;
+        },
+        getRowNode:function (gridNode, index, columns) {
+            return gridNode.childNodes[columns + index];
+        },
+        getPixels:function (dimension, max) {
+            var found = dimension.match(/(\d+)(px|%)/);
+            if (found[2] === "%") {
+                return parseInt(found[1], 10) * max / 100;
+            }
+            if (found[2] === "px") {
+                return parseInt(found[1], 10);
+            }
+        },
+        computeRowHeights:function (template) {
+            var result = {
+                totalHeight:undefined,
+                rowHeight:[]
+            }, tmp, height = 0, fixedHeights = 0, relativeHeights = 0;
+
+            tmp = template.grid.rows.map(function (row) {
+                if (/(\d+)(px)/.test(row.height)) {
+                    return generator.fn.getPixels(row.height, 0);
+                }
+                return row.height;
+            }, this);
+
+            template.grid.rows.forEach(function (row, rowIndex) {
+                if (row.height === "*" || row.height === "auto") {
+                    tmp[rowIndex] = 0;
+                    row.slots.forEach(function (slot) {
+                        if (slot.rowSpan === 1) {
+                            var zzz = slot.htmlNode.offsetHeight;
+                            if (zzz > tmp[rowIndex]) {
+                                tmp[rowIndex] = zzz;
+                            }
                         }
+                    }, this);
+                }
+            }, this);
+
+            template.grid.rows.forEach(function (row, rowIndex) {
+                if (row.height === "*") {
+                    if (tmp[rowIndex] > height) {
+                        height = tmp[rowIndex];
                     }
+                }
+            }, this);
+            template.grid.rows.forEach(function (row, rowIndex) {
+                if (row.height === "*") {
+                    tmp[rowIndex] = height;
+                }
+            }, this);
+
+            tmp.forEach(function (height) {
+                if (/(\d+)(%)/.test(height)) {
+                    var found = height.match(/(\d+)(%)/);
+                    relativeHeights += parseInt(found[1], 10);
+                } else {
+                    fixedHeights += height;
+                }
+            });
+            //            result.totalHeight = tmp.reduce(function (previous, height) {
+            //                return previous + height;
+            //            }, 0);
+            result.totalHeight = (fixedHeights * 100) / (100 - relativeHeights);
+            result.rowHeight = tmp;
+            return result;
+        },
+        computeColWidths:function (availableWidth, template) {
+            var result = {
+                totalWidth:undefined,
+                colWidth:[]
+            }, gridMinWidth, flexibleColCounter = 0, fixedColSum = 0, flexibleWidth = 0, gridFinalWidth = 0;
+
+
+            template.grid.widths.forEach(function (colWidth) {
+                if (colWidth === "*") {
+                    flexibleColCounter++;
+                } else {
+                    fixedColSum += generator.fn.getPixels(colWidth, availableWidth);
+                }
+            });
+            flexibleWidth = (flexibleColCounter > 0) ? (availableWidth - fixedColSum) / flexibleColCounter : 0;
+
+            gridMinWidth = template.grid.minWidths.reduce(function (previous, colMinWidth) {
+                return previous + generator.fn.getPixels(colMinWidth, availableWidth);
+            }, 0);
+
+            if (gridMinWidth > availableWidth) {
+                result.totalWidth = availableWidth;
+                result.colWidth = template.grid.minWidths.map(function (col) {
+                    return generator.fn.getPixels(col, availableWidth);
                 });
-                flexibleWidth = (flexibleColCounter > 0) ? parseInt((parentWidth - fixedColSum) / flexibleColCounter, 10) : 0;
-                lastCalculateWidths.parentWidth = parentWidth;
-                lastCalculateWidths.widths = fixedWidths.map(function (width) {
+            } else {
+                result.colWidth = template.grid.widths.map(function (width) {
+                    var tmp;
                     if (width === "*") {
-                        return "" + flexibleWidth + "px";
-                    }
-                    if (width === "auto") {
-                        return "auto";
+                        gridFinalWidth += flexibleWidth;
+                        return flexibleWidth;
                     }
                     if (/(\d+)(px|%)/.test(width)) {
-                        return width;
+                        //minWidth==width==preferredWidth
+                        tmp = generator.fn.getPixels(width, availableWidth);
+                        gridFinalWidth += tmp;
+                        return tmp;
                     }
                     //no more use cases
-
                 });
-                return lastCalculateWidths;
+                result.totalWidth = gridFinalWidth;
             }
-            if (!fixedWidths && !parentNode) {
-                return lastCalculateWidths;
-            }
-        },
-        calculateHeights:function (heights, parentNode) {
-            var fixedHeights = heights, parentHeight, flexibleRowCounter = 0, fixedRowSum = 0, found, flexibleHeight;
-
-            if (fixedHeights && parentNode) {
-                parentHeight = parentNode.offsetHeight;
-                fixedHeights.forEach(function (height, index) {
-                    if (height === "*") {
-                        flexibleColCounter++;
-                    } else {
-                        found = height.match(/(\d+)(px|%)/);
-                        if (found[2] !== "%") {
-                            fixedColSum += parseInt(found[1], 10);
-                        } else {
-                            fixedHeights[index] = String(parseInt(found[1], 10) * parentHeight / 100) + "px";
-                            fixedColSum += parseInt(found[1], 10) * parentHeight / 100;
-                        }
-                    }
-                });
-                flexibleHeight = (flexibleColCounter > 0) ? parseInt((parentHeight - fixedColSum) / flexibleColCounter, 10) : 0;
-                lastCalculateHeights.parentHeight = parentHeight;
-                lastCalculateHeights.heights = fixedHeights.map(function (height) {
-                    if (height === "*") {
-                        return "" + flexibleHeight + "px";
-                    }
-                    if (height === "auto") {
-                        return "auto";
-                    }
-                    if (/(\d+)(px|%)/.test(height)) {
-                        return height;
-                    }
-                    //no more use cases
-
-                });
-                return lastCalculateHeights;
-            }
-            if (!fixedHeights && !parentNode) {
-                return lastCalculateHeights;
-            }
+            return result;
         },
         appendGrid:function (grid, parentNode) {
-            var fixedWidths, gridNode = document.createElement("table");
+            var gridNode = document.createElement("table");
             gridNode.className = "templateLayout templateLayoutTable";
             parentNode.appendChild(gridNode);
-
-            if (grid.widths.length !== 0) {
-                fixedWidths = generator.fn.calculateWidths(grid.widths, parentNode);
-                gridNode.style.tableLayout = "fixed";
-                gridNode.style.width = fixedWidths.parentWidth;
-                generator.fn.appendCol(gridNode, {widths:fixedWidths.widths});
-            } else {
-                gridNode.style.width = "100%";
-            }
-
+            generator.fn.appendCol(gridNode, grid.colNumber);
             return gridNode;
         },
-        appendCol:function (parentNode, options) {
-            if (options && options.widths) {
-                options.widths.forEach(function (width) {
-                    var colNode = document.createElement("col");
-                    colNode.className = "templateLayout templateLayoutCol";
-                    colNode.style.width = width;
-                    colNode.style.maxWidth = width;
-                    //append to parent
-                    parentNode.appendChild(colNode);
-                });
+        appendCol:function (parentNode, colNumber) {
+            var i, colNode;
+            for (i = 0; i < colNumber; i++) {
+                colNode = document.createElement("col");
+                colNode.className = "templateLayout templateLayoutCol";
+                parentNode.appendChild(colNode);
             }
         },
         appendRow:function (row, parentNode) {
             var rowNode = document.createElement("tr");
             rowNode.className = "templateLayout templateLayoutRow";
             parentNode.appendChild(rowNode);
-
-            if (row.height) {
-                rowNode.style.height = row.height;
-                rowNode.style.maxHeight = row.height;
-            }
             return rowNode;
         },
         appendSlot:function (slot, parentNode) {
             //create container
-            var width = 0,
-                height = 0,
-                cellNode = document.createElement("td"),
-                i;
-            cellNode.className = "templateLayout templateLayoutCell";
+            var cellNode, overflowNode;
+            cellNode = document.createElement("td");
+            cellNode.className = "templateLayout templateLayoutSlot";
+            slot.htmlNode = cellNode;
             parentNode.appendChild(cellNode);
 
             if (slot.rowSpan > 1) {
@@ -315,35 +376,24 @@
             if (slot.colSpan > 1) {
                 cellNode.colSpan = slot.colSpan;
             }
-            if (slot.height) {
-                for (i = 1; i < slot.rowSpan; i++) {
-                    height += generator.fn.calculateHeigths().height[slot.rowIndex];
-                }
-                cellNode.style.height = height;
-                cellNode.style.maxHeight = height;
-                cellNode.style.overflow = "hidden";
-            }
-            if (slot.width) {
-                for (i = 0; i < slot.colSpan; i++) {
-                    width += generator.fn.calculateWidths().widths[slot.colIndex];
-                }
-                cellNode.style.width = width;
-                cellNode.style.maxWidth = width;
-                cellNode.style.overflow = "hidden";
-            }
 
-            return cellNode;
+            overflowNode = document.createElement("div");
+            overflowNode.className = "templateLayout templateOverflow";
+            cellNode.appendChild(overflowNode);
+            return overflowNode;
         },
         appendVirtualNode:function (parentNode) {
             var extraNode = document.createElement("div");
-            extraNode.className = "templateLayout templateLayoutExtra";
-            extraNode.style.width = "100%";
+            extraNode.className = "templateLayout templateLayoutVirtualNode";
             parentNode.appendChild(extraNode);
             return extraNode;
         },
         appendTemplate:function (template, parentNode) {
             var templateNode = document.querySelector(template.selectorText) || generator.fn.appendVirtualNode(parentNode);
-            parentNode.appendChild(templateNode);
+            template.htmlNode = templateNode;
+            if (templateNode.parentNode !== parentNode) {
+                parentNode.appendChild(templateNode);
+            }
             return templateNode;
         }
     };
