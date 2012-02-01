@@ -96,8 +96,54 @@
             log.debug("template resize... [OK]");
         }
 
+        function resizeTemplateHeight(template, parentHtmlNode) {
+            var templateNode, gridNode, columnNode, rowNode, slotNode, computedHeights;
+            log.info("resize template - parentHeight:", parentHtmlNode.clientHeight);
+            templateNode = template.htmlNode;
+
+            if (!template.isLeaf()) {
+//                computedHeights = generator.fn.computeRowHeights(template);
+                gridNode = generator.fn.getGridNode(templateNode);
+
+                columnNode = generator.fn.getColumnNodes(gridNode, template.grid.colNumber);
+                template.grid.rows.forEach(function (row, rowIndex) {
+                    log.info("resize row:", row.rowText);
+                    rowNode = generator.fn.getRowNode(gridNode, rowIndex, columnNode.length);
+
+                    row.slots.forEach(function (slot, colIndex) {
+                        log.info("resize slot:", slot.slotText);
+                        if (template.grid.filledSlots[slot.slotText]) {
+                            slotNode = slot.htmlNode;
+
+                            template.grid.filledSlots[slot.slotText].forEach(function (childTemplate) {
+                                resizeTemplateHeight(childTemplate, slotNode);
+
+                            });
+                            //generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
+//                                    var zzz = slot.htmlNode.offsetHeight;
+//                                    if(zzz>computedHeights.rowHeight[rowIndex]) {
+//                                        computedHeights.rowHeight[rowIndex] = zzz;
+//                                        generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
+//                                    }
+                        }
+                        computedHeights = generator.fn.computeRowHeights(template);
+                        generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
+                    });
+                    computedHeights = generator.fn.computeRowHeights(template);
+                    generator.fn.setRowNodeHeight(rowNode, computedHeights, rowIndex);
+                });
+                computedHeights = generator.fn.computeRowHeights(template);
+                generator.fn.setGridNodeHeight(gridNode, computedHeights);
+            } else {
+                log.warn("leaf - no grid");
+            }
+            log.debug("template resize... [OK]");
+        }
+
         rootElement = document.querySelector(template.selectorText);
         generateTemplate(template, rootElement.parentNode);
+        resizeTemplateWidth(template, rootElement.parentNode);
+        resizeTemplateHeight(template, rootElement.parentNode);
     }
 
     generator = function (tom) {
