@@ -256,7 +256,6 @@
             slots:[],
             length:undefined,
             height:undefined,
-            widths:[],
             init:function (rowText, rowIndex, slots, options) {
                 this.rowText = rowText;
                 this.rowIndex = rowIndex;
@@ -264,8 +263,7 @@
                 this.length = this.rowText.length;
                 //options
                 this.height = undefined;
-                this.widths = [];
-                wef.extend(this, options, ["height", "widths"]);
+                wef.extend(this, options, ["height"]);
             }
         };
         gridRow.fn = gridRow.prototype;
