@@ -481,8 +481,41 @@
                 if (display.grid.length > 0) {
                     display.grid.forEach(function (row, rowIndex) {
                         this._addGridRow(row, rowIndex, display.widths);
+            checkRowSpan:function (slotText, rowIndex, colIndex) {
+                var previousRow, oldRowSpan, candidateRowSpan, slotGroups;
+                slotGroups = this.buffer.getSlot(slotText);
+                if (!slotGroups[0].allowRowSpan) {
+                    log.info("Slot don't allow row span");
+                    return false;
+                }
 
-                        //TODO: validate multiple groups
+                if (rowIndex > 0) {
+                    return slotGroups.some(function (slot) {
+                        previousRow = this.source.display.grid[rowIndex - 1];
+                        if (previousRow.rowText.charAt(colIndex) === slotText) {
+                            oldRowSpan = slot.rowSpan;
+                            candidateRowSpan = (rowIndex - slot.rowIndex) + 1;
+                            if (candidateRowSpan == oldRowSpan) {
+                                //do nothing
+                                log.debug("Slot row span... [OK]");
+                                return true;
+                            }
+                            if (candidateRowSpan == oldRowSpan + 1) {
+                                slot.rowSpan++;
+                                this.buffer.add(slot);
+                                log.debug("Slot row span... [OK]");
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }, this);
+                } else {
+                    return false;
+                }
+            },
             checkColSpan:function (slotText, row, colIndex) {
                 var slotGroups, oldColSpan, candidateColSpan;
                 slotGroups = this.buffer.getSlot(slotText);
