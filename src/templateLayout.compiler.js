@@ -473,6 +473,20 @@
             },
             _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
                 this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, {rowSpan:rowSpan, colSpan:colSpan, height:height, width:width}));
+            _getMinWidth:function (width) {
+                if (width === "*") {
+                    return "0px";
+                } else {
+                    return width;
+                }
+            },
+            _getPreferredWidth:function (width) {
+                if (width === "*") {
+                    return "9999px";
+                } else {
+                    return width;
+                }
+            },
             _normalizeWidths:function (widths) {
                 var i, tmp = [], dotColumn;
 
@@ -516,6 +530,7 @@
                     }
                 }
                 return tmp;
+            },
             _getMaxColNumber:function (grid) {
                 if (grid.length === 0) {
                     return 0;
