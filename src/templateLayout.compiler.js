@@ -473,6 +473,49 @@
             },
             _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
                 this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, {rowSpan:rowSpan, colSpan:colSpan, height:height, width:width}));
+            _normalizeWidths:function (widths) {
+                var i, tmp = [], dotColumn;
+
+                function checkDotColumn(row) {
+                    return row.rowText.charAt(i) === ".";
+                }
+
+                for (i = 0; i < this._getMaxColNumber(this.source.display.grid); i++) {
+                    if (widths[i] === undefined) {
+                        tmp[i] = "*";
+                    } else {
+                        if (/-/.test(widths[i])) {
+                            throw new Error("Invalid argument: negative width not allowed");
+                        }
+                    }
+                    if (this.source.display.grid.every(checkDotColumn)) {
+                        tmp[i] = "0px";
+                    }
+                    if (widths[i] !== undefined) {
+                        tmp[i] = widths[i];
+                    }
+                }
+                return tmp;
+            },
+            _normalizeHeights:function (display) {
+                var dotLineRegExp = /^\.+$/, negativeHeight = /-/, i, tmp = [];
+                for (i = 0; i < display.grid.length; i++) {
+                    if (display.grid[i].height === undefined) {
+                        tmp[i] = "auto";
+                    } else {
+                        if (negativeHeight.test(display.grid[i].rowText)) {
+                            throw new Error("Invalid argument: negative height not allowed");
+                        }
+                    }
+                    if (dotLineRegExp.test(display.grid[i].rowText)) {
+                        tmp[i] = "0px";
+                    }
+                    //can overwrite dotLine rule
+                    if (display.grid[i].height !== undefined) {
+                        tmp[i] = display.grid[i].height;
+                    }
+                }
+                return tmp;
             _getMaxColNumber:function (grid) {
                 if (grid.length === 0) {
                     return 0;
