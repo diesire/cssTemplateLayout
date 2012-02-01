@@ -209,27 +209,29 @@
             slotText:undefined,
             rowIndex:undefined,
             colIndex:undefined,
-            rowSpan:undefined,
-            colSpan:undefined,
-            width:undefined,
-            minWidth:undefined,
-            preferredWidth:undefined,
-            height:undefined,
+            rowSpan:1,
+            colSpan:1,
+            allowDisconnected:false,
+            allowColSpan:false,
+            allowRowSpan:false,
+            htmlNode:undefined,
+            contentHeight:0,
+
             init:function (slotText, rowIndex, colIndex, options) {
                 this.slotText = slotText;
                 this.rowIndex = rowIndex;
                 this.colIndex = colIndex;
+                this.contentHeight = 0;
                 //options
                 this.rowSpan = 1;
                 this.colSpan = 1;
                 this.height = "auto";
-                this.width = "*";
-                this.minWidth = "0px";
-                this.preferredWidth = "99999px"; //TODO:magic
-                wef.extend(this, options, ["rowSpan", "colSpan", "width", "height"]);
-                if(this.width !== "*") {
-                    this.minWidth = this.preferredWidth = this.width;
-                }
+
+                this.allowDisconnected = false;
+                this.allowColSpan = true;
+                this.allowRowSpan = true;
+                this.htmlNode = undefined;
+                wef.extend(this, options, ["rowSpan", "colSpan", "allowDisconnected", "allowColSpan", "allowRowSpan"]);
             }
         };
 
