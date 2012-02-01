@@ -417,42 +417,48 @@
         log.info("load templateBuilder module...");
 
         function GridBuffer() {
-            this._used = {};
             this._rows = [];
         }
 
         GridBuffer.prototype = {
             constructor:GridBuffer,
-            _used:{},
             _rows:[],
             add:function (slot) {
-                this._used[slot.slotText] = slot;
                 if (!Array.isArray(this._rows[slot.rowIndex])) {
                     this._rows[slot.rowIndex] = [];
                 }
                 this._rows[slot.rowIndex][slot.colIndex] = slot;
             },
             getSlot:function (id) {
-                return this._used[id];
+                var result = [];
+                this._rows.forEach(function (row) {
+                    row.forEach(function (slot) {
+                        if (slot.slotText === id) {
+                            result.push(slot);
+                        }
+                    }, this);
+                }, this);
+                return result;
             },
             getRows:function () {
                 return this._rows;
             },
-            deleteSlot:function (id) {
-                delete this._used[id];
-                this._rows[id.rowIndex].splice(id.colIndex, 1);
+            getRow:function (index) {
+                return this._rows[index];
             }
         };
 
-        templateBuilder = function () {
+        templateBuilder = function (source) {
             log.debug("templateBuilder...");
-            return new templateBuilder.prototype.init();
+            return new templateBuilder.prototype.init(source);
         };
 
         templateBuilder.prototype = {
             constructor:templateBuilder,
             buffer:undefined,
-            init:function () {
+            source:undefined,
+            init:function (source) {
+                this.source = source;
                 this.buffer = new GridBuffer();
             },
             createTemplate:function (source) {
