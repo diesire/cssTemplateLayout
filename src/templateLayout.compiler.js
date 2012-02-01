@@ -174,7 +174,7 @@
                         log.info("preProcess: empty template", preProcessTemplate);
                     } else {
                         log.debug("preProcess:", preProcessTemplate);
-                        template = compiler.fn.templateBuilder().createTemplate(preProcessTemplate);
+                        template = compiler.fn.templateBuilder(preProcessTemplate).createTemplate();
                         inserted = rootTemplate.insert(template);
                         log.groupEnd();
                         log.info("element insertion...", inserted ? "[OK]" : "ERROR!");
@@ -200,7 +200,7 @@
         var gridSlot;
         log.info("load gridSlot module...");
         gridSlot = function (slotText, rowIndex, colIndex, options) {
-            log.debug("slot...");
+            log.debug("slot", slotText + "...");
             return new gridSlot.prototype.init(slotText, rowIndex, colIndex, options);
         };
 
@@ -461,26 +461,39 @@
                 this.source = source;
                 this.buffer = new GridBuffer();
             },
-            createTemplate:function (source) {
-                var display, grid, gridRows;
-
-                display = source.display;
+            createTemplate:function () {
+                var display, grid, gridRows, gridOptions = {}, heights;
+                display = this.source.display;
                 grid = null;
                 if (display.grid.length > 0) {
-                    this._addGrid(source.display);
+                    this._addGrid(this.source.display);
+
+                    heights = this._normalizeHeights(this.source.display);
                     gridRows = this.buffer.getRows().map(function (row, index) {
-                        return compiler.fn.gridRow(source.display.grid[index].rowText, index, row, {height:source.display.grid[index].height});
+                        return compiler.fn.gridRow(this.source.display.grid[index].rowText, index, row, {height:heights[index]});
                     }, this);
-                    grid = compiler.fn.grid(gridRows, {widths:source.display.widths});
+
+                    gridOptions.widths = this._normalizeWidths(this.source.display.widths);
+                    gridOptions.minWidths = gridOptions.widths.map(function (col) {
+                        return templateBuilder.fn._getMinWidth(col);
+                    });
+                    gridOptions.preferredWidths = gridOptions.widths.map(function (col) {
+                        return templateBuilder.fn._getPreferredWidth(col);
+                    });
+                    grid = compiler.fn.grid(gridRows, gridOptions);
                 } else {
+                    //TODO:fixme
                 }
 
-                return compiler.fn.template(source.selectorText, source.position, display, grid);
+                return compiler.fn.template(this.source.selectorText, this.source.position, display, grid);
             },
             _addGrid:function (display) {
                 if (display.grid.length > 0) {
                     display.grid.forEach(function (row, rowIndex) {
-                        this._addGridRow(row, rowIndex, display.widths);
+                        this._addGridRow(row, rowIndex);
+                    }, this);
+                }
+            },
             checkRowSpan:function (slotText, rowIndex, colIndex) {
                 var previousRow, oldRowSpan, candidateRowSpan, slotGroups;
                 slotGroups = this.buffer.getSlot(slotText);
