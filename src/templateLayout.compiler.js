@@ -383,15 +383,16 @@
             constructor:template,
             parentTemplate:undefined,
             selectorText:undefined,
-            selector:undefined,
             display:undefined,
             position:undefined,
             grid:undefined,
+            htmlNode:undefined,
             init:function (selectorText, position, display, grid) {
                 this.selectorText = selectorText;
                 this.display = display;
                 this.position = position;
                 this.grid = grid;
+                this.htmlNode = undefined;
             },
             isRoot:function () {
                 return this.position.position === null;
