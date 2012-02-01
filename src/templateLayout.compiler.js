@@ -505,8 +505,27 @@
                     this.buffer.add(slot);
                 }, this);
             },
-            _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
-                this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, {rowSpan:rowSpan, colSpan:colSpan, height:height, width:width}));
+            _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan) {
+                var options, allowDisconnected, allowColSpan, allowRowSpan;
+
+                if (slotText === ".") {
+                    allowDisconnected = true;
+                    allowColSpan = false;
+                    allowRowSpan = false;
+                } else {
+                    allowDisconnected = false;
+                    allowColSpan = true;
+                    allowRowSpan = true;
+                }
+                options = {
+                    rowSpan:rowSpan,
+                    colSpan:colSpan,
+                    allowDisconnected:allowDisconnected,
+                    allowColSpan:allowColSpan,
+                    allowRowSpan:allowRowSpan
+                };
+                this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, options));
+            },
             _getMinWidth:function (width) {
                 if (width === "*") {
                     return "0px";
