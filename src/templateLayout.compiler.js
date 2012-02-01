@@ -473,6 +473,13 @@
             },
             _addGridSlot:function (slotText, rowIndex, colIndex, rowSpan, colSpan, height, width) {
                 this.buffer.add(compiler.fn.gridSlot(slotText, rowIndex, colIndex, {rowSpan:rowSpan, colSpan:colSpan, height:height, width:width}));
+            _getMaxColNumber:function (grid) {
+                if (grid.length === 0) {
+                    return 0;
+                }
+                return grid.reduce(function (last, row) {
+                    return last > row.rowText.length ? last : row.rowText.length;
+                }, 0);
             }
         };
 
