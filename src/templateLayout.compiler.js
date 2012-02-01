@@ -483,7 +483,32 @@
                         this._addGridRow(row, rowIndex, display.widths);
 
                         //TODO: validate multiple groups
+            checkColSpan:function (slotText, row, colIndex) {
+                var slotGroups, oldColSpan, candidateColSpan;
+                slotGroups = this.buffer.getSlot(slotText);
+                if (!slotGroups[0].allowColSpan) {
+                    log.info("Slot don't allow col span");
+                    return false;
+                }
+                if (colIndex > 0) {
+                    return slotGroups.some(function (slot) {
+                        if (row.rowText[colIndex - 1] === slotText) {
+                            oldColSpan = slot.colSpan;
+                            candidateColSpan = (colIndex - slot.colIndex) + 1;
+                            if (candidateColSpan == oldColSpan + 1) {
+                                slot.colSpan++;
+                                this.buffer.add(slot);
+                                log.debug("Slot col span... [OK]");
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
                     }, this);
+                } else {
+                    return false;
                 }
             },
             _addGridRow:function (row, rowIndex) {
