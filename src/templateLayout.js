@@ -195,8 +195,26 @@
 
     function readFile(url) {
         //TODO: FIXME
+
+        function xhr() {
+            if (typeof XMLHttpRequest !== 'undefined' && (window.location.protocol !== 'file:' || !window.ActiveXObject)) {
+                return new XMLHttpRequest();
+            } else {
+                try {
+                    return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+                } catch(e) { }
+                try {
+                    return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+                } catch(e) { }
+                try {
+                    return new ActiveXObject('Msxml2.XMLHTTP');
+                } catch(e) { }
+            }
+            return false;
+        }
+
         function ajaxReadFile(url) {
-            var request = new XMLHttpRequest();
+            var request = new xhr();
             request.open("get", url, false);
             request.send("");
             log.info("request status: ", request.statusText);
