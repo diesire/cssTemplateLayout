@@ -1,3 +1,7 @@
+/**
+ * @namespace
+ * @name templateLayout
+ */
 (function (templateLayout) {
     var compiler, log, rootTemplate;
     log = wef.logger("templateLayout.compiler");
@@ -148,6 +152,10 @@
         return preProcessTemplate;
     }
 
+    /**
+     * @memberOf templateLayout
+     * @class
+     */
     compiler = function () {
         return new compiler.prototype.init();
     };
@@ -196,6 +204,10 @@
 
     templateLayout.fn.compiler = compiler;
 
+    /**
+     * @scope templateLayout.compiler.fn
+     * @class
+     */
     (function (global) {
         var gridSlot;
         log.info("load gridSlot module...");
@@ -242,6 +254,9 @@
         log.info("load gridSlot module... [OK]");
     })(compiler.fn);
 
+    /**
+     * @class
+     */
     (function (global) {
         var gridRow;
         log.info("load gridRow module...");
@@ -273,6 +288,9 @@
         log.info("load gridRow module... [OK]");
     })(compiler.fn);
 
+    /**
+     * @class
+     */
     (function (global) {
         var grid;
         log.info("load grid module...");
@@ -371,6 +389,9 @@
         log.info("load grid module... [OK]");
     })(compiler.fn);
 
+    /**
+     * @class
+     */
     (function (global) {
         var template;
         log.info("load template module...");
@@ -412,6 +433,9 @@
         log.info("load template module... [OK]");
     })(compiler.fn);
 
+    /**
+     * @class
+     */
     (function (global) {
         var templateBuilder;
         log.info("load templateBuilder module...");

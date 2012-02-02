@@ -10,10 +10,16 @@
         tom,
         parser;
 
+    /**
+     * @class
+     * TemplateLayout class
+     * @param templateSource template definition
+     */
     templateLayout = function (templateSource) {
         log.info("create templateLayout...");
         return new templateLayout.prototype.init(arguments);
     };
+
 
     templateLayout.prototype = {
         constructor:templateLayout,
