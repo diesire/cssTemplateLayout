@@ -3,59 +3,64 @@
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  */
-TestCase("templateLayout", {
-    "test main":function () {
-        assertNotUndefined(templateLayout);
-    },
-    "test setTemplate":function () {
-        templateLayout.setTemplate("/test/test/css/template1.css");
-    }
+var isChrome = /chrome/i.exec(navigator.appVersion);
+
+module("CSSTemplateLayout");
+
+test("namespace", function () {
+    notEqual(templateLayout, undefined, "is templateLayout namespace defined?");
+    equal(typeof templateLayout, "function", "is templateLayout a function?");
 });
 
-AsyncTestCase("templateLayoutAsync", {
-    "test templateLayout listen cssParser events":function (queue) {
-        var text = "body {display: \"a (intrinsic), b (intrinsic)\";} div#uno {situated: a; display: \"123 (intrinsic)\";}";
-        queue.call(function (callbacks) {
-            var myCallback = callbacks.add(function () {
-                wef.fn.cssParser.parse(text);
-            });
-            window.setTimeout(myCallback, 1000);
-        });
+test("templateLayout.fn", function () {
+    notEqual(typeof templateLayout.fn, undefined, "is templateLayout.fn defined ?");
+});
 
-        queue.call(function () {
-            console.log("--", wef.fn.cssParser.events.PARSER_DONE, templateLayout.getLastEvent());
-            assertEquals(wef.fn.cssParser.events.PARSER_DONE, templateLayout.getLastEvent().type);
-        });
-    },
+test("constructor", function () {
+    var templateSource = "body {display: \"ab\"} h1 {position: a} h2 {position: b}";
+    equal(templateLayout().templateSources[0].type, "file", "calling empty constructor");
+    //can't load remote files from local ones
+    //equal(templateLayout("http://www.uniovi.es/TemaUniovi2010/css/layout.css").templateSources[0].type, "http", "loading remote css file");
+    //equal(templateLayout("https://example.com/template.css").templateSources[0].type, "http", "loading remote css file");
+    //equal(templateLayout("file://localhost/template.css").templateSources[0].type, "file", "loading local css file");
 
-    "test templateLayout buffer":function (queue) {
-        var text = "body {display: \"abcd\"} h1 {position: d} h2 {position: c} h3 {position: b} h4 {position: a}";
-        queue.call(function (callbacks) {
-            var myCallback = callbacks.add(function () {
-                wef.fn.cssParser.parse(text);
-            });
-            window.setTimeout(myCallback, 1000);
-        });
-
-        queue.call(function () {
-            var result = templateLayout.getBuffer();
-            assertEquals({"selectorText":"body", "declaration":{"display":"\"abcd\""}}, result["body"]);
-        });
-    },
-
-    "test templateLayout buffer appending":function (queue) {
-        var text = "body {display: \"ab\"} h1 {position: a; display: \"cd\"} h2 {position: b} h3 {position: c} h4 {position: d}";
-        queue.call(function (callbacks) {
-            var myCallback = callbacks.add(function () {
-                wef.fn.cssParser.parse(text);
-            });
-            window.setTimeout(myCallback, 1000);
-        });
-
-        queue.call(function () {
-            var result = templateLayout.getBuffer();
-            assertEquals("\"cd\"", result["h1"].declaration["display"]);
-            assertEquals("a", result["h1"].declaration["position"]);
-        });
+    if (!isChrome) {
+        //Chrome can't load local files from local ones
+        equal(templateLayout("template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("css/template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("./css/template.css").templateSources[0].type, "file", "loading local css file");
+        equal(templateLayout("../test/css/template.css").templateSources[0].type, "file", "loading local css file");
     }
+    equal(templateLayout(templateSource).templateSources[0].type, "css", "loading css string");
+
+    equal(templateLayout(templateSource, templateSource, templateSource).templateSources[0].type, "css", "loading multiple css string");
+    //equal(templateLayout(templateSource, "../css/template.css", "https://example.com/template.css").templateSources[0].type, "mixed", "loading multiple css string");
+});
+
+test("public properties", function () {
+    equal(typeof templateLayout.fn.version, "string", "tl().version");
+});
+
+test("public methods", function () {
+    //old ones, deleted
+    equal(templateLayout().setTemplate, undefined, "setTemplate no longer supported");
+    equal(templateLayout().insertTemplate, undefined, "insertTemplate no longer supported");
+    equal(templateLayout().preprocess, undefined, "preprocess no longer supported");
+    equal(templateLayout().compile, undefined, "compile no longer supported");
+
+    //testing
+    notEqual(templateLayout().getBuffer, undefined, "getBuffer");
+
+    //new ones
+    notEqual(templateLayout().transform, undefined, "transform is a public method");
+});
+
+test("transform options", function () {
+    var templateSource = "body {display: \"ab\"} h1 {position: a} h2 {position: b}",
+        result;
+    templateLayout(templateSource).transform({action:"none"});
+    result = templateLayout(templateSource).transform({action:"parse"}).getBuffer();
+    wef.logger().info("buffer: ", result);
+    result = templateLayout(templateSource).transform({action:"compile"}).getTOM();
+    wef.logger().info("TOM: ", result);
 });

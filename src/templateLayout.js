@@ -10,10 +10,16 @@
         tom,
         parser;
 
+    /**
+     * @class
+     * TemplateLayout class
+     * @param templateSource template definition
+     */
     templateLayout = function (templateSource) {
         log.info("create templateLayout...");
         return new templateLayout.prototype.init(arguments);
     };
+
 
     templateLayout.prototype = {
         constructor:templateLayout,
@@ -28,7 +34,7 @@
 
         //templateLayout(), templateLayout(""), templateLayout("", "", ...)
         init:function (templateSources) {
-            var args, firstSource;
+            var args, firstSource, internalSources = [];
             log.debug("sources:", templateSources);
 
             log.debug("init subsystems...");
@@ -43,10 +49,20 @@
                 //TODO: load style & inline css
                 log.info("no external template loaded!!!");
 
-                this.templateSources[0] = {
-                    type:"inherited",
-                    sourceText:""
-                };
+                Array.prototype.forEach.call(document.styleSheets, function (sheet) {
+                    if (sheet.href !== null) {
+                        //load external CSS
+                        log.info("load external CSS", sheet.href);
+                        internalSources.push(sheet.href);
+                    }
+                    else {
+                        var text = sheet.ownerNode.innerHTML;
+                        log.info("load style tag", text);
+                        internalSources.push(text);
+                    }
+                });
+
+                this.templateSources = internalSources.map(getContent);
                 log.info("templateLayout... [OK]");
                 return this;
             }
@@ -72,8 +88,9 @@
                 parser.whenProperty(propertyFound);
                 parser.whenStop(parserDone);
 
-                //TODO: FIXME multiple sources
-                parser.parse(this.templateSources[0].sourceText);
+                parser.parse(this.templateSources.reduce(function (previous, source) {
+                    return previous + source.sourceText;
+                }, ""));
 
                 log.groupEnd();
                 log.info("Step 1: parse... [OK]");
@@ -193,7 +210,7 @@
             return templateText;
         } catch (e) {
             log.error("Operation not supported", e);
-            throw new Error(e);
+            throw new Error("Operation not supported", e);
         }
     }
 

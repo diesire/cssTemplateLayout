@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <!-- Qunit -->
+    <script src="qunit/jquery.js"></script>
+    <link rel="stylesheet" href="qunit/qunit.css" type="text/css"
+          media="screen"/>
+    <script type="text/javascript" src="qunit/qunit.js"></script>
+    <!-- Lib -->
+    <script src="../lib/wef/build/wef.js"></script>
+    <!-- Src -->
+    <script src="../src/templateLayout.js"></script>
+    <script src="../src/templateLayout.compiler.js"></script>
+    <script src="../src/templateLayout.generator.js"></script>
+    <!-- Example style -->
+    <style type="text/css">
+        .templateLayoutRow {
+            background-color: rgb(210, 224, 230);
+        }
+
+        .templateLayoutCell:hover {
+            background-color: rgb(198, 231, 70);
+        }
+    </style>
+    <style type="text/css">
+        #parent {
+            display: "a.b" "c.b";
+        }
+
+        #child1 {
+            position: d
+        }
+
+        #child2 {
+            position: c
+        }
+
+        #child3 {
+            position: b
+        }
+
+        #child4 {
+            position: a
+        }
+    </style>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            templateLayout().transform();
+
+            <!-- Test code -->
+            test("width", function () {
+                equal($("#parent").children().width(),
+                      $("#child1").width() + $("#child2").width() +
+                      $("#child3").width() + $("#child4").width(),
+                      "parentWidth = child_1_Width + ...+ child_n_Width");
+            });
+        }
+    </script>
+    <title></title>
+</head>
+<body>
+<!-- Qunit code -->
+<div>
+    <div id="qunit-header">CSS Template Layout test - Width</div>
+    <div id="qunit-banner"></div>
+    <div id="qunit-testrunner-toolbar"></div>
+    <div id="qunit-userAgent"></div>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+    <div style="margin: 50px"></div>
+</div>
+<!-- Test -->
+<div id="parent">
+    Inner text
+    <p id="child1">F i r s t</p>
+    <p id="child2">Second</p>
+    <p id="child3">T h i r d</p>
+    <p id="child4">F o u r t h</p>
+</div>
+Outer text
+</body>
+</html>

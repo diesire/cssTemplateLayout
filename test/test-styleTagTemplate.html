@@ -13,12 +13,31 @@
     <script src="../src/templateLayout.js"></script>
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
-    <!-- Example style -->
+    <!-- Template -->
     <style type="text/css">
-        .templateLayoutTable {
-            -background-color: rgb(43, 129, 175);
+        #parent {
+            display: "ab" /250px "cd" /150px 250px 150px;
         }
 
+        #child1 {
+            position: d
+        }
+
+        #child2 {
+            position: c
+        }
+
+        #child3 {
+            position: b
+        }
+
+        #child4 {
+            position: a
+        }
+    </style>
+
+    <!-- Example style-->
+    <style type="text/css">
         .templateLayoutRow {
             background-color: rgb(210, 224, 230);
         }
@@ -30,8 +49,7 @@
 
     <script type="text/javascript">
         window.onload = function () {
-            var text = "#parent {display: \"abcd\"} #child1 {position: d} #child2 {position: c} #child3 {position: b} #child4 {position: a}";
-            templateLayout(text).transform();
+            templateLayout().transform();
 
             <!-- Test code -->
             test("width", function () {
