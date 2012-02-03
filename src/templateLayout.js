@@ -68,7 +68,9 @@
             }
 
             //templateLayout("aString") and templateLayout("aString", "anotherString", ...)
-            if (args.length >= 1 && args.every(isString)) {
+            if (args.length >= 1 && args.every(function (element) {
+                return typeof element == "string";
+            })) {
                 this.templateSources = args.map(getContent);
                 log.info("templateLayout... [OK]");
                 return this;
@@ -152,10 +154,6 @@
 
     templateLayout.fn.init.prototype = templateLayout.fn;
 
-    function isString(element) {
-        return typeof element == "string";
-    }
-
     function getSourceType(templateSource) {
         var rxHttp = /^http[s]?:\/\/.*\.css$/i, rxFile = /^file:\/\/.*\.css$/i, rxPath = /^(?!\s*.*(http[s]?|file))(\.){0,2}(\/.*)*.*\.css$/i;
         if (rxHttp.exec(templateSource)) {
@@ -205,25 +203,7 @@
     function readFile(url) {
         //TODO: FIXME
 
-        function xhr() {
-            if (typeof XMLHttpRequest !== 'undefined' && (window.location.protocol !== 'file:' || !window.ActiveXObject)) {
-                return new XMLHttpRequest();
-            } else {
-                try {
-                    return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-                } catch (e) {
-                }
-                try {
-                    return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-                } catch (e) {
-                }
-                try {
-                    return new ActiveXObject('Msxml2.XMLHTTP');
-                } catch (e) {
-                }
-            }
-            return false;
-        }
+
 
         function ajaxReadFile(url) {
             var request = xhr();
@@ -233,9 +213,13 @@
             return request.responseText;
         }
 
+
+
         try {
             log.info("reading file...");
-            var templateText = ajaxReadFile(url);
+            var templateText = wef.net.ajax('template.css', {
+                success: function(request) { return request.responseText;}
+            });
             log.info("template loaded... [OK]");
             return templateText;
         } catch (e) {
