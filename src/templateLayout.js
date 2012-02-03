@@ -84,9 +84,9 @@
             if (options.parse) {
                 log.info("Step 1: parse");
                 log.group();
-                parser.whenStart(parserStarts);
-                parser.whenProperty(propertyFound);
-                parser.whenStop(parserDone);
+                parser.whenStart(this.parserStarts);
+                parser.whenProperty(this.propertyFound);
+                parser.whenStop(this.parserDone);
 
                 parser.parse(this.templateSources.reduce(function (previous, source) {
                     return previous + source.sourceText;
@@ -120,6 +120,31 @@
         },
         getTOM:function () {
             return tom;
+        },
+        parserStarts:function (o) {
+            log.info("start parsing at", new Date(o.time).toLocaleTimeString());
+            buffer = {};
+        },
+        propertyFound:function (property) {
+            log.info("templateLayout listens: property found");
+            if (templateLayout.fn.isSupportedProperty(property)) {
+                store(property);
+            }
+        },
+        parserDone:function (o) {
+            log.info("parsing done at", new Date(o.time).toLocaleTimeString());
+        },
+        isSupportedProperty:function (rule) {
+            var iterator;
+            for (iterator in templateLayout.fn.constants) {
+                if (templateLayout.fn.constants.hasOwnProperty(iterator)) {
+                    if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
+                        log.info("supported property found: ", rule.declaration.property);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     };
 
@@ -177,22 +202,6 @@
         return options;
     }
 
-    function parserStarts(o) {
-        log.info("start parsing at", new Date(o.time).toLocaleTimeString());
-        buffer = {};
-    }
-
-    function propertyFound(property) {
-        log.info("templateLayout listens: property found");
-        if (isSupportedProperty(property)) {
-            store(property);
-        }
-    }
-
-    function parserDone(o) {
-        log.info("parsing done at", new Date(o.time).toLocaleTimeString());
-    }
-
     function readFile(url) {
         //TODO: FIXME
 
@@ -202,19 +211,22 @@
             } else {
                 try {
                     return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-                } catch(e) { }
+                } catch (e) {
+                }
                 try {
                     return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-                } catch(e) { }
+                } catch (e) {
+                }
                 try {
                     return new ActiveXObject('Msxml2.XMLHTTP');
-                } catch(e) { }
+                } catch (e) {
+                }
             }
             return false;
         }
 
         function ajaxReadFile(url) {
-            var request = new xhr();
+            var request = xhr();
             request.open("get", url, false);
             request.send("");
             log.info("request status: ", request.statusText);
@@ -241,20 +253,6 @@
         }
         buffer[rule.selectorText].declaration[rule.declaration.property] = rule.declaration.valueText;
         log.info("property stored: ", rule.declaration.property);
-    }
-
-    function isSupportedProperty(rule) {
-        var iterator;
-        for (iterator in templateLayout.fn.constants) {
-            if (templateLayout.fn.constants.hasOwnProperty(iterator)) {
-                if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
-                    log.info("supported property found: ", rule.declaration.property);
-                    return true;
-                }
-            }
-
-        }
-        return false;
     }
 
     global.templateLayout = templateLayout;
