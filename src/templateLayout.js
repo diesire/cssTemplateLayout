@@ -201,23 +201,11 @@
     }
 
     function readFile(url) {
-        //TODO: FIXME
-
-
-
-        function ajaxReadFile(url) {
-            var request = xhr();
-            request.open("get", url, false);
-            request.send("");
-            log.info("request status: ", request.statusText);
-            return request.responseText;
-        }
-
-
+        var templateText;
 
         try {
             log.info("reading file...");
-            var templateText = wef.net.ajax('template.css', {
+            templateText = wef.net.ajax('template.css', {
                 success: function(request) { return request.responseText;}
             });
             log.info("template loaded... [OK]");
