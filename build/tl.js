@@ -11,9 +11,30 @@
         parser;
 
     /**
-     * @class
-     * TemplateLayout class
-     * @param templateSource template definition
+     * Create the prototype main class
+     *
+     * @param {string|strings[]}[templateSource] template source.
+     * Supports 0..* strings containing valid CSS text or URL.
+     * </p>
+     * Empty constructor searches parent HTML file for STYLE tags and uses its
+     * CSS content as template source.
+     * </p>
+     * String params are analyzed and loaded in this way:
+     * <ul>
+     *     <li>"htttp[s]://..." entries are loaded as files and content extracted</li>
+     *     <li>"file://..." entries are loaded as files and content extracted</li>
+     *     <li>Unmatched entries are loaded as CSS text</li>
+     * </ul>
+     * Multiple strings are first analyzed and then concatenated
+     *
+     * @class TemplateLayout is a  CSS Template Layout prototype that implements
+     * some basic features defined in W3C working draft "Template Layout Module".
+     * Features:
+     * <ul>
+     *     <li>basic template definition: letters, . (dot) and @</li>
+     *     <li>column width in pixels and %</li>
+     *     <li>row height imn pixels and %</li>
+     * </ul>
      */
     templateLayout = function (templateSource) {
         log.info("create templateLayout...");
@@ -23,16 +44,40 @@
 
     templateLayout.prototype = {
         constructor:templateLayout,
+        /**
+         * Version number
+         */
         version:"0.0.1",
+        /**
+         * Template sources store
+         */
         templateSources:[],
+        /**
+         * Constant object that stores CSS properties names used as triggers
+         * </p>
+         * Currently used:
+         * <ul>
+         *     <li>constants.DISPLAY = "display"</li>
+         *     <li>constants.POSITION = "position"</li>
+         * </ul>
+         */
         constants:{
             DISPLAY:"display",
             POSITION:"position"
         },
+        /**
+         * Template compiler
+         */
         compiler:null,
+        /**
+         * Template output generator
+         */
         generator:null,
 
-        //templateLayout(), templateLayout(""), templateLayout("", "", ...)
+        /**
+         * @ignore
+         * see templateLayout constructor
+         */
         init:function (templateSources) {
             var args, firstSource, internalSources = [];
             log.debug("sources:", templateSources);
@@ -46,9 +91,7 @@
 
             //templateLayout()
             if (!firstSource) {
-                //TODO: load style & inline css
                 log.info("no external template loaded!!!");
-
                 Array.prototype.forEach.call(document.styleSheets, function (sheet) {
                     if (sheet.href !== null) {
                         //load external CSS
@@ -79,6 +122,19 @@
             log.error("Invalid argument");
             throw new Error("Invalid argument");
         },
+        /**
+         * Reads, compiles and generates the template
+         *
+         * @param {string}[options=all] Only for testing purposes.
+         * Supported values [none|parse|compile]
+         * </p>
+         * Stops transform process at different points:
+         * <ul>
+         *     <li>none: transform does nothing</li>
+         *     <li>parse: transform only parses template source</li>
+         *     <li>compile: transform  parses source and compiles the template</li>
+         * </ul>
+         */
         transform:function () {
             log.debug("transform...");
             var options = parseTransformOptions(arguments);
@@ -116,32 +172,62 @@
             log.info("transform... [OK]");
             return this;
         },
-        //only for testing purposes
+        /**
+         * Returns the info from the parsing step
+         * @returns {ParserBufferEntry[]}buffer
+         */
         getBuffer:function () {
             return buffer;
         },
+        /**
+         * Returns TOM (Template Object Model)
+         * @returns {rootTemplate}tom
+         */
         getTOM:function () {
             return tom;
         },
+        /**
+         * "Parser start" callback. Prints start time and resets buffer
+         *
+         * @param o Information sent by parser
+         * @param o.time Start time in milliseconds
+         */
         parserStarts:function (o) {
             log.info("start parsing at", new Date(o.time).toLocaleTimeString());
             buffer = {};
         },
+        /**
+         * "Property has been found" callback. Stores in buffer valid properties
+         *
+         * @param {CSSParserProperty}property found property information
+         */
         propertyFound:function (property) {
             log.info("templateLayout listens: property found");
             if (templateLayout.fn.isSupportedProperty(property)) {
                 store(property);
             }
         },
+        /**
+         * "Parser stop" callback. Prints stop time
+         * @param {StopCallbackData}o Information sent by parser
+         */
         parserDone:function (o) {
             log.info("parsing done at", new Date(o.time).toLocaleTimeString());
         },
-        isSupportedProperty:function (rule) {
+
+        /**
+         * Checks if given property is a valid one.
+         * If property name exists in constants then is a valid one
+         *
+         * @param {CSSParserProperty}property the property
+         * @returns {boolean}true if exists constants[???] == property.declaration.property
+         */
+        isSupportedProperty:function (property) {
             var iterator;
             for (iterator in templateLayout.fn.constants) {
                 if (templateLayout.fn.constants.hasOwnProperty(iterator)) {
-                    if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
-                        log.info("supported property found: ", rule.declaration.property);
+                    if (templateLayout.fn.constants[iterator] == property.declaration.property) {
+                        log.info("supported property found: ", property.declaration.property);
                         return true;
                     }
                 }
@@ -205,8 +291,10 @@
 
         try {
             log.info("reading file...");
-            templateText = wef.net.ajax('template.css', {
-                success: function(request) { return request.responseText;}
+            templateText = wef.net.ajax(url, {
+                success:function (request) {
+                    return request.responseText;
+                }
             });
             log.info("template loaded... [OK]");
             return templateText;
@@ -218,8 +306,24 @@
 
     function store(rule) {
         if (!buffer[rule.selectorText]) {
-            buffer[rule.selectorText] = {
+            buffer[rule.selectorText] =
+            /**
+             * @namespace Data format of parser buffer entry
+             * @name ParserBufferEntry
+             */
+            /**
+             * @lends ParserBufferEntry#
+             */
+            {
+                /**
+                 * property selector text
+                 * @type string
+                 */
                 selectorText:rule.selectorText,
+                /**
+                 * array of declarations (property_name:property_value)
+                 * @type string[]
+                 */
                 declaration:{}
             };
         }
@@ -228,40 +332,18 @@
     }
 
     global.templateLayout = templateLayout;
-})(window);/**
- * @namespace
- * @name templateLayout
+})(window);/*!
+ * templateLayout.compiler
+ * Copyright (c) 2011 Pablo Escalada
+ * MIT Licensed
  */
 (function (templateLayout) {
     var compiler, log, rootTemplate;
     log = wef.logger("templateLayout.compiler");
     log.info("load compiler module");
 
-    rootTemplate = function () {
-        var that = {
-            insert:insert,
-            rows:[]
-        };
-
-        function insert(aTemplate) {
-            log.info("add template ", aTemplate.selectorText);
-            if (aTemplate.isRoot()) {
-                log.debug("insert as root", aTemplate);
-                that.rows.push(aTemplate);
-                return true;
-            } else {
-                log.debug("search position :", aTemplate.position.position);
-                return that.rows.some(function (element) {
-                    return element.insert(aTemplate);
-                });
-            }
-        }
-
-        return that;
-    }();
-
     function parseDisplay(displayValue) {
-        /**
+        /*
          * Name:    ‘display’
          * New value:    <display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
          * Percentages:    N/A
@@ -289,9 +371,29 @@
          */
         log.info("compiling display...");
         log.debug("display source: ", displayValue);
-        var displayMetadata = {
+        /**
+         * @namespace Preprocessed template display info
+         * @name DisplayMetadata
+         */
+        var displayMetadata =
+        /**
+         * @lends DisplayMetadata#
+         */
+        {
+            /**
+             * Display type. Currently unused
+             * @type string
+             */
             displayType:undefined,
+            /**
+             * Array of rows. strings are cleaned
+             * @type string[]
+             */
             grid:[],
+            /**
+             * Array of columnns widths
+             * @type string[]
+             */
             widths:[]
         },
             allRefExp = /\s*(none|inline)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/ ?(\*|\d+(:?px|%)))?)\s*((:?(:?(:?\d+(:?px|%))|\*)\s*)*)/gi,
@@ -341,9 +443,49 @@
         return displayMetadata;
     }
 
+    /**
+     * @namespace Top level template. Used as "fake page template"
+     */
+    rootTemplate = function () {
+
+        var that =
+        /**
+         * @lends rootTemplate#
+         */
+        {
+            /**
+             * Inserts given template into TOM.
+             * If template "isRoot", inserts here, else looks inside TOM and
+             * inserts in place.
+             *
+             * @param {Template}aTemplate the template
+             */
+            insert:function (aTemplate) {
+                log.info("add template ", aTemplate.selectorText);
+                if (aTemplate.isRoot()) {
+                    log.debug("insert as root", aTemplate);
+                    that.rows.push(aTemplate);
+                    return true;
+                } else {
+                    log.debug("search position :", aTemplate.position.position);
+                    return that.rows.some(function (element) {
+                        return element.insert(aTemplate);
+                    });
+                }
+            },
+            /**
+             * Templates stored into the root template
+             * @type gridRow[]
+             */
+            rows:[]
+        };
+
+        return that;
+    }();
+
     function parsePosition(positionValue) {
         var positionMetadata, matched, positionRegExp;
-        /**
+        /*
          * Name:    position
          * New value:    <letter> | same
          * Percentages:    N/A
@@ -354,7 +496,19 @@
          */
         log.info("compiling position...");
         log.debug("position source: ", positionValue);
-        positionMetadata = {
+        /**
+         * @namespace Preprocessed template position info
+         * @name PositionMetadata
+         */
+        positionMetadata =
+        /**
+         * @lends PositionMetadata#
+         */
+        {
+            /**
+             * Position string
+             * @type string
+             */
             position:null
         };
         positionRegExp = /^\s*(same|[a-zA-Z0-9])\s*$/i;
@@ -383,20 +537,34 @@
     }
 
     /**
-     * @memberOf templateLayout
-     * @class
+     * Creates a compiler
+     *
+     * @class CSS template compiler
      */
     compiler = function () {
         return new compiler.prototype.init();
     };
 
+    /**
+     * Extension point.
+     * Elements added to compiler.fn extend compiler functionality
+     */
     compiler.fn = compiler.prototype;
 
     compiler.prototype = {
         constructor:compiler,
+        /**
+         * @ignore
+         */
         init:function () {
             return this;
         },
+        /**
+         * Compiles given parser data</p>
+         *
+         * @param {ParserBufferEntry[]}buffer parser generated data
+         * @returns {rootTemplate} Template Object Model
+         */
         compile:function (buffer) {
             var selectorText, preProcessTemplate, inserted, template;
             log.info("compile...");
@@ -422,9 +590,19 @@
             log.debug("compile... OK");
             return rootTemplate;
         },
+        /**
+         * Checks if display is empty
+         * @param {DisplayMetadata}display compiled display
+         * @returns {boolean}true if display.grid.length === 0
+         */
         isEmptyDisplay:function (display) {
             return display.grid.length === 0;
         },
+        /**
+         * Checks is position is empty
+         * @param {PositionMetadata}position compiled position
+         * @returns {boolean}true if position.position === null
+         */
         isEmptyPosition:function (position) {
             return position.position === null;
         }
@@ -434,13 +612,30 @@
 
     templateLayout.fn.compiler = compiler;
 
-    /**
-     * @scope templateLayout.compiler.fn
-     * @class
-     */
     (function (global) {
         var gridSlot;
         log.info("load gridSlot module...");
+
+        /**
+         * Creates a slot.
+         *
+         * @param {string}slotText slot identifier
+         * @param {integer}rowIndex row index
+         * @param {integer}colIndex column index
+         * @param {Object}[options] optional initialization
+         * @param {integer}options.rowSpan row span number
+         * @param {integer}options.colSpan column span number
+         * @param {boolean}options.allowDisconnected row span number
+         * @param {boolean}options.allowColSpan row span number
+         * @param {boolean}options.allowRowSpan row span number
+         *
+         * @class Template slot.
+         * Features:
+         * <ul>
+         *     <li>column and row span</li>
+         *     <li>disconnected regions</li>
+         * </ul>
+         */
         gridSlot = function (slotText, rowIndex, colIndex, options) {
             log.debug("slot", slotText + "...");
             return new gridSlot.prototype.init(slotText, rowIndex, colIndex, options);
@@ -448,17 +643,61 @@
 
         gridSlot.prototype = {
             constructor:gridSlot,
+            /**
+             * slot identifier
+             * @type string
+             */
             slotText:undefined,
+            /**
+             * row index. If row spans, topmost row index
+             * @type integer
+             */
             rowIndex:undefined,
+            /**
+             * column index. If column spans, leftmost column index
+             * @type integer
+             */
             colIndex:undefined,
+            /**
+             * row span number
+             * @type integer
+             */
             rowSpan:1,
+            /**
+             * column span number
+             * @type integer
+             */
             colSpan:1,
+            /**
+             * Can exists more than one group of slots with the same identifier?
+             * @type boolean
+             */
             allowDisconnected:false,
+            /**
+             * is column span allowed?
+             * @type boolean
+             */
             allowColSpan:false,
+            /**
+             * is row span allowed?
+             * @type boolean
+             */
             allowRowSpan:false,
+            /**
+             * HTML node that maps the slot
+             * @type HTMLElement
+             */
             htmlNode:undefined,
+            /**
+             * Stores the sum of children heights
+             * @type integer
+             */
             contentHeight:0,
 
+            /**
+             * @ignore
+             * see gridSlot.constructor
+             */
             init:function (slotText, rowIndex, colIndex, options) {
                 this.slotText = slotText;
                 this.rowIndex = rowIndex;
@@ -477,6 +716,9 @@
             }
         };
 
+        /**
+         * Extension point
+         */
         gridSlot.fn = gridSlot.prototype;
         gridSlot.prototype.init.prototype = gridSlot.prototype;
 
@@ -484,23 +726,56 @@
         log.info("load gridSlot module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
+
     (function (global) {
         var gridRow;
         log.info("load gridRow module...");
+        /**
+         * Creates a row
+         *
+         * @param {string}rowText row slots identifiers
+         * @param {integer}rowIndex row index
+         * @param {gridSlot[]}slots row gridSlot elements
+         * @param {Object}[options] optional initialization
+         * @param {string}options.height row height as string
+         *
+         * @class Template row. Store {@link gridSlot} elements
+         */
         gridRow = function (rowText, rowIndex, slots, options) {
             log.debug("row...");
             return new gridRow.prototype.init(rowText, rowIndex, slots, options);
         };
         gridRow.prototype = {
             constructor:gridRow,
+            /**
+             * Row slots identifiers
+             * @type string
+             */
             rowText:undefined,
+            /**
+             * Row index
+             * @type integer
+             */
             rowIndex:undefined,
+            /**
+             * Slots row gridSlot elements
+             * @type gridSlot[]
+             */
             slots:[],
+            /**
+             * Number of slots in row
+             * @type integer
+             */
             length:undefined,
+            /**
+             * Row height as string
+             * @type string
+             */
             height:undefined,
+            /**
+             * @ignore
+             * see constructor
+             */
             init:function (rowText, rowIndex, slots, options) {
                 this.rowText = rowText;
                 this.rowIndex = rowIndex;
@@ -511,6 +786,9 @@
                 wef.extend(this, options, ["height"]);
             }
         };
+        /**
+         * Extension point
+         */
         gridRow.fn = gridRow.prototype;
         gridRow.prototype.init.prototype = gridRow.prototype;
 
@@ -518,12 +796,18 @@
         log.info("load gridRow module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
+
     (function (global) {
         var grid;
         log.info("load grid module...");
+        /**
+         * Creates a template grid
+         *
+         * @param {gridRow[]}rows template rows
+         * @param [options] optional initialization
+         *
+         * @class Template grid, represented as a tabular structure
+         */
         grid = function (rows, options) {
             log.debug("grid...");
             return new grid.prototype.init(rows, options);
@@ -531,13 +815,49 @@
 
         grid.prototype = {
             constructor:grid,
+            /**
+             * Template rows
+             * @type gridRow[]
+             */
             rows:undefined,
+            /**
+             * Hash table like structure that stores nested Template objects.
+             * <ul>
+             *     <li>key = template position</li>
+             *     <li>value = array of template objects</li>
+             * <ul>
+             *
+             * @type Object
+             */
             filledSlots:undefined,
+            /**
+             * columns widths
+             * @type string[]
+             */
             widths:[],
+            /**
+             * minimums columns widths
+             * @type string[]
+             */
             minWidths:[],
+            /**
+             * preferred columns widths
+             * @type string[]
+             */
             preferredWidths:[],
+            /**
+             * Number of rows
+             * @type integer
+             */
             rowNumber:undefined,
+            /**
+             * Number of columns
+             * @type integer
+             */
             colNumber:undefined,
+            /**
+             * @ignore
+             */
             init:function (rows, options) {
                 this.rows = rows;
                 this.filledSlots = {};
@@ -549,6 +869,13 @@
                 this.colNumber = this.widths.length;
                 this.rowNumber = rows.length;
             },
+            /**
+             * Checks if grid contains specified slot identifier
+             *
+             * @param {string}slotIdentifier slot identifier
+             * @returns {boolean} true if rows[i].rowText contains slotIdentifier,
+             * else if not
+             */
             hasSlot:function hasSlot(slotIdentifier) {
                 var result;
                 result = this.rows.some(function (row) {
@@ -558,6 +885,9 @@
                 log.debug("hasSlot " + slotIdentifier + "?", result ? "yes" : "no");
                 return result;
             },
+            /**
+             * Gets the "@" slot OR topmost left slot
+             */
             getDefaultSlot:function () {
                 var firstLetterSlot, definedDefaultSlot = false;
                 this.rows.forEach(function (row) {
@@ -577,6 +907,12 @@
                 });
                 return definedDefaultSlot || firstLetterSlot;
             },
+            /**
+             * Traverses this grid and its children and insert the given
+             * template in place
+             * @param {template}aTemplate given template
+             * @returns {boolean} true if inserted, false if not
+             */
             setTemplate:function (aTemplate) {
                 var row, tmp, result;
                 if (this.hasSlot(aTemplate.position.position)) {
@@ -611,7 +947,9 @@
                 }
             }
         };
-
+        /**
+         * Extension point
+         */
         grid.fn = grid.prototype;
         grid.prototype.init.prototype = grid.prototype;
 
@@ -619,12 +957,20 @@
         log.info("load grid module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
     (function (global) {
         var template;
         log.info("load template module...");
+        /**
+         * Creates a template
+         *
+         * @param {string}selectorText CSS selector
+         * @param {PositionMetadata}position raw position information
+         * @param {DisplayMetadata}display raw display information
+         * @param {grid}grid its physical structure
+         *
+         * @class A Template has a grid, the raw information generated by
+         * the preprocessor and a link to the DOM reference node
+         */
         template = function (selectorText, position, display, grid) {
             log.debug("template...");
             return new template.prototype.init(selectorText, position, display, grid);
@@ -632,12 +978,38 @@
 
         template.prototype = {
             constructor:template,
+            /**
+             * Link to parent template. Unused
+             */
             parentTemplate:undefined,
+            /**
+             * CSS selector
+             * @type string
+             */
             selectorText:undefined,
+            /**
+             * Raw display information
+             * @type DisplayMetadata
+             */
             display:undefined,
+            /**
+             * Raw position information
+             * @type PositionMetadata
+             */
             position:undefined,
+            /**
+             * Its grid, the physical representation
+             * @type grid
+             */
             grid:undefined,
+            /**
+             * A link to the DOM reference node
+             * @type HTMLElement
+             */
             htmlNode:undefined,
+            /**
+             * @ignore
+             */
             init:function (selectorText, position, display, grid) {
                 this.selectorText = selectorText;
                 this.display = display;
@@ -645,17 +1017,38 @@
                 this.grid = grid;
                 this.htmlNode = undefined;
             },
+            /**
+             * Checks if has parent
+             *
+             * @returns {boolean} true if doesn't have a position value,
+             * false if not
+             */
             isRoot:function () {
                 return this.position.position === null;
             },
+            /**
+             * Checks if has children
+             *
+             * @returns {boolean} true if has a grid value, false if not
+             */
             isLeaf:function () {
                 return this.display.grid.length === 0;
             },
+            /**
+             * Insert given template in this template or its children.
+             * Calls grid.setTemplate()
+             *
+             * @param aTemplate given template
+             * @returns {boolean} true if inserted, false if not
+             */
             insert:function (aTemplate) {
                 log.debug("trying to insert into ", this);
                 return this.grid.setTemplate(aTemplate);
             }
         };
+        /**
+         * Extension point
+         */
         template.fn = template.prototype;
         template.prototype.init.prototype = template.prototype;
 
@@ -663,45 +1056,79 @@
         log.info("load template module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
     (function (global) {
         var templateBuilder;
         log.info("load templateBuilder module...");
 
+        /**
+         * Creates a gridBuffer
+         *
+         * @class {@link templateBuilder} temporal data structure.
+         * Only for internal use. Doesn´t check array index
+         * @name GridBuffer
+         */
         function GridBuffer() {
             this._rows = [];
         }
 
-        GridBuffer.prototype = {
+        GridBuffer.prototype =
+        /**
+         * @lends GridBuffer#
+         */
+        {
             constructor:GridBuffer,
+            /**
+             * Array of rows
+             * @type gridRow[]
+             * @public
+             */
             _rows:[],
+            /**
+             * Add the slot to _rows
+             * @param {gridSlot}slot the slot
+             */
             add:function (slot) {
                 if (!Array.isArray(this._rows[slot.rowIndex])) {
                     this._rows[slot.rowIndex] = [];
                 }
                 this._rows[slot.rowIndex][slot.colIndex] = slot;
             },
-            getSlot:function (id) {
+            /**
+             * Gets the slot with the specified slot Text
+             * @param {string}slotText slot text
+             * @returns {gridSlot} the specified slot
+             */
+            getSlot:function (slotText) {
                 var result = [];
                 this._rows.forEach(function (row) {
                     row.forEach(function (slot) {
-                        if (slot.slotText === id) {
+                        if (slot.slotText === slotText) {
                             result.push(slot);
                         }
                     }, this);
                 }, this);
                 return result;
             },
+            /**
+             * Gets rows
+             * @returns {gridRow[]} _rows
+             */
             getRows:function () {
                 return this._rows;
             },
+            /**
+             * Gets the specified row in _rows
+             * @param index row index
+             * @returns {gridRow} the specified row
+             */
             getRow:function (index) {
                 return this._rows[index];
             }
         };
 
+        /**
+         * @class
+         */
         templateBuilder = function (source) {
             log.debug("templateBuilder...");
             return new templateBuilder.prototype.init(source);
@@ -1070,6 +1497,7 @@
                                 resizeTemplateHeight(childTemplate, slotNode);
 
                             });
+                            //todo:delete
                             //generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
 //                                    var zzz = slot.htmlNode.offsetHeight;
 //                                    if(zzz>computedHeights.rowHeight[rowIndex]) {
@@ -1097,23 +1525,53 @@
         resizeTemplateHeight(template, rootElement.parentNode);
     }
 
+    /**
+     * Creates a template compiler
+     *
+     * @param {r}tom Template Object Model
+     *
+     * @class Generates HTML code that maps generated TOM to tables, then injects
+     * this code into  the page DOM.
+     * This version uses the old "table layout" method.
+     */
     generator = function (tom) {
-        //TODO: assert(tom)
         return new generator.prototype.init(tom);
     };
 
     generator.prototype = {
+        /**
+         * Local copy of given TOM
+         * @type rootTemplate
+         */
         tom:undefined,
+
+        /**
+         * @ignore
+         * see constructor
+         */
         init:function (tom) {
             this.tom = tom;
             return this;
         },
+        /**
+         * Generates the HTML code and injects it into the page DOM.
+         * </p>
+         * Code generation is done in three steps:
+         * <ul>
+         *     <li>Step 1: Plain object generation</li>
+         *     <li>Step 2: Column width resize</li>
+         *     <li>Step 3: Ror height resize</li>
+         * </ul>
+         */
         patchDOM:function () {
             log.info("patch DOM...");
             log.debug("TOM: ", this.tom);
             generator.fn.resetCSS();
             this.tom.rows.forEach(generateRootTemplate);
         },
+        /**
+         * Resets browser default CSS styles.
+         */
         resetCSS:function () {
             var head = document.getElementsByTagName('head')[0],
                 cssString = [
@@ -1134,24 +1592,61 @@
             head.appendChild(styleTag);
             styleTag.innerHTML = cssString;
         },
+        /**
+         * Set grid width (the TABLE node)
+         *
+         * @param {HTMLElement}gridNode DOM node that maps grid element
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer}computedWidths.totalWidth table width
+         */
         setGridNodeWidth:function (gridNode, computedWidths) {
             gridNode.style.tableLayout = "fixed";
             gridNode.width = computedWidths.totalWidth;
         },
+        /**
+         * Set grid height (the TABLE node)
+         *
+         * @param {HTMLElement}gridNode DOM node that maps grid element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer}computedHeights.maxHeight table height
+         */
         setGridNodeHeight:function (gridNode, computedHeights) {
             gridNode.style.height = computedHeights.totalHeight + "px";
             gridNode.style.maxHeight = computedHeights.totalHeight + "px";
         },
-        setColNodeWidth:function (colNode, computedWidths) {
-            colNode.forEach(function (node, index) {
+        /**
+         * Set columns width (the COL nodes)
+         *
+         * @param {HTMLElement[]}colNodes array of DOM nodes that maps column nodes
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer[]}computedWidths.colWidth array of column widths
+         */
+        setColNodeWidth:function (colNodes, computedWidths) {
+            colNodes.forEach(function (node, index) {
                 node.width = computedWidths.colWidth[index];
                 node.style.maxWidth = computedWidths.colWidth[index] + "px";
             });
         },
+        /**
+         * Set row height (the TR nodes)
+         *
+         * @param {HTMLElement}rowNode DOM node that maps row element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer[]}computedHeights.rowHeight array of row heights
+         * @param {integer}rowIndex row index
+         */
         setRowNodeHeight:function (rowNode, computedHeights, rowIndex) {
             rowNode.style.height = computedHeights.rowHeight[rowIndex] + "px";
             rowNode.style.maxHeight = computedHeights.rowHeight[rowIndex] + "px";
         },
+        /**
+         * Set slot width (the TD nodes)
+         *
+         * @param {HTMLElement}slotNode DOM node that maps slot element
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer[]}computedWidths.colWidth array of column widths
+         * @param {integer}colIndex slot colIndex.  See {@link gridSlot#colIndex}
+         */
         setSlotNodeWidth:function (slotNode, computedWidths, colIndex) {
             var i, width = 0;
             for (i = 0; i < slotNode.colSpan; i++) {
@@ -1160,6 +1655,13 @@
             slotNode.style.width = width + "px";
             slotNode.style.maxWidth = width + "px";
         },
+        /**
+         * Set slot height (the TD nodes)
+         * @param {HTMLElement}slotNode DOM node that maps slot element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer[]}computedHeights.rowHeight array of row heights
+         * @param {integer}rowIndex slot rowIndex.  See {@link gridSlot#rowIndex}
+         */
         setSlotNodeHeight:function (slotNode, computedHeights, rowIndex) {
             var i, height = 0;
             for (i = 0; i < slotNode.rowSpan; i++) {
@@ -1171,19 +1673,44 @@
             slotNode.childNodes[0].style.maxHeight = height + "px";
             slotNode.childNodes[0].style.overflow = "auto";
         },
+        /**
+         * Get DOM node that maps template grid (TABLE node)
+         * @param {HTMLElement}templateNode template node
+         * @returns {HTMLElement} templateNode.childNodes[0]
+         */
         getGridNode:function (templateNode) {
             return templateNode.childNodes[0];
         },
-        getColumnNodes:function (gridNode, columns) {
+
+        /**
+         * Get DOM nodes that maps template grid "columns" (COL nodes)
+         * @param {HTMLElement}gridNode grid node
+         * @param {integer}maxColumns number of columns in grid
+         * @returns {HTMLElement[]} array of matching gridNode.childNodes[]
+         */
+        getColumnNodes:function (gridNode, maxColumns) {
             var i, columnNodes = [];
-            for (i = 0; i < columns; i++) {
+            for (i = 0; i < maxColumns; i++) {
                 columnNodes.push(gridNode.childNodes[i]);
             }
             return columnNodes;
         },
-        getRowNode:function (gridNode, index, columns) {
-            return gridNode.childNodes[columns + index];
+        /**
+         * Get DOM node that maps row (TR nodes)
+         * @param {HTMLElement}gridNode grid node
+         * @param {integer}index row index
+         * @param {integer}maxColumns number of columns in grid
+         * @returns {HTMLElement[]} array of matching gridNode.childNodes[]
+         */
+        getRowNode:function (gridNode, index, maxColumns) {
+            return gridNode.childNodes[maxColumns + index];
         },
+        /**
+         * Get pixel size. Currently converts "px" and "%"
+         * @param {string}dimension source in "75[px|%]" format
+         * @param {integer}max max size in pixels. Only used relative sizes ("%")
+         * @returns {integer} given size converted to pixels or Error
+         */
         getPixels:function (dimension, max) {
             var found = dimension.match(/(\d+)(px|%)/);
             if (found[2] === "%") {
@@ -1193,9 +1720,36 @@
                 return parseInt(found[1], 10);
             }
         },
+        /**
+         * A lightly modified version of "compute heights" algorithm defined in
+         * the draft.
+         * </p>
+         * The good parts, it works (thanks to native table algorithms);
+         * the bad, needs further improvements
+         *
+         * @param {template}template the source template
+         * @returns {ComputedHeight} rows height
+         */
         computeRowHeights:function (template) {
-            var result = {
+            /**
+             *
+             * @namespace Computed template rows heights
+             * @name ComputedHeight
+             */
+            var result =
+            /**
+             * @lends ComputedHeight#
+             */
+            {
+                /**
+                 * Sum of rows heights
+                 * @type integer
+                 */
                 totalHeight:undefined,
+                /**
+                 * Array of row heights
+                 * @type integer[]
+                 */
                 rowHeight:[]
             }, tmp, height = 0, fixedHeights = 0, relativeHeights = 0;
 
@@ -1241,16 +1795,41 @@
                     fixedHeights += height;
                 }
             });
-            //            result.totalHeight = tmp.reduce(function (previous, height) {
-            //                return previous + height;
-            //            }, 0);
             result.totalHeight = (fixedHeights * 100) / (100 - relativeHeights);
             result.rowHeight = tmp;
             return result;
         },
+        /**
+         * A lightly modified version of "compute width" algorithm defined in
+         * the draft.
+         * </p>
+         * The good parts, it works (thanks to native table algorithms);
+         * the bad, needs further improvements
+         *
+         * @param {Number}availableWidth parent node max width
+         * @param {template}template the source template
+         * @returns {ComputedWidth} columns width
+         */
         computeColWidths:function (availableWidth, template) {
-            var result = {
+            /**
+             *
+             * @namespace Computed template columns widths
+             * @name ComputedWidth
+             * */
+            var result =
+            /**
+             * @lends ComputedWidth#
+             */
+            {
+                /**
+                 * Sum of columns widths
+                 * @type integer
+                 */
                 totalWidth:undefined,
+                /**
+                 * Array of columns widths
+                 * @type integer[]
+                 */
                 colWidth:[]
             }, gridMinWidth, flexibleColCounter = 0, fixedColSum = 0, flexibleWidth = 0, gridFinalWidth = 0;
 
@@ -1292,6 +1871,13 @@
             }
             return result;
         },
+        /**
+         * Create the grid node (using TABLE) and inject it into parent node.
+         * Uses appendCol to create column nodes too.
+         * @param {grid} grid template grid
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendGrid:function (grid, parentNode) {
             var gridNode = document.createElement("table");
             gridNode.className = "templateLayout templateLayoutTable";
@@ -1299,6 +1885,12 @@
             generator.fn.appendCol(gridNode, grid.colNumber);
             return gridNode;
         },
+        /**
+         * Create columns nodes (using COL) and inject it into parent node
+         * @param {HTMLElement}parentNode DOM parent node
+         * @param {integer}colNumber max number of columns
+         * @returns {HTMLElement} current node
+         */
         appendCol:function (parentNode, colNumber) {
             var i, colNode;
             for (i = 0; i < colNumber; i++) {
@@ -1307,12 +1899,24 @@
                 parentNode.appendChild(colNode);
             }
         },
+        /**
+         * Create a row node (using TR) and inject it into parent node
+         * @param {gridRow}row template row
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendRow:function (row, parentNode) {
             var rowNode = document.createElement("tr");
             rowNode.className = "templateLayout templateLayoutRow";
             parentNode.appendChild(rowNode);
             return rowNode;
         },
+        /**
+         * Create a slot node (using TD) and inject it into parent node
+         * @param {gridSlot}slot template slot
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendSlot:function (slot, parentNode) {
             //create container
             var cellNode, overflowNode;
@@ -1333,12 +1937,41 @@
             cellNode.appendChild(overflowNode);
             return overflowNode;
         },
+        /**
+         * Create a virtual node (using DIV) and inject it into parent node.
+         *
+         * Virtual nodes are valid templates that doesn't match selector queries
+         * because doesn´t have HTML content (used in nested templates chains).
+         * </p>
+         * <pre>
+         *     #parent {display: "aa" "bc" "dd"}
+         *     #header {position:a; display: "123"}
+         *     #logo {position:1}
+         *     ...
+         *     &lt;div id="parent"&gt;&lt;/div&gt;
+         *     &lt;img id="logo" src="logo.png"/&gt;
+         *     ...
+         * </pre>
+         * #parent maps to DIV element and #logo to image, but #header maps
+         * nothing, its a template used only to simplify layout. #header needs
+         * to create a virtual node.
+         *
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendVirtualNode:function (parentNode) {
             var extraNode = document.createElement("div");
             extraNode.className = "templateLayout templateLayoutVirtualNode";
             parentNode.appendChild(extraNode);
             return extraNode;
         },
+        /**
+         * Get template node and inject it into parent node.
+         * Template node is get using a CSS selector query OR if query fails calling {@link generator#appendVirtualNode}
+         * @param {template}template the template
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendTemplate:function (template, parentNode) {
             var templateNode = document.querySelector(template.selectorText) || generator.fn.appendVirtualNode(parentNode);
             template.htmlNode = templateNode;

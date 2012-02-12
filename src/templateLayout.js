@@ -11,9 +11,30 @@
         parser;
 
     /**
-     * @class
-     * TemplateLayout class
-     * @param templateSource template definition
+     * Create the prototype main class
+     *
+     * @param {string|strings[]}[templateSource] template source.
+     * Supports 0..* strings containing valid CSS text or URL.
+     * </p>
+     * Empty constructor searches parent HTML file for STYLE tags and uses its
+     * CSS content as template source.
+     * </p>
+     * String params are analyzed and loaded in this way:
+     * <ul>
+     *     <li>"htttp[s]://..." entries are loaded as files and content extracted</li>
+     *     <li>"file://..." entries are loaded as files and content extracted</li>
+     *     <li>Unmatched entries are loaded as CSS text</li>
+     * </ul>
+     * Multiple strings are first analyzed and then concatenated
+     *
+     * @class TemplateLayout is a  CSS Template Layout prototype that implements
+     * some basic features defined in W3C working draft "Template Layout Module".
+     * Features:
+     * <ul>
+     *     <li>basic template definition: letters, . (dot) and @</li>
+     *     <li>column width in pixels and %</li>
+     *     <li>row height imn pixels and %</li>
+     * </ul>
      */
     templateLayout = function (templateSource) {
         log.info("create templateLayout...");
@@ -23,16 +44,40 @@
 
     templateLayout.prototype = {
         constructor:templateLayout,
+        /**
+         * Version number
+         */
         version:"0.0.1",
+        /**
+         * Template sources store
+         */
         templateSources:[],
+        /**
+         * Constant object that stores CSS properties names used as triggers
+         * </p>
+         * Currently used:
+         * <ul>
+         *     <li>constants.DISPLAY = "display"</li>
+         *     <li>constants.POSITION = "position"</li>
+         * </ul>
+         */
         constants:{
             DISPLAY:"display",
             POSITION:"position"
         },
+        /**
+         * Template compiler
+         */
         compiler:null,
+        /**
+         * Template output generator
+         */
         generator:null,
 
-        //templateLayout(), templateLayout(""), templateLayout("", "", ...)
+        /**
+         * @ignore
+         * see templateLayout constructor
+         */
         init:function (templateSources) {
             var args, firstSource, internalSources = [];
             log.debug("sources:", templateSources);
@@ -46,9 +91,7 @@
 
             //templateLayout()
             if (!firstSource) {
-                //TODO: load style & inline css
                 log.info("no external template loaded!!!");
-
                 Array.prototype.forEach.call(document.styleSheets, function (sheet) {
                     if (sheet.href !== null) {
                         //load external CSS
@@ -79,6 +122,19 @@
             log.error("Invalid argument");
             throw new Error("Invalid argument");
         },
+        /**
+         * Reads, compiles and generates the template
+         *
+         * @param {string}[options=all] Only for testing purposes.
+         * Supported values [none|parse|compile]
+         * </p>
+         * Stops transform process at different points:
+         * <ul>
+         *     <li>none: transform does nothing</li>
+         *     <li>parse: transform only parses template source</li>
+         *     <li>compile: transform  parses source and compiles the template</li>
+         * </ul>
+         */
         transform:function () {
             log.debug("transform...");
             var options = parseTransformOptions(arguments);
@@ -116,32 +172,61 @@
             log.info("transform... [OK]");
             return this;
         },
-        //only for testing purposes
+        /**
+         * Returns the info from the parsing step
+         * @returns {ParserBufferEntry[]}buffer
+         */
         getBuffer:function () {
             return buffer;
         },
+        /**
+         * Returns TOM (Template Object Model)
+         * @returns {rootTemplate}tom
+         */
         getTOM:function () {
             return tom;
         },
+        /**
+         * "Parser start" callback. Prints start time and resets buffer
+         *
+         * @param o Information sent by parser
+         * @param o.time Start time in milliseconds
+         */
         parserStarts:function (o) {
             log.info("start parsing at", new Date(o.time).toLocaleTimeString());
             buffer = {};
         },
+        /**
+         * "Property has been found" callback. Stores in buffer valid properties
+         *
+         * @param {CSSParserProperty}property found property information
+         */
         propertyFound:function (property) {
             log.info("templateLayout listens: property found");
             if (templateLayout.fn.isSupportedProperty(property)) {
                 store(property);
             }
         },
+        /**
+         * "Parser stop" callback. Prints stop time
+         * @param {StopCallbackData}o Information sent by parser
+         */
         parserDone:function (o) {
             log.info("parsing done at", new Date(o.time).toLocaleTimeString());
         },
-        isSupportedProperty:function (rule) {
+        /**
+         * Checks if given property is a valid one.
+         * If property name exists in constants then is a valid one
+         *
+         * @param {CSSParserProperty}property the property
+         * @returns {boolean}true if exists constants[???] == property.declaration.property
+         */
+        isSupportedProperty:function (property) {
             var iterator;
             for (iterator in templateLayout.fn.constants) {
                 if (templateLayout.fn.constants.hasOwnProperty(iterator)) {
-                    if (templateLayout.fn.constants[iterator] == rule.declaration.property) {
-                        log.info("supported property found: ", rule.declaration.property);
+                    if (templateLayout.fn.constants[iterator] == property.declaration.property) {
+                        log.info("supported property found: ", property.declaration.property);
                         return true;
                     }
                 }
@@ -201,12 +286,15 @@
     }
 
     function readFile(url) {
-        var templateText;
+        var templateText="";
 
         try {
             log.info("reading file...");
-            templateText = wef.net.ajax('template.css', {
-                success: function(request) { return request.responseText;}
+            wef.net.ajax(url, {
+                asynchronous:false,
+                success:function (request) {
+                    templateText = request.responseText;
+                }
             });
             log.info("template loaded... [OK]");
             return templateText;
@@ -218,8 +306,24 @@
 
     function store(rule) {
         if (!buffer[rule.selectorText]) {
-            buffer[rule.selectorText] = {
+            buffer[rule.selectorText] =
+            /**
+             * @namespace Data format of parser buffer entry
+             * @name ParserBufferEntry
+             */
+            /**
+             * @lends ParserBufferEntry#
+             */
+            {
+                /**
+                 * property selector text
+                 * @type string
+                 */
                 selectorText:rule.selectorText,
+                /**
+                 * array of declarations (property_name:property_value)
+                 * @type string[]
+                 */
                 declaration:{}
             };
         }

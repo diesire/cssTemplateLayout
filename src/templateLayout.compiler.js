@@ -1,37 +1,15 @@
-/**
- * @namespace
- * @name templateLayout
+/*!
+ * templateLayout.compiler
+ * Copyright (c) 2011 Pablo Escalada
+ * MIT Licensed
  */
 (function (templateLayout) {
     var compiler, log, rootTemplate;
     log = wef.logger("templateLayout.compiler");
     log.info("load compiler module");
 
-    rootTemplate = function () {
-        var that = {
-            insert:insert,
-            rows:[]
-        };
-
-        function insert(aTemplate) {
-            log.info("add template ", aTemplate.selectorText);
-            if (aTemplate.isRoot()) {
-                log.debug("insert as root", aTemplate);
-                that.rows.push(aTemplate);
-                return true;
-            } else {
-                log.debug("search position :", aTemplate.position.position);
-                return that.rows.some(function (element) {
-                    return element.insert(aTemplate);
-                });
-            }
-        }
-
-        return that;
-    }();
-
     function parseDisplay(displayValue) {
-        /**
+        /*
          * Name:    ‘display’
          * New value:    <display-type>? && [ [ <string> [ / <row-height> ]? ]+ ] <col-width>*
          * Percentages:    N/A
@@ -59,9 +37,29 @@
          */
         log.info("compiling display...");
         log.debug("display source: ", displayValue);
-        var displayMetadata = {
+        /**
+         * @namespace Preprocessed template display info
+         * @name DisplayMetadata
+         */
+        var displayMetadata =
+        /**
+         * @lends DisplayMetadata#
+         */
+        {
+            /**
+             * Display type. Currently unused
+             * @type string
+             */
             displayType:undefined,
+            /**
+             * Array of rows. strings are cleaned
+             * @type string[]
+             */
             grid:[],
+            /**
+             * Array of columnns widths
+             * @type string[]
+             */
             widths:[]
         },
             allRefExp = /\s*(none|inline)?\s*(:?(\"[A-Za-z0-9\.@ ]+\")\s*(:?\/ ?(\*|\d+(:?px|%)))?)\s*((:?(:?(:?\d+(:?px|%))|\*)\s*)*)/gi,
@@ -111,9 +109,49 @@
         return displayMetadata;
     }
 
+    /**
+     * @namespace Top level template. Used as "fake page template"
+     */
+    rootTemplate = function () {
+
+        var that =
+        /**
+         * @lends rootTemplate#
+         */
+        {
+            /**
+             * Inserts given template into TOM.
+             * If template "isRoot", inserts here, else looks inside TOM and
+             * inserts in place.
+             *
+             * @param {Template}aTemplate the template
+             */
+            insert:function (aTemplate) {
+                log.info("add template ", aTemplate.selectorText);
+                if (aTemplate.isRoot()) {
+                    log.debug("insert as root", aTemplate);
+                    that.rows.push(aTemplate);
+                    return true;
+                } else {
+                    log.debug("search position :", aTemplate.position.position);
+                    return that.rows.some(function (element) {
+                        return element.insert(aTemplate);
+                    });
+                }
+            },
+            /**
+             * Templates stored into the root template
+             * @type gridRow[]
+             */
+            rows:[]
+        };
+
+        return that;
+    }();
+
     function parsePosition(positionValue) {
         var positionMetadata, matched, positionRegExp;
-        /**
+        /*
          * Name:    position
          * New value:    <letter> | same
          * Percentages:    N/A
@@ -124,7 +162,19 @@
          */
         log.info("compiling position...");
         log.debug("position source: ", positionValue);
-        positionMetadata = {
+        /**
+         * @namespace Preprocessed template position info
+         * @name PositionMetadata
+         */
+        positionMetadata =
+        /**
+         * @lends PositionMetadata#
+         */
+        {
+            /**
+             * Position string
+             * @type string
+             */
             position:null
         };
         positionRegExp = /^\s*(same|[a-zA-Z0-9])\s*$/i;
@@ -153,20 +203,34 @@
     }
 
     /**
-     * @memberOf templateLayout
-     * @class
+     * Creates a compiler
+     *
+     * @class CSS template compiler
      */
     compiler = function () {
         return new compiler.prototype.init();
     };
 
+    /**
+     * Extension point.
+     * Elements added to compiler.fn extend compiler functionality
+     */
     compiler.fn = compiler.prototype;
 
     compiler.prototype = {
         constructor:compiler,
+        /**
+         * @ignore
+         */
         init:function () {
             return this;
         },
+        /**
+         * Compiles given parser data</p>
+         *
+         * @param {ParserBufferEntry[]}buffer parser generated data
+         * @returns {rootTemplate} Template Object Model
+         */
         compile:function (buffer) {
             var selectorText, preProcessTemplate, inserted, template;
             log.info("compile...");
@@ -192,9 +256,19 @@
             log.debug("compile... OK");
             return rootTemplate;
         },
+        /**
+         * Checks if display is empty
+         * @param {DisplayMetadata}display compiled display
+         * @returns {boolean}true if display.grid.length === 0
+         */
         isEmptyDisplay:function (display) {
             return display.grid.length === 0;
         },
+        /**
+         * Checks is position is empty
+         * @param {PositionMetadata}position compiled position
+         * @returns {boolean}true if position.position === null
+         */
         isEmptyPosition:function (position) {
             return position.position === null;
         }
@@ -204,13 +278,30 @@
 
     templateLayout.fn.compiler = compiler;
 
-    /**
-     * @scope templateLayout.compiler.fn
-     * @class
-     */
     (function (global) {
         var gridSlot;
         log.info("load gridSlot module...");
+
+        /**
+         * Creates a slot.
+         *
+         * @param {string}slotText slot identifier
+         * @param {integer}rowIndex row index
+         * @param {integer}colIndex column index
+         * @param {Object}[options] optional initialization
+         * @param {integer}options.rowSpan row span number
+         * @param {integer}options.colSpan column span number
+         * @param {boolean}options.allowDisconnected row span number
+         * @param {boolean}options.allowColSpan row span number
+         * @param {boolean}options.allowRowSpan row span number
+         *
+         * @class Template slot.
+         * Features:
+         * <ul>
+         *     <li>column and row span</li>
+         *     <li>disconnected regions</li>
+         * </ul>
+         */
         gridSlot = function (slotText, rowIndex, colIndex, options) {
             log.debug("slot", slotText + "...");
             return new gridSlot.prototype.init(slotText, rowIndex, colIndex, options);
@@ -218,17 +309,61 @@
 
         gridSlot.prototype = {
             constructor:gridSlot,
+            /**
+             * slot identifier
+             * @type string
+             */
             slotText:undefined,
+            /**
+             * row index. If row spans, topmost row index
+             * @type integer
+             */
             rowIndex:undefined,
+            /**
+             * column index. If column spans, leftmost column index
+             * @type integer
+             */
             colIndex:undefined,
+            /**
+             * row span number
+             * @type integer
+             */
             rowSpan:1,
+            /**
+             * column span number
+             * @type integer
+             */
             colSpan:1,
+            /**
+             * Can exists more than one group of slots with the same identifier?
+             * @type boolean
+             */
             allowDisconnected:false,
+            /**
+             * is column span allowed?
+             * @type boolean
+             */
             allowColSpan:false,
+            /**
+             * is row span allowed?
+             * @type boolean
+             */
             allowRowSpan:false,
+            /**
+             * HTML node that maps the slot
+             * @type HTMLElement
+             */
             htmlNode:undefined,
+            /**
+             * Stores the sum of children heights
+             * @type integer
+             */
             contentHeight:0,
 
+            /**
+             * @ignore
+             * see gridSlot.constructor
+             */
             init:function (slotText, rowIndex, colIndex, options) {
                 this.slotText = slotText;
                 this.rowIndex = rowIndex;
@@ -247,6 +382,9 @@
             }
         };
 
+        /**
+         * Extension point
+         */
         gridSlot.fn = gridSlot.prototype;
         gridSlot.prototype.init.prototype = gridSlot.prototype;
 
@@ -254,23 +392,56 @@
         log.info("load gridSlot module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
+
     (function (global) {
         var gridRow;
         log.info("load gridRow module...");
+        /**
+         * Creates a row
+         *
+         * @param {string}rowText row slots identifiers
+         * @param {integer}rowIndex row index
+         * @param {gridSlot[]}slots row gridSlot elements
+         * @param {Object}[options] optional initialization
+         * @param {string}options.height row height as string
+         *
+         * @class Template row. Store {@link gridSlot} elements
+         */
         gridRow = function (rowText, rowIndex, slots, options) {
             log.debug("row...");
             return new gridRow.prototype.init(rowText, rowIndex, slots, options);
         };
         gridRow.prototype = {
             constructor:gridRow,
+            /**
+             * Row slots identifiers
+             * @type string
+             */
             rowText:undefined,
+            /**
+             * Row index
+             * @type integer
+             */
             rowIndex:undefined,
+            /**
+             * Slots row gridSlot elements
+             * @type gridSlot[]
+             */
             slots:[],
+            /**
+             * Number of slots in row
+             * @type integer
+             */
             length:undefined,
+            /**
+             * Row height as string
+             * @type string
+             */
             height:undefined,
+            /**
+             * @ignore
+             * see constructor
+             */
             init:function (rowText, rowIndex, slots, options) {
                 this.rowText = rowText;
                 this.rowIndex = rowIndex;
@@ -281,6 +452,9 @@
                 wef.extend(this, options, ["height"]);
             }
         };
+        /**
+         * Extension point
+         */
         gridRow.fn = gridRow.prototype;
         gridRow.prototype.init.prototype = gridRow.prototype;
 
@@ -288,12 +462,18 @@
         log.info("load gridRow module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
+
     (function (global) {
         var grid;
         log.info("load grid module...");
+        /**
+         * Creates a template grid
+         *
+         * @param {gridRow[]}rows template rows
+         * @param [options] optional initialization
+         *
+         * @class Template grid, represented as a tabular structure
+         */
         grid = function (rows, options) {
             log.debug("grid...");
             return new grid.prototype.init(rows, options);
@@ -301,13 +481,49 @@
 
         grid.prototype = {
             constructor:grid,
+            /**
+             * Template rows
+             * @type gridRow[]
+             */
             rows:undefined,
+            /**
+             * Hash table like structure that stores nested Template objects.
+             * <ul>
+             *     <li>key = template position</li>
+             *     <li>value = array of template objects</li>
+             * <ul>
+             *
+             * @type Object
+             */
             filledSlots:undefined,
+            /**
+             * columns widths
+             * @type string[]
+             */
             widths:[],
+            /**
+             * minimums columns widths
+             * @type string[]
+             */
             minWidths:[],
+            /**
+             * preferred columns widths
+             * @type string[]
+             */
             preferredWidths:[],
+            /**
+             * Number of rows
+             * @type integer
+             */
             rowNumber:undefined,
+            /**
+             * Number of columns
+             * @type integer
+             */
             colNumber:undefined,
+            /**
+             * @ignore
+             */
             init:function (rows, options) {
                 this.rows = rows;
                 this.filledSlots = {};
@@ -319,6 +535,13 @@
                 this.colNumber = this.widths.length;
                 this.rowNumber = rows.length;
             },
+            /**
+             * Checks if grid contains specified slot identifier
+             *
+             * @param {string}slotIdentifier slot identifier
+             * @returns {boolean} true if rows[i].rowText contains slotIdentifier,
+             * else if not
+             */
             hasSlot:function hasSlot(slotIdentifier) {
                 var result;
                 result = this.rows.some(function (row) {
@@ -328,6 +551,9 @@
                 log.debug("hasSlot " + slotIdentifier + "?", result ? "yes" : "no");
                 return result;
             },
+            /**
+             * Gets the "@" slot OR topmost left slot
+             */
             getDefaultSlot:function () {
                 var firstLetterSlot, definedDefaultSlot = false;
                 this.rows.forEach(function (row) {
@@ -347,6 +573,12 @@
                 });
                 return definedDefaultSlot || firstLetterSlot;
             },
+            /**
+             * Traverses this grid and its children and insert the given
+             * template in place
+             * @param {template}aTemplate given template
+             * @returns {boolean} true if inserted, false if not
+             */
             setTemplate:function (aTemplate) {
                 var row, tmp, result;
                 if (this.hasSlot(aTemplate.position.position)) {
@@ -381,7 +613,9 @@
                 }
             }
         };
-
+        /**
+         * Extension point
+         */
         grid.fn = grid.prototype;
         grid.prototype.init.prototype = grid.prototype;
 
@@ -389,12 +623,20 @@
         log.info("load grid module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
     (function (global) {
         var template;
         log.info("load template module...");
+        /**
+         * Creates a template
+         *
+         * @param {string}selectorText CSS selector
+         * @param {PositionMetadata}position raw position information
+         * @param {DisplayMetadata}display raw display information
+         * @param {grid}grid its physical structure
+         *
+         * @class A Template has a grid, the raw information generated by
+         * the preprocessor and a link to the DOM reference node
+         */
         template = function (selectorText, position, display, grid) {
             log.debug("template...");
             return new template.prototype.init(selectorText, position, display, grid);
@@ -402,12 +644,38 @@
 
         template.prototype = {
             constructor:template,
+            /**
+             * Link to parent template. Unused
+             */
             parentTemplate:undefined,
+            /**
+             * CSS selector
+             * @type string
+             */
             selectorText:undefined,
+            /**
+             * Raw display information
+             * @type DisplayMetadata
+             */
             display:undefined,
+            /**
+             * Raw position information
+             * @type PositionMetadata
+             */
             position:undefined,
+            /**
+             * Its grid, the physical representation
+             * @type grid
+             */
             grid:undefined,
+            /**
+             * A link to the DOM reference node
+             * @type HTMLElement
+             */
             htmlNode:undefined,
+            /**
+             * @ignore
+             */
             init:function (selectorText, position, display, grid) {
                 this.selectorText = selectorText;
                 this.display = display;
@@ -415,17 +683,38 @@
                 this.grid = grid;
                 this.htmlNode = undefined;
             },
+            /**
+             * Checks if has parent
+             *
+             * @returns {boolean} true if doesn't have a position value,
+             * false if not
+             */
             isRoot:function () {
                 return this.position.position === null;
             },
+            /**
+             * Checks if has children
+             *
+             * @returns {boolean} true if has a grid value, false if not
+             */
             isLeaf:function () {
                 return this.display.grid.length === 0;
             },
+            /**
+             * Insert given template in this template or its children.
+             * Calls grid.setTemplate()
+             *
+             * @param aTemplate given template
+             * @returns {boolean} true if inserted, false if not
+             */
             insert:function (aTemplate) {
                 log.debug("trying to insert into ", this);
                 return this.grid.setTemplate(aTemplate);
             }
         };
+        /**
+         * Extension point
+         */
         template.fn = template.prototype;
         template.prototype.init.prototype = template.prototype;
 
@@ -433,45 +722,79 @@
         log.info("load template module... [OK]");
     })(compiler.fn);
 
-    /**
-     * @class
-     */
     (function (global) {
         var templateBuilder;
         log.info("load templateBuilder module...");
 
+        /**
+         * Creates a gridBuffer
+         *
+         * @class {@link templateBuilder} temporal data structure.
+         * Only for internal use. Doesn´t check array index
+         * @name GridBuffer
+         */
         function GridBuffer() {
             this._rows = [];
         }
 
-        GridBuffer.prototype = {
+        GridBuffer.prototype =
+        /**
+         * @lends GridBuffer#
+         */
+        {
             constructor:GridBuffer,
+            /**
+             * Array of rows
+             * @type gridRow[]
+             * @public
+             */
             _rows:[],
+            /**
+             * Add the slot to _rows
+             * @param {gridSlot}slot the slot
+             */
             add:function (slot) {
                 if (!Array.isArray(this._rows[slot.rowIndex])) {
                     this._rows[slot.rowIndex] = [];
                 }
                 this._rows[slot.rowIndex][slot.colIndex] = slot;
             },
-            getSlot:function (id) {
+            /**
+             * Gets the slot with the specified slot Text
+             * @param {string}slotText slot text
+             * @returns {gridSlot} the specified slot
+             */
+            getSlot:function (slotText) {
                 var result = [];
                 this._rows.forEach(function (row) {
                     row.forEach(function (slot) {
-                        if (slot.slotText === id) {
+                        if (slot.slotText === slotText) {
                             result.push(slot);
                         }
                     }, this);
                 }, this);
                 return result;
             },
+            /**
+             * Gets rows
+             * @returns {gridRow[]} _rows
+             */
             getRows:function () {
                 return this._rows;
             },
+            /**
+             * Gets the specified row in _rows
+             * @param index row index
+             * @returns {gridRow} the specified row
+             */
             getRow:function (index) {
                 return this._rows[index];
             }
         };
 
+        /**
+         * @class
+         */
         templateBuilder = function (source) {
             log.debug("templateBuilder...");
             return new templateBuilder.prototype.init(source);

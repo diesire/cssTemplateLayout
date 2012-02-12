@@ -119,6 +119,7 @@
                                 resizeTemplateHeight(childTemplate, slotNode);
 
                             });
+                            //todo:delete
                             //generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
 //                                    var zzz = slot.htmlNode.offsetHeight;
 //                                    if(zzz>computedHeights.rowHeight[rowIndex]) {
@@ -146,23 +147,53 @@
         resizeTemplateHeight(template, rootElement.parentNode);
     }
 
+    /**
+     * Creates a template compiler
+     *
+     * @param {r}tom Template Object Model
+     *
+     * @class Generates HTML code that maps generated TOM to tables, then injects
+     * this code into  the page DOM.
+     * This version uses the old "table layout" method.
+     */
     generator = function (tom) {
-        //TODO: assert(tom)
         return new generator.prototype.init(tom);
     };
 
     generator.prototype = {
+        /**
+         * Local copy of given TOM
+         * @type rootTemplate
+         */
         tom:undefined,
+
+        /**
+         * @ignore
+         * see constructor
+         */
         init:function (tom) {
             this.tom = tom;
             return this;
         },
+        /**
+         * Generates the HTML code and injects it into the page DOM.
+         * </p>
+         * Code generation is done in three steps:
+         * <ul>
+         *     <li>Step 1: Plain object generation</li>
+         *     <li>Step 2: Column width resize</li>
+         *     <li>Step 3: Ror height resize</li>
+         * </ul>
+         */
         patchDOM:function () {
             log.info("patch DOM...");
             log.debug("TOM: ", this.tom);
             generator.fn.resetCSS();
             this.tom.rows.forEach(generateRootTemplate);
         },
+        /**
+         * Resets browser default CSS styles.
+         */
         resetCSS:function () {
             var head = document.getElementsByTagName('head')[0],
                 cssString = [
@@ -183,24 +214,61 @@
             head.appendChild(styleTag);
             styleTag.innerHTML = cssString;
         },
+        /**
+         * Set grid width (the TABLE node)
+         *
+         * @param {HTMLElement}gridNode DOM node that maps grid element
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer}computedWidths.totalWidth table width
+         */
         setGridNodeWidth:function (gridNode, computedWidths) {
             gridNode.style.tableLayout = "fixed";
             gridNode.width = computedWidths.totalWidth;
         },
+        /**
+         * Set grid height (the TABLE node)
+         *
+         * @param {HTMLElement}gridNode DOM node that maps grid element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer}computedHeights.maxHeight table height
+         */
         setGridNodeHeight:function (gridNode, computedHeights) {
             gridNode.style.height = computedHeights.totalHeight + "px";
             gridNode.style.maxHeight = computedHeights.totalHeight + "px";
         },
-        setColNodeWidth:function (colNode, computedWidths) {
-            colNode.forEach(function (node, index) {
+        /**
+         * Set columns width (the COL nodes)
+         *
+         * @param {HTMLElement[]}colNodes array of DOM nodes that maps column nodes
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer[]}computedWidths.colWidth array of column widths
+         */
+        setColNodeWidth:function (colNodes, computedWidths) {
+            colNodes.forEach(function (node, index) {
                 node.width = computedWidths.colWidth[index];
                 node.style.maxWidth = computedWidths.colWidth[index] + "px";
             });
         },
+        /**
+         * Set row height (the TR nodes)
+         *
+         * @param {HTMLElement}rowNode DOM node that maps row element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer[]}computedHeights.rowHeight array of row heights
+         * @param {integer}rowIndex row index
+         */
         setRowNodeHeight:function (rowNode, computedHeights, rowIndex) {
             rowNode.style.height = computedHeights.rowHeight[rowIndex] + "px";
             rowNode.style.maxHeight = computedHeights.rowHeight[rowIndex] + "px";
         },
+        /**
+         * Set slot width (the TD nodes)
+         *
+         * @param {HTMLElement}slotNode DOM node that maps slot element
+         * @param {Object}computedWidths column widths given by calculateColWidths()
+         * @param {integer[]}computedWidths.colWidth array of column widths
+         * @param {integer}colIndex slot colIndex.  See {@link gridSlot#colIndex}
+         */
         setSlotNodeWidth:function (slotNode, computedWidths, colIndex) {
             var i, width = 0;
             for (i = 0; i < slotNode.colSpan; i++) {
@@ -209,6 +277,13 @@
             slotNode.style.width = width + "px";
             slotNode.style.maxWidth = width + "px";
         },
+        /**
+         * Set slot height (the TD nodes)
+         * @param {HTMLElement}slotNode DOM node that maps slot element
+         * @param {Object}computedHeights column widths given by calculateRowHeights()
+         * @param {integer[]}computedHeights.rowHeight array of row heights
+         * @param {integer}rowIndex slot rowIndex.  See {@link gridSlot#rowIndex}
+         */
         setSlotNodeHeight:function (slotNode, computedHeights, rowIndex) {
             var i, height = 0;
             for (i = 0; i < slotNode.rowSpan; i++) {
@@ -220,19 +295,44 @@
             slotNode.childNodes[0].style.maxHeight = height + "px";
             slotNode.childNodes[0].style.overflow = "auto";
         },
+        /**
+         * Get DOM node that maps template grid (TABLE node)
+         * @param {HTMLElement}templateNode template node
+         * @returns {HTMLElement} templateNode.childNodes[0]
+         */
         getGridNode:function (templateNode) {
             return templateNode.childNodes[0];
         },
-        getColumnNodes:function (gridNode, columns) {
+
+        /**
+         * Get DOM nodes that maps template grid "columns" (COL nodes)
+         * @param {HTMLElement}gridNode grid node
+         * @param {integer}maxColumns number of columns in grid
+         * @returns {HTMLElement[]} array of matching gridNode.childNodes[]
+         */
+        getColumnNodes:function (gridNode, maxColumns) {
             var i, columnNodes = [];
-            for (i = 0; i < columns; i++) {
+            for (i = 0; i < maxColumns; i++) {
                 columnNodes.push(gridNode.childNodes[i]);
             }
             return columnNodes;
         },
-        getRowNode:function (gridNode, index, columns) {
-            return gridNode.childNodes[columns + index];
+        /**
+         * Get DOM node that maps row (TR nodes)
+         * @param {HTMLElement}gridNode grid node
+         * @param {integer}index row index
+         * @param {integer}maxColumns number of columns in grid
+         * @returns {HTMLElement[]} array of matching gridNode.childNodes[]
+         */
+        getRowNode:function (gridNode, index, maxColumns) {
+            return gridNode.childNodes[maxColumns + index];
         },
+        /**
+         * Get pixel size. Currently converts "px" and "%"
+         * @param {string}dimension source in "75[px|%]" format
+         * @param {integer}max max size in pixels. Only used relative sizes ("%")
+         * @returns {integer} given size converted to pixels or Error
+         */
         getPixels:function (dimension, max) {
             var found = dimension.match(/(\d+)(px|%)/);
             if (found[2] === "%") {
@@ -242,9 +342,36 @@
                 return parseInt(found[1], 10);
             }
         },
+        /**
+         * A lightly modified version of "compute heights" algorithm defined in
+         * the draft.
+         * </p>
+         * The good parts, it works (thanks to native table algorithms);
+         * the bad, needs further improvements
+         *
+         * @param {template}template the source template
+         * @returns {ComputedHeight} rows height
+         */
         computeRowHeights:function (template) {
-            var result = {
+            /**
+             *
+             * @namespace Computed template rows heights
+             * @name ComputedHeight
+             */
+            var result =
+            /**
+             * @lends ComputedHeight#
+             */
+            {
+                /**
+                 * Sum of rows heights
+                 * @type integer
+                 */
                 totalHeight:undefined,
+                /**
+                 * Array of row heights
+                 * @type integer[]
+                 */
                 rowHeight:[]
             }, tmp, height = 0, fixedHeights = 0, relativeHeights = 0;
 
@@ -290,16 +417,41 @@
                     fixedHeights += height;
                 }
             });
-            //            result.totalHeight = tmp.reduce(function (previous, height) {
-            //                return previous + height;
-            //            }, 0);
             result.totalHeight = (fixedHeights * 100) / (100 - relativeHeights);
             result.rowHeight = tmp;
             return result;
         },
+        /**
+         * A lightly modified version of "compute width" algorithm defined in
+         * the draft.
+         * </p>
+         * The good parts, it works (thanks to native table algorithms);
+         * the bad, needs further improvements
+         *
+         * @param {Number}availableWidth parent node max width
+         * @param {template}template the source template
+         * @returns {ComputedWidth} columns width
+         */
         computeColWidths:function (availableWidth, template) {
-            var result = {
+            /**
+             *
+             * @namespace Computed template columns widths
+             * @name ComputedWidth
+             * */
+            var result =
+            /**
+             * @lends ComputedWidth#
+             */
+            {
+                /**
+                 * Sum of columns widths
+                 * @type integer
+                 */
                 totalWidth:undefined,
+                /**
+                 * Array of columns widths
+                 * @type integer[]
+                 */
                 colWidth:[]
             }, gridMinWidth, flexibleColCounter = 0, fixedColSum = 0, flexibleWidth = 0, gridFinalWidth = 0;
 
@@ -341,6 +493,13 @@
             }
             return result;
         },
+        /**
+         * Create the grid node (using TABLE) and inject it into parent node.
+         * Uses appendCol to create column nodes too.
+         * @param {grid} grid template grid
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendGrid:function (grid, parentNode) {
             var gridNode = document.createElement("table");
             gridNode.className = "templateLayout templateLayoutTable";
@@ -348,6 +507,12 @@
             generator.fn.appendCol(gridNode, grid.colNumber);
             return gridNode;
         },
+        /**
+         * Create columns nodes (using COL) and inject it into parent node
+         * @param {HTMLElement}parentNode DOM parent node
+         * @param {integer}colNumber max number of columns
+         * @returns {HTMLElement} current node
+         */
         appendCol:function (parentNode, colNumber) {
             var i, colNode;
             for (i = 0; i < colNumber; i++) {
@@ -356,12 +521,24 @@
                 parentNode.appendChild(colNode);
             }
         },
+        /**
+         * Create a row node (using TR) and inject it into parent node
+         * @param {gridRow}row template row
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendRow:function (row, parentNode) {
             var rowNode = document.createElement("tr");
             rowNode.className = "templateLayout templateLayoutRow";
             parentNode.appendChild(rowNode);
             return rowNode;
         },
+        /**
+         * Create a slot node (using TD) and inject it into parent node
+         * @param {gridSlot}slot template slot
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendSlot:function (slot, parentNode) {
             //create container
             var cellNode, overflowNode;
@@ -382,12 +559,41 @@
             cellNode.appendChild(overflowNode);
             return overflowNode;
         },
+        /**
+         * Create a virtual node (using DIV) and inject it into parent node.
+         *
+         * Virtual nodes are valid templates that doesn't match selector queries
+         * because doesn´t have HTML content (used in nested templates chains).
+         * </p>
+         * <pre>
+         *     #parent {display: "aa" "bc" "dd"}
+         *     #header {position:a; display: "123"}
+         *     #logo {position:1}
+         *     ...
+         *     &lt;div id="parent"&gt;&lt;/div&gt;
+         *     &lt;img id="logo" src="logo.png"/&gt;
+         *     ...
+         * </pre>
+         * #parent maps to DIV element and #logo to image, but #header maps
+         * nothing, its a template used only to simplify layout. #header needs
+         * to create a virtual node.
+         *
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendVirtualNode:function (parentNode) {
             var extraNode = document.createElement("div");
             extraNode.className = "templateLayout templateLayoutVirtualNode";
             parentNode.appendChild(extraNode);
             return extraNode;
         },
+        /**
+         * Get template node and inject it into parent node.
+         * Template node is get using a CSS selector query OR if query fails calling {@link generator#appendVirtualNode}
+         * @param {template}template the template
+         * @param {HTMLElement}parentNode DOM parent node
+         * @returns {HTMLElement} current node
+         */
         appendTemplate:function (template, parentNode) {
             var templateNode = document.querySelector(template.selectorText) || generator.fn.appendVirtualNode(parentNode);
             template.htmlNode = templateNode;

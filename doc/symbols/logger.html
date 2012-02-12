@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - templateLayout</title>
+		<title>JsDoc Reference - logger</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -254,7 +254,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class templateLayout
+				Class logger
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -262,23 +262,23 @@ ul.inheritsList
 				
 				
 			
-				TemplateLayout is a  CSS Template Layout prototype that implements
-some basic features defined in W3C working draft "Template Layout Module".
+				Console logger withs vitamins.
+</p>
 Features:
 <ul>
-    <li>basic template definition: letters, . (dot) and @</li>
-    <li>column width in pixels and %</li>
-    <li>row height imn pixels and %</li>
+    <li>Named loggers</li>
+    <li>Filters</li>
+    <li>Failsafe logging functions</li>
 </ul>
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/src_templateLayout.js.html">templateLayout.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_wef_src_wef.logger.js.html">wef.logger.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class templateLayout.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class logger.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -291,9 +291,9 @@ Features:
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#constructor">templateLayout</a></b>(templateSource)
+								<b><a href="../symbols/logger.html#constructor">logger</a></b>(logName)
 							</div>
-							<div class="description">Create the prototype main class</div>
+							<div class="description">Creates a logger</div>
 						</td>
 					</tr>
 				</tbody>
@@ -304,7 +304,7 @@ Features:
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class templateLayout.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class logger.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -315,12 +315,12 @@ Features:
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#compiler">compiler</a></b>
+								logger.<b><a href="../symbols/logger.html#.fn">fn</a></b>
 								</div>
-								<div class="description">Template compiler</div>
+								<div class="description">Extension point</div>
 							</td>
 						</tr>
 					
@@ -328,15 +328,9 @@ Features:
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#constants">constants</a></b>
+								<b><a href="../symbols/logger.html#formatter">formatter</a></b>
 								</div>
-								<div class="description">Constant object that stores CSS properties names used as triggers
-</p>
-Currently used:
-<ul>
-    <li>constants.DISPLAY = "display"</li>
-    <li>constants.POSITION = "position"</li>
-</ul></div>
+								<div class="description">Logger formatter.</div>
 							</td>
 						</tr>
 					
@@ -344,9 +338,9 @@ Currently used:
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#generator">generator</a></b>
+								<b><a href="../symbols/logger.html#loglevel">loglevel</a></b>
 								</div>
-								<div class="description">Template output generator</div>
+								<div class="description">Log level</div>
 							</td>
 						</tr>
 					
@@ -354,17 +348,7 @@ Currently used:
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#templateSources">templateSources</a></b>
-								</div>
-								<div class="description">Template sources store</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/templateLayout.html#version">version</a></b>
+								<b><a href="../symbols/logger.html#version">version</a></b>
 								</div>
 								<div class="description">Version number</div>
 							</td>
@@ -381,7 +365,7 @@ Currently used:
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class templateLayout.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class logger.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -394,63 +378,83 @@ Currently used:
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#getBuffer">getBuffer</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/logger.html#debug">debug</a></b>(message, messages)
 								</div>
-								<div class="description">Returns the info from the parsing step</div>
+								<div class="description">Logs messages of logLevel=debug</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#getTOM">getTOM</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/logger.html#error">error</a></b>(message, messages)
 								</div>
-								<div class="description">Returns TOM (Template Object Model)</div>
+								<div class="description">Logs messages of logLevel=error</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#isSupportedProperty">isSupportedProperty</a></b>(property)
+								<div class="fixedFont"><b><a href="../symbols/logger.html#filter">filter</a></b>(options)
 								</div>
-								<div class="description">Checks if given property is a valid one.</div>
+								<div class="description">Filter current loggers by name and priority level.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#parserDone">parserDone</a></b>(o)
+								<div class="fixedFont"><b><a href="../symbols/logger.html#group">group</a></b>(messages)
 								</div>
-								<div class="description">"Parser stop" callback.</div>
+								<div class="description">Groups next messages until there is a call to groupEnd
+and logs messages to logLevel=log</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#parserStarts">parserStarts</a></b>(o)
+								<div class="fixedFont"><b><a href="../symbols/logger.html#groupEnd">groupEnd</a></b>(messages)
 								</div>
-								<div class="description">"Parser start" callback.</div>
+								<div class="description">Ungroup previously grouped messages
+and logs messages to logLevel=log</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#propertyFound">propertyFound</a></b>(property)
+								<div class="fixedFont"><b><a href="../symbols/logger.html#info">info</a></b>(message, messages)
 								</div>
-								<div class="description">"Property has been found" callback.</div>
+								<div class="description">Logs messages of logLevel=info</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/templateLayout.html#transform">transform</a></b>(options)
+								<div class="fixedFont"><b><a href="../symbols/logger.html#log">log</a></b>(message, messages)
 								</div>
-								<div class="description">Reads, compiles and generates the template</div>
+								<div class="description">Logs messages of logLevel=log</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/logger.html#trace">trace</a></b>(message, messages)
+								</div>
+								<div class="description">Logs messages of logLevel=trace</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/logger.html#warn">warn</a></b>(message, messages)
+								</div>
+								<div class="description">Logs messages of logLevel=warn</div>
 							</td>
 						</tr>
 					
@@ -471,11 +475,11 @@ Currently used:
 				</div>
 				
 				<div class="fixedFont">
-						<b>templateLayout</b>(templateSource)
+						<b>logger</b>(logName)
 				</div>
 				
 				<div class="description">
-					Create the prototype main class
+					Creates a logger
 					
 				</div>
 				
@@ -487,22 +491,10 @@ Currently used:
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{string|strings[]}</span>  <b>templateSource</b>
-								<i>Optional</i>
+								<span class="light fixedFont">{string}</span>  <b>logName</b>
+								<i>Optional, Default: default</i>
 							</dt>
-								<dd>template source.
-Supports 0..* strings containing valid CSS text or URL.
-</p>
-Empty constructor searches parent HTML file for STYLE tags and uses its
-CSS content as template source.
-</p>
-String params are analyzed and loaded in this way:
-<ul>
-    <li>"htttp[s]://..." entries are loaded as files and content extracted</li>
-    <li>"file://..." entries are loaded as files and content extracted</li>
-    <li>Unmatched entries are loaded as CSS text</li>
-</ul>
-Multiple strings are first analyzed and then concatenated</dd>
+								<dd>Logger name</dd>
 						
 						</dl>
 					
@@ -522,15 +514,15 @@ Multiple strings are first analyzed and then concatenated</dd>
 					Field Detail
 				</div>
 				
-					<a name="compiler"> </a>
-					<div class="fixedFont">
+					<a name=".fn"> </a>
+					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<b>compiler</b>
+					<span class="light">logger.</span><b>fn</b>
 					
 					</div>
 					<div class="description">
-						Template compiler
+						Extension point
 						
 						
 					</div>
@@ -544,21 +536,15 @@ Multiple strings are first analyzed and then concatenated</dd>
 
 					<hr />
 				
-					<a name="constants"> </a>
+					<a name="formatter"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>constants</b>
+					<b>formatter</b>
 					
 					</div>
 					<div class="description">
-						Constant object that stores CSS properties names used as triggers
-</p>
-Currently used:
-<ul>
-    <li>constants.DISPLAY = "display"</li>
-    <li>constants.POSITION = "position"</li>
-</ul>
+						Logger formatter. Currently a plain text formatter
 						
 						
 					</div>
@@ -572,37 +558,15 @@ Currently used:
 
 					<hr />
 				
-					<a name="generator"> </a>
+					<a name="loglevel"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>generator</b>
+					<b>loglevel</b>
 					
 					</div>
 					<div class="description">
-						Template output generator
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="templateSources"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>templateSources</b>
-					
-					</div>
-					<div class="description">
-						Template sources store
+						Log level
 						
 						
 					</div>
@@ -646,80 +610,15 @@ Currently used:
 					Method Detail
 				</div>
 				
-					<a name="getBuffer"> </a>
+					<a name="debug"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/ParserBufferEntry.html">ParserBufferEntry</a>[]}</span>
-					<b>getBuffer</b>()
+					
+					<b>debug</b>(message, messages)
 					
 					</div>
 					<div class="description">
-						Returns the info from the parsing step
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/ParserBufferEntry.html">ParserBufferEntry</a>[]}</span> buffer</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="getTOM"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span>
-					<b>getTOM</b>()
-					
-					</div>
-					<div class="description">
-						Returns TOM (Template Object Model)
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span> tom</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="isSupportedProperty"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{boolean}</span>
-					<b>isSupportedProperty</b>(property)
-					
-					</div>
-					<div class="description">
-						Checks if given property is a valid one.
-If property name exists in constants then is a valid one
+						Logs messages of logLevel=debug
 						
 						
 					</div>
@@ -731,53 +630,16 @@ If property name exists in constants then is a valid one
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/CSSParserProperty.html">CSSParserProperty</a>}</span> <b>property</b>
+									<span class="light fixedFont">{string}</span> <b>message</b>
 									
 								</dt>
-								<dd>the property</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{boolean}</span> true if exists constants[???] == property.declaration.property</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="parserDone"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>parserDone</b>(o)
-					
-					</div>
-					<div class="description">
-						"Parser stop" callback. Prints stop time
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/StopCallbackData.html">StopCallbackData</a>}</span> <b>o</b>
-									
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
 								</dt>
-								<dd>Information sent by parser</dd>
+								<dd>more messages, comma separated</dd>
 							
 							</dl>
 						
@@ -790,15 +652,15 @@ If property name exists in constants then is a valid one
 
 					<hr />
 				
-					<a name="parserStarts"> </a>
+					<a name="error"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>parserStarts</b>(o)
+					<b>error</b>(message, messages)
 					
 					</div>
 					<div class="description">
-						"Parser start" callback. Prints start time and resets buffer
+						Logs messages of logLevel=error
 						
 						
 					</div>
@@ -810,16 +672,16 @@ If property name exists in constants then is a valid one
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>o</b>
+									<span class="light fixedFont">{string}</span> <b>message</b>
 									
 								</dt>
-								<dd>Information sent by parser</dd>
+								<dd></dd>
 							
 								<dt>
-									<b>o.time</b>
-									
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
 								</dt>
-								<dd>Start time in milliseconds</dd>
+								<dd>more messages, comma separated</dd>
 							
 							</dl>
 						
@@ -832,74 +694,294 @@ If property name exists in constants then is a valid one
 
 					<hr />
 				
-					<a name="propertyFound"> </a>
+					<a name="filter"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>propertyFound</b>(property)
+					<b>filter</b>(options)
 					
 					</div>
 					<div class="description">
-						"Property has been found" callback. Stores in buffer valid properties
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/CSSParserProperty.html">CSSParserProperty</a>}</span> <b>property</b>
-									
-								</dt>
-								<dd>found property information</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="transform"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>transform</b>(options)
-					
-					</div>
-					<div class="description">
-						Reads, compiles and generates the template
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>options</b>
-									<i>Optional, Default: all</i>
-								</dt>
-								<dd>Only for testing purposes.
-Supported values [none|parse|compile]
+						Filter current loggers by name and priority level.
 </p>
-Stops transform process at different points:
+Only log entries from matched loggers and priority > filter level are
+allowed. Filtered logs are lost.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object|string}</span> <b>options</b>
+									
+								</dt>
+								<dd>filter options.
+</p>
+There are two shortcuts :
 <ul>
-    <li>none: transform does nothing</li>
-    <li>parse: transform only parses template source</li>
-    <li>compile: transform  parses source and compiles the template</li>
+    <li>"all": activates all loggers (logLevel: -1, pattern: ".*")</li>
+    <li>"none": deactivates all loggers (logLevel: 100, pattern: ".*")</li>
 </ul></dd>
+							
+								<dt>
+									<span class="light fixedFont">{integer}</span> <b>options.logLevel</b>
+									
+								</dt>
+								<dd>Priority level</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.pattern</b>
+									
+								</dt>
+								<dd>Pattern that matches against current
+registered loggers. Pattern must be regExp compatible.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="group"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>group</b>(messages)
+					
+					</div>
+					<div class="description">
+						Groups next messages until there is a call to groupEnd
+and logs messages to logLevel=log
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>more messages, comma separated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="groupEnd"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>groupEnd</b>(messages)
+					
+					</div>
+					<div class="description">
+						Ungroup previously grouped messages
+and logs messages to logLevel=log
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>messages, comma separated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="info"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>info</b>(message, messages)
+					
+					</div>
+					<div class="description">
+						Logs messages of logLevel=info
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>message</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>more messages, comma separated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="log"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>log</b>(message, messages)
+					
+					</div>
+					<div class="description">
+						Logs messages of logLevel=log
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>message</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>more messages, comma separated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="trace"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>trace</b>(message, messages)
+					
+					</div>
+					<div class="description">
+						Logs messages of logLevel=trace
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>message</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>more messages, comma separated</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="warn"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>warn</b>(message, messages)
+					
+					</div>
+					<div class="description">
+						Logs messages of logLevel=warn
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>message</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>messages</b>
+									<i>Optional</i>
+								</dt>
+								<dd>more messages, comma separated</dd>
 							
 							</dl>
 						
@@ -924,7 +1006,7 @@ Stops transform process at different points:
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 08 2012 23:25:21 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 08 2012 23:25:20 GMT+0100 (CET)
 		</div>
 	</body>
 </html>

@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - compiler</title>
+		<title>JsDoc Reference - cssParser</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -254,7 +254,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class compiler
+				Class cssParser
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -262,16 +262,16 @@ ul.inheritsList
 				
 				
 			
-				CSS template compiler
+				CSS parser
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/src_templateLayout.compiler.js.html">templateLayout.compiler.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_wef_src_wef.cssParser.js.html">wef.cssParser.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class compiler.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class cssParser.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -284,9 +284,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/compiler.html#constructor">compiler</a></b>()
+								<b><a href="../symbols/cssParser.html#constructor">cssParser</a></b>()
 							</div>
-							<div class="description">Creates a compiler</div>
+							<div class="description">Creates a CSS parser</div>
 						</td>
 					</tr>
 				</tbody>
@@ -297,7 +297,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class compiler.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class cssParser.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -308,12 +308,42 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/cssParser.html#backend">backend</a></b>
+								</div>
+								<div class="description">Reference to jscssp parser</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/cssParser.html#callbacks">callbacks</a></b>
+								</div>
+								<div class="description">Stores callback functions.</div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								compiler.<b><a href="../symbols/compiler.html#.fn">fn</a></b>
+								cssParser.<b><a href="../symbols/cssParser.html#.fn">fn</a></b>
 								</div>
-								<div class="description">Extension point.</div>
+								<div class="description">Extension point</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/cssParser.html#version">version</a></b>
+								</div>
+								<div class="description">Version number</div>
 							</td>
 						</tr>
 					
@@ -328,7 +358,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class compiler.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class cssParser.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -341,27 +371,54 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#compile">compile</a></b>(buffer)
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#parse">parse</a></b>(data)
 								</div>
-								<div class="description">Compiles given parser data</p></div>
+								<div class="description">Parses given text calling callbacks when registered actions happens</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#isEmptyDisplay">isEmptyDisplay</a></b>(display)
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#whenCssRule">whenCssRule</a></b>(callback)
 								</div>
-								<div class="description">Checks if display is empty</div>
+								<div class="description">Calls cssRuleFound callback</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#isEmptyPosition">isEmptyPosition</a></b>(position)
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#whenError">whenError</a></b>(callback)
 								</div>
-								<div class="description">Checks is position is empty</div>
+								<div class="description">Calls error callback</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#whenProperty">whenProperty</a></b>(callback)
+								</div>
+								<div class="description">Calls propertyFound callback</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#whenStart">whenStart</a></b>(callback)
+								</div>
+								<div class="description">Calls parserStar callback</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/cssParser.html#whenStop">whenStop</a></b>(callback)
+								</div>
+								<div class="description">Calls parserStop callback</div>
 							</td>
 						</tr>
 					
@@ -382,11 +439,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>compiler</b>()
+						<b>cssParser</b>()
 				</div>
 				
 				<div class="description">
-					Creates a compiler
+					Creates a CSS parser
 					
 				</div>
 				
@@ -410,16 +467,81 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
+					<a name="backend"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>backend</b>
+					
+					</div>
+					<div class="description">
+						Reference to jscssp parser
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="callbacks"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>callbacks</b>
+					
+					</div>
+					<div class="description">
+						Stores callback functions. Looks like register events
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".fn"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">compiler.</span><b>fn</b>
+					<span class="light">cssParser.</span><b>fn</b>
 					
 					</div>
 					<div class="description">
-						Extension point.
-Elements added to compiler.fn extend compiler functionality
+						Extension point
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="version"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>version</b>
+					
+					</div>
+					<div class="description">
+						Version number
 						
 						
 					</div>
@@ -441,15 +563,15 @@ Elements added to compiler.fn extend compiler functionality
 					Method Detail
 				</div>
 				
-					<a name="compile"> </a>
+					<a name="parse"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span>
-					<b>compile</b>(buffer)
+					
+					<b>parse</b>(data)
 					
 					</div>
 					<div class="description">
-						Compiles given parser data</p>
+						Parses given text calling callbacks when registered actions happens
 						
 						
 					</div>
@@ -461,38 +583,31 @@ Elements added to compiler.fn extend compiler functionality
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/ParserBufferEntry.html">ParserBufferEntry</a>[]}</span> <b>buffer</b>
+									<span class="light fixedFont">{string}</span> <b>data</b>
 									
 								</dt>
-								<dd>parser generated data</dd>
+								<dd>CSS code</dd>
 							
 							</dl>
 						
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span> Template Object Model</dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name="isEmptyDisplay"> </a>
+					<a name="whenCssRule"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{boolean}</span>
-					<b>isEmptyDisplay</b>(display)
+					
+					<b>whenCssRule</b>(callback)
 					
 					</div>
 					<div class="description">
-						Checks if display is empty
+						Calls cssRuleFound callback
 						
 						
 					</div>
@@ -504,38 +619,31 @@ Elements added to compiler.fn extend compiler functionality
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/DisplayMetadata.html">DisplayMetadata</a>}</span> <b>display</b>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
 									
 								</dt>
-								<dd>compiled display</dd>
+								<dd>"Css rule found" callback</dd>
 							
 							</dl>
 						
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{boolean}</span> true if display.grid.length === 0</dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name="isEmptyPosition"> </a>
+					<a name="whenError"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{boolean}</span>
-					<b>isEmptyPosition</b>(position)
+					
+					<b>whenError</b>(callback)
 					
 					</div>
 					<div class="description">
-						Checks is position is empty
+						Calls error callback
 						
 						
 					</div>
@@ -547,23 +655,124 @@ Elements added to compiler.fn extend compiler functionality
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/PositionMetadata.html">PositionMetadata</a>}</span> <b>position</b>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
 									
 								</dt>
-								<dd>compiled position</dd>
+								<dd>"Error" callback</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="whenProperty"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>whenProperty</b>(callback)
+					
+					</div>
+					<div class="description">
+						Calls propertyFound callback
+						
+						
+					</div>
+					
+					
+					
 						
 							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
+							<dt class="heading">Parameters:</dt>
 							
-								<dd><span class="light fixedFont">{boolean}</span> true if position.position === null</dd>
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>"Property found" callback</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="whenStart"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>whenStart</b>(callback)
+					
+					</div>
+					<div class="description">
+						Calls parserStar callback
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>"Parser starts" callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="whenStop"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>whenStop</b>(callback)
+					
+					</div>
+					<div class="description">
+						Calls parserStop callback
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>"Parser stops" callback</dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						

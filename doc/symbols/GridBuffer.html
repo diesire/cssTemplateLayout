@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - compiler</title>
+		<title>JsDoc Reference - GridBuffer</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -254,7 +254,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class compiler
+				Class GridBuffer
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -262,7 +262,8 @@ ul.inheritsList
 				
 				
 			
-				CSS template compiler
+				temporal data structure.
+Only for internal use. Doesn´t check array index
 				
 				
 					<br /><i>Defined in: </i> <a href="../symbols/src/src_templateLayout.compiler.js.html">templateLayout.compiler.js</a>.
@@ -271,7 +272,7 @@ ul.inheritsList
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class compiler.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class GridBuffer.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -284,9 +285,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/compiler.html#constructor">compiler</a></b>()
+								<b><a href="../symbols/GridBuffer.html#constructor">GridBuffer</a></b>()
 							</div>
-							<div class="description">Creates a compiler</div>
+							<div class="description">Creates a gridBuffer</div>
 						</td>
 					</tr>
 				</tbody>
@@ -297,7 +298,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class compiler.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class GridBuffer.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -308,12 +309,12 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								compiler.<b><a href="../symbols/compiler.html#.fn">fn</a></b>
+								<b><a href="../symbols/GridBuffer.html#_rows">_rows</a></b>
 								</div>
-								<div class="description">Extension point.</div>
+								<div class="description">Array of rows</div>
 							</td>
 						</tr>
 					
@@ -328,7 +329,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class compiler.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class GridBuffer.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -341,27 +342,36 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#compile">compile</a></b>(buffer)
+								<div class="fixedFont"><b><a href="../symbols/GridBuffer.html#add">add</a></b>(slot)
 								</div>
-								<div class="description">Compiles given parser data</p></div>
+								<div class="description">Add the slot to _rows</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#isEmptyDisplay">isEmptyDisplay</a></b>(display)
+								<div class="fixedFont"><b><a href="../symbols/GridBuffer.html#getRow">getRow</a></b>(index)
 								</div>
-								<div class="description">Checks if display is empty</div>
+								<div class="description">Gets the specified row in _rows</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/compiler.html#isEmptyPosition">isEmptyPosition</a></b>(position)
+								<div class="fixedFont"><b><a href="../symbols/GridBuffer.html#getRows">getRows</a></b>()
 								</div>
-								<div class="description">Checks is position is empty</div>
+								<div class="description">Gets rows</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/GridBuffer.html#getSlot">getSlot</a></b>(slotText)
+								</div>
+								<div class="description">Gets the slot with the specified slot Text</div>
 							</td>
 						</tr>
 					
@@ -382,11 +392,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>compiler</b>()
+						<b>GridBuffer</b>()
 				</div>
 				
 				<div class="description">
-					Creates a compiler
+					Creates a gridBuffer
 					
 				</div>
 				
@@ -410,16 +420,15 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
-					<a name=".fn"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="_rows"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">compiler.</span><b>fn</b>
+					<span class="light">{<a href="../symbols/gridRow.html">gridRow</a>[]}</span>
+					<b>_rows</b>
 					
 					</div>
 					<div class="description">
-						Extension point.
-Elements added to compiler.fn extend compiler functionality
+						Array of rows
 						
 						
 					</div>
@@ -441,15 +450,15 @@ Elements added to compiler.fn extend compiler functionality
 					Method Detail
 				</div>
 				
-					<a name="compile"> </a>
+					<a name="add"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span>
-					<b>compile</b>(buffer)
+					
+					<b>add</b>(slot)
 					
 					</div>
 					<div class="description">
-						Compiles given parser data</p>
+						Add the slot to _rows
 						
 						
 					</div>
@@ -461,10 +470,46 @@ Elements added to compiler.fn extend compiler functionality
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/ParserBufferEntry.html">ParserBufferEntry</a>[]}</span> <b>buffer</b>
+									<span class="light fixedFont">{<a href="../symbols/gridSlot.html">gridSlot</a>}</span> <b>slot</b>
 									
 								</dt>
-								<dd>parser generated data</dd>
+								<dd>the slot</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getRow"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/gridRow.html">gridRow</a>}</span>
+					<b>getRow</b>(index)
+					
+					</div>
+					<div class="description">
+						Gets the specified row in _rows
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>index</b>
+									
+								</dt>
+								<dd>row index</dd>
 							
 							</dl>
 						
@@ -475,7 +520,7 @@ Elements added to compiler.fn extend compiler functionality
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/rootTemplate.html">rootTemplate</a>}</span> Template Object Model</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/gridRow.html">gridRow</a>}</span> the specified row</dd>
 							
 							</dl>
 						
@@ -484,32 +529,21 @@ Elements added to compiler.fn extend compiler functionality
 
 					<hr />
 				
-					<a name="isEmptyDisplay"> </a>
+					<a name="getRows"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{boolean}</span>
-					<b>isEmptyDisplay</b>(display)
+					<span class="light">{<a href="../symbols/gridRow.html">gridRow</a>[]}</span>
+					<b>getRows</b>()
 					
 					</div>
 					<div class="description">
-						Checks if display is empty
+						Gets rows
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/DisplayMetadata.html">DisplayMetadata</a>}</span> <b>display</b>
-									
-								</dt>
-								<dd>compiled display</dd>
-							
-							</dl>
 						
 						
 						
@@ -518,7 +552,7 @@ Elements added to compiler.fn extend compiler functionality
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{boolean}</span> true if display.grid.length === 0</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/gridRow.html">gridRow</a>[]}</span> _rows</dd>
 							
 							</dl>
 						
@@ -527,15 +561,15 @@ Elements added to compiler.fn extend compiler functionality
 
 					<hr />
 				
-					<a name="isEmptyPosition"> </a>
+					<a name="getSlot"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{boolean}</span>
-					<b>isEmptyPosition</b>(position)
+					<span class="light">{<a href="../symbols/gridSlot.html">gridSlot</a>}</span>
+					<b>getSlot</b>(slotText)
 					
 					</div>
 					<div class="description">
-						Checks is position is empty
+						Gets the slot with the specified slot Text
 						
 						
 					</div>
@@ -547,10 +581,10 @@ Elements added to compiler.fn extend compiler functionality
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/PositionMetadata.html">PositionMetadata</a>}</span> <b>position</b>
+									<span class="light fixedFont">{string}</span> <b>slotText</b>
 									
 								</dt>
-								<dd>compiled position</dd>
+								<dd>slot text</dd>
 							
 							</dl>
 						
@@ -561,7 +595,7 @@ Elements added to compiler.fn extend compiler functionality
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{boolean}</span> true if position.position === null</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/gridSlot.html">gridSlot</a>}</span> the specified slot</dd>
 							
 							</dl>
 						

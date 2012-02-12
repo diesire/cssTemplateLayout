@@ -1,0 +1,788 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - logger#backend</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Array.html">Array</a></li>
+	
+	<li><a href="../symbols/compiler.html">compiler</a></li>
+	
+	<li><a href="../symbols/ComputedHeight.html">ComputedHeight</a></li>
+	
+	<li><a href="../symbols/ComputedWidth.html">ComputedWidth</a></li>
+	
+	<li><a href="../symbols/cssParser.html">cssParser</a></li>
+	
+	<li><a href="../symbols/CSSParserProperty.html">CSSParserProperty</a></li>
+	
+	<li><a href="../symbols/DisplayMetadata.html">DisplayMetadata</a></li>
+	
+	<li><a href="../symbols/generator.html">generator</a></li>
+	
+	<li><a href="../symbols/grid.html">grid</a></li>
+	
+	<li><a href="../symbols/GridBuffer.html">GridBuffer</a></li>
+	
+	<li><a href="../symbols/gridRow.html">gridRow</a></li>
+	
+	<li><a href="../symbols/gridSlot.html">gridSlot</a></li>
+	
+	<li><a href="../symbols/logger.html">logger</a></li>
+	
+	<li><a href="../symbols/logger%23backend.html">logger#backend</a></li>
+	
+	<li><a href="../symbols/LOGLEVEL.html">LOGLEVEL</a></li>
+	
+	<li><a href="../symbols/net.html">net</a></li>
+	
+	<li><a href="../symbols/ParserBufferEntry.html">ParserBufferEntry</a></li>
+	
+	<li><a href="../symbols/PositionMetadata.html">PositionMetadata</a></li>
+	
+	<li><a href="../symbols/rootTemplate.html">rootTemplate</a></li>
+	
+	<li><a href="../symbols/StartCallbackData.html">StartCallbackData</a></li>
+	
+	<li><a href="../symbols/StopCallbackData.html">StopCallbackData</a></li>
+	
+	<li><a href="../symbols/StyleDeclaration.html">StyleDeclaration</a></li>
+	
+	<li><a href="../symbols/template.html">template</a></li>
+	
+	<li><a href="../symbols/templateBuilder.html">templateBuilder</a></li>
+	
+	<li><a href="../symbols/templateLayout.html">templateLayout</a></li>
+	
+	<li><a href="../symbols/textFormatter.html">textFormatter</a></li>
+	
+	<li><a href="../symbols/wef.html">wef</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Namespace logger#backend
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				Output object. Currently window.console
+</p>
+Redefining backend allows logs redirection
+</p>
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_wef_src_wef.logger.js.html">wef.logger.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class logger#backend.">
+				<caption>Namespace Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/logger%23backend.html#constructor">logger#backend</a></b>
+							</div>
+							<div class="description"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class logger#backend.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.debug">debug</a></b>()
+								</div>
+								<div class="description">debug backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.error">error</a></b>()
+								</div>
+								<div class="description">error backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.failSafe">failSafe</a></b>()
+								</div>
+								<div class="description">FailSafe output.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.failSafeGroup">failSafeGroup</a></b>()
+								</div>
+								<div class="description">FailSafe grouping activation</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.failSafeGroupEnd">failSafeGroupEnd</a></b>()
+								</div>
+								<div class="description">FailSafe ungrouping activation</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.group">group</a></b>()
+								</div>
+								<div class="description">group backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.groupCollapsed">groupCollapsed</a></b>()
+								</div>
+								<div class="description">groupCollapsed backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.groupEnd">groupEnd</a></b>()
+								</div>
+								<div class="description">groupEnd backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.info">info</a></b>()
+								</div>
+								<div class="description">info backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.log">log</a></b>()
+								</div>
+								<div class="description">log backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.trace">trace</a></b>()
+								</div>
+								<div class="description">trace backend</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">logger#backend.<b><a href="../symbols/logger%23backend.html#.warn">warn</a></b>()
+								</div>
+								<div class="description">warn backend</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Namespace Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>logger#backend</b>
+				</div>
+				
+				<div class="description">
+					
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name=".debug"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>debug</b>()
+					
+					</div>
+					<div class="description">
+						debug backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".error"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>error</b>()
+					
+					</div>
+					<div class="description">
+						error backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".failSafe"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>failSafe</b>()
+					
+					</div>
+					<div class="description">
+						FailSafe output. Currently unused.
+</p> window.console its the best option, alert messages are too intrusive
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".failSafeGroup"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>failSafeGroup</b>()
+					
+					</div>
+					<div class="description">
+						FailSafe grouping activation
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".failSafeGroupEnd"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>failSafeGroupEnd</b>()
+					
+					</div>
+					<div class="description">
+						FailSafe ungrouping activation
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".group"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>group</b>()
+					
+					</div>
+					<div class="description">
+						group backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".groupCollapsed"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>groupCollapsed</b>()
+					
+					</div>
+					<div class="description">
+						groupCollapsed backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".groupEnd"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>groupEnd</b>()
+					
+					</div>
+					<div class="description">
+						groupEnd backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".info"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>info</b>()
+					
+					</div>
+					<div class="description">
+						info backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".log"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>log</b>()
+					
+					</div>
+					<div class="description">
+						log backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".trace"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>trace</b>()
+					
+					</div>
+					<div class="description">
+						trace backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".warn"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">logger#backend.</span><b>warn</b>()
+					
+					</div>
+					<div class="description">
+						warn backend
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 08 2012 23:25:20 GMT+0100 (CET)
+		</div>
+	</body>
+</html>
