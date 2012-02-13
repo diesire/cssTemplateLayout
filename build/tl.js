@@ -214,7 +214,6 @@
         parserDone:function (o) {
             log.info("parsing done at", new Date(o.time).toLocaleTimeString());
         },
-
         /**
          * Checks if given property is a valid one.
          * If property name exists in constants then is a valid one
@@ -287,13 +286,14 @@
     }
 
     function readFile(url) {
-        var templateText;
+        var templateText="";
 
         try {
             log.info("reading file...");
-            templateText = wef.net.ajax(url, {
+            wef.net.ajax(url, {
+                asynchronous:false,
                 success:function (request) {
-                    return request.responseText;
+                    templateText = request.responseText;
                 }
             });
             log.info("template loaded... [OK]");

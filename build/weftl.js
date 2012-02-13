@@ -8,26 +8,51 @@
  * wef module
  */
 (function () {
-    var wef = function () {
+    var wef;
+    /**
+     * @namespace
+     */
+    wef = function () {
         return new wef.prototype.init();
     };
 
     wef.prototype = {
         constructor:wef,
+        /**
+         * Version number
+         */
         version:"0.2.0",
+        /**
+         * @ignore
+         */
         init:function () {
             return this;
         }
     };
 
+    /**
+     * Extension point
+     */
     wef.fn = wef.prototype;
 
+    /**
+     * @ignore
+     */
     wef.prototype.init = function () {
         return this;
     };
 
     wef.prototype.init.prototype = wef.prototype;
 
+    /**
+     * Extends an object with other object properties
+     * @param {Object}receiver receiver object
+     * @param {Object}giver giver object
+     * @param {string[]}[filter] array of strings. If giver property name is
+     * contained in filter is added to receiver, else don't
+     *
+     * @memberOf wef
+     */
     wef.fn.extend = function (receiver, giver, filter) {
         var tmp = receiver, property;
         //both must be objects
@@ -52,17 +77,38 @@
 
     wef.fn.hasOwnProperty = function(o, property) {
         //literal objects in IE don't have hasOwnProperty
+        //todo:delete????
         return Object.prototype.hasOwnProperty.call(o, property);
     };
 
+    /**
+     * Checks if param is a Function
+     * @param obj object to check
+     * @returns {boolean} true if a Function, false if not
+     *
+     * @memberOf wef
+     */
     wef.fn.isFunction = function (obj) {
         return typeof obj == "function";
     };
 
+    /**
+     * Checks if param is a literal string
+     * @param obj object to check
+     * @returns {boolean} true if a literal string, false if not
+     *
+     * @memberOf wef
+     */
     wef.fn.isString = function (obj) {
         return typeof obj == "string";
     };
 
+    /**
+     * Throws an Error
+     * @param message error message
+     *
+     * @memberOf wef
+     */
     wef.fn.error = function (message) {
         throw new Error(message);
     };
@@ -83,9 +129,22 @@
 (function (wef) {
 
     if (!("map" in Array.prototype)) {
-        Array.prototype.map = function (mapper, that /*opt*/) {
-            var other = new Array(this.length);
-            for (var i = 0, n = this.length; i < n; i++)
+        /**
+         * Crossbrowser implementation of Array.map().
+         *
+         * More info http://stackoverflow.com/questions/2790001/fixing-javascript-array-functions-in-internet-explorer-indexof-foreach-etc
+         * </p>
+         * Copyright (c) 2010 bobince [http://stackoverflow.com/users/18936/bobince]
+         * </p>
+         * Public Domain Licensed
+         *
+         * @param {Array}mapper the source array
+         * @param [that] "this" object reference
+         */
+        Array.prototype.map = function (mapper, that) {
+            var other, i;
+            other = new Array(this.length);
+            for (i = 0, n = this.length; i < n; i++)
                 if (i in this)
                     other[i] = mapper.call(that, this[i], i, this);
             return other;
@@ -98,22 +157,67 @@
  * MIT Licensed
  */
 (function (wef) {
-    var LOGLEVEL = {
-        all:-1,
-        trace:1,
-        debug:2,
-        log:2,
-        info:3,
-        warn:4,
-        error:5,
-        none:100
-    }, textFormatter, registered = {}, lastLogger, failSafeIndentation = false, logger, filteredLogs = 0;
 
+    var LOGLEVEL,textFormatter,registered = {},lastLogger,failSafeIndentation = false,logger,filteredLogs = 0;
+
+    /**
+     * @namespace  Log level constants
+     */
+    LOGLEVEL = {
+        /**
+         * @lends LOGLEVEL
+         */
+        /**
+         * Max verbosity
+         */
+        all:-1,
+        /**
+         * Noisy
+         */
+        trace:1,
+        /**
+         * Useful for testing
+         */
+        debug:2,
+        /**
+         * Log and more important messages
+         */
+        log:2,
+        /**
+         * Info and more important messages
+         */
+        info:3,
+        /**
+         * Warn and error messages
+         */
+        warn:4,
+        /**
+         * Only error message
+         */
+        error:5,
+        /**
+         * Minimum verbosity. Zero logs
+         */
+        none:100
+    }
+
+    /**
+     * Create a textFormatter
+     *
+     * @class Plain text logger formatter
+     */
     textFormatter = function () {
         return this;
     };
 
     textFormatter.prototype = {
+
+        /**
+         * Formats logger messages
+         * @param {Array-like}messages logger messages
+         * @param {integer}indentationLevel indentation level
+         * @param {string}type message type
+         */
         format:function (messages, indentationLevel, type) {
             var tmp = [], levelMarks = "                                                                                            ", levelText, typeText;
             tmp = Array.prototype.slice.call(messages, tmp);
@@ -129,6 +233,20 @@
         }
     };
 
+    /**
+     * Creates a logger
+     *
+     * @param {string}[logName=default] Logger name
+     *
+     * @class Console logger withs vitamins.
+     * </p>
+     * Features:
+     * <ul>
+     *     <li>Named loggers</li>
+     *     <li>Filters</li>
+     *     <li>Failsafe logging functions</li>
+     * </ul>
+     */
     logger = function (logName) {
         var tmpLogger;
         if (!logName || logName === "") {
@@ -150,29 +268,58 @@
 
     logger.prototype = {
         constructor:logger,
+        /**
+         * Log level
+         */
         loglevel: LOGLEVEL,
+        /**
+         * Version number
+         */
         version:"0.2.0",
+        /**
+         * Logger formatter. Currently a plain text formatter
+         */
         formatter:new textFormatter(),
+        /**
+         * @ignore
+         */
         init:function (logName) {
             this.logName = logName;
             return this;
         },
+        /**
+         * Gets the number of filtered log messages. Only for testing purposes
+         * @returns {integer} Number of Filtered messages
+         */
         _filteredLogs:function () {
             return filteredLogs;
         },
+        /**
+         * Gets the indentation level of the specified logger. Only for testing
+         * purposes
+         *
+         * @param {string}logName logger name
+         * @returns {integer} indentation level
+         */
         _getIndentLevel:function (logName) {
             return registered[logName].indentationLevel;
         },
         /**
          * Filter current loggers by name and priority level.
-         * Only log entries from matched loggers and priority > filter level are allowed. Filtered logs are lost.
+         * </p>
+         * Only log entries from matched loggers and priority > filter level are
+         * allowed. Filtered logs are lost.
          *
-         * @param {Object|string} options Filter options. There are two shortcuts :
-         * string "all" activate all loggers (logLevel: -1, pattern: ".*")
-         * string "none" deactivate all loggers (logLevel: 100, pattern: ".*")
-         * @param {number} options.logLevel Priority level
-         * @param {string} options.pattern Pattern that matches against current registered loggers. Pattern must be regExp
-         * compatible.
+         * @param {Object|string} options filter options.
+         * </p>
+         * There are two shortcuts :
+         * <ul>
+         *     <li>"all": activates all loggers (logLevel: -1, pattern: ".*")</li>
+         *     <li>"none": deactivates all loggers (logLevel: 100, pattern: ".*")</li>
+         * </ul>
+         * @param {integer} options.logLevel Priority level
+         * @param {string} options.pattern Pattern that matches against current
+         * registered loggers. Pattern must be regExp compatible.
          * */
         filter:function (options) {
             var name, regExp, logLevel;
@@ -207,49 +354,106 @@
         }
     };
 
+    /**
+     * Extension point
+     */
     logger.fn = logger.prototype;
 
+    /**
+     * @namespace Output object. Currently window.console
+     * </p>
+     * Redefining backend allows logs redirection
+     * </p>
+     */
     logger.prototype.backend = window.console || {};
 
+    /**
+     * FailSafe output. Currently unused.
+     * </p> window.console its the best option, alert messages are too intrusive
+     */
     logger.prototype.backend.failSafe = function () {
         //silent
     };
 
+    /**
+     * FailSafe grouping activation
+     */
     logger.prototype.backend.failSafeGroup = function () {
         failSafeIndentation = true;
     };
 
+    /**
+     * FailSafe ungrouping activation
+     */
     logger.prototype.backend.failSafeGroupEnd = function () {
         failSafeIndentation = true;
     };
 
+    /**
+     * trace backend
+     * @function
+     */
     logger.prototype.backend.trace = window.console.trace || logger.prototype.backend.log;
-
+    /**
+     * log backend
+     * @function
+     */
     logger.prototype.backend.log = window.console.log || logger.prototype.backend.failSafe;
-
+    /**
+     * debug backend
+     * @function
+     */
     logger.prototype.backend.debug = window.console.debug || logger.prototype.backend.log;
-
+    /**
+     * info backend
+     * @function
+     */
     logger.prototype.backend.info = window.console.info || logger.prototype.backend.log;
-
+    /**
+     * warn backend
+     * @function
+     */
     logger.prototype.backend.warn = window.console.warn || logger.prototype.backend.log;
-
+    /**
+     * error backend
+     * @function
+     */
     logger.prototype.backend.error = window.console.error || logger.prototype.backend.log;
-
+    /**
+     * group backend
+     * @function
+     */
     logger.prototype.backend.group = window.console.group || logger.prototype.backend.failSafeGroup;
-
+    /**
+     * groupCollapsed backend
+     * @function
+     */
     logger.prototype.backend.groupCollapsed = window.console.groupCollapsed || window.console.group || logger.prototype.backend.failSafeGroup;
-
+    /**
+     * groupEnd backend
+     * @function
+     */
     logger.prototype.backend.groupEnd = window.console.groupEnd || logger.prototype.backend.failSafeGroupEnd;
 
     logger.prototype.init.prototype = logger.prototype;
 
     //TODO: refactor using wef.extend
 
-    logger.prototype.init.prototype.debug = function (message) {
+    logger.prototype.init.prototype.debug =
+    /**
+     * Logs messages of logLevel=debug
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name debug
+     * @function
+     */
+    function (message) {
         if (registered[lastLogger].logLevel > LOGLEVEL.debug) {
             filteredLogs++;
             return this;
         }
+        //crossBrowser support
         if (Function.prototype.bind && console && typeof console.debug == "object") {
             var debug = Function.prototype.bind.call(console.debug, console);
             debug.apply(console, this.formatter.format(arguments, registered[lastLogger].indentationLevel));
@@ -260,7 +464,16 @@
         }
     };
 
-    logger.prototype.init.prototype.error = function (message) {
+    logger.prototype.init.prototype.error =
+    /**
+     * Logs messages of logLevel=error
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name error
+     * @function
+     */
+    function (message) {
         if (registered[lastLogger].logLevel > LOGLEVEL.error) {
             filteredLogs++;
             return this;
@@ -275,7 +488,16 @@
         }
     };
 
-    logger.prototype.init.prototype.info = function (message) {
+    logger.prototype.init.prototype.info =
+    /**
+     * Logs messages of logLevel=info
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name info
+     * @function
+     */
+    function (message) {
         if (registered[lastLogger].logLevel > LOGLEVEL.info) {
             filteredLogs++;
             return this;
@@ -290,7 +512,16 @@
         }
     };
 
-    logger.prototype.init.prototype.warn = function (message) {
+    logger.prototype.init.prototype.warn =
+    /**
+     * Logs messages of logLevel=warn
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name warn
+     * @function
+     */
+    function (message) {
         if (registered[lastLogger].logLevel > LOGLEVEL.warn) {
             filteredLogs++;
             return this;
@@ -305,7 +536,16 @@
         }
     };
 
-    logger.prototype.init.prototype.log = function (message) {
+    logger.prototype.init.prototype.log =
+    /**
+     * Logs messages of logLevel=log
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name log
+     * @function
+     */
+    function (message) {
         if (registered[lastLogger].logLevel > LOGLEVEL.log) {
             filteredLogs++;
             return this;
@@ -320,7 +560,16 @@
         }
     };
 
-    logger.prototype.init.prototype.trace = function () {
+    logger.prototype.init.prototype.trace =
+    /**
+     * Logs messages of logLevel=trace
+     * @param {string}message
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name trace
+     * @function
+     */
+    function () {
         if (registered[lastLogger].logLevel > LOGLEVEL.trace) {
             filteredLogs++;
             return this;
@@ -335,7 +584,16 @@
         }
     };
 
-    logger.prototype.init.prototype.group = function (message) {
+    logger.prototype.init.prototype.group =
+    /**
+     * Groups next messages until there is a call to groupEnd
+     * and logs messages to logLevel=log
+     * @param {string}[messages] more messages, comma separated
+     * @memberOf logger#
+     * @name group
+     * @function
+     */
+    function (message) {
         registered[lastLogger].indentationLevel++;
         this.backend.groupCollapsed.call(this.backend);
         if (registered[lastLogger].logLevel > LOGLEVEL.log) {
@@ -348,7 +606,16 @@
         return this;
     };
 
-    logger.prototype.init.prototype.groupEnd = function (message) {
+    logger.prototype.init.prototype.groupEnd =
+    /**
+     * Ungroup previously grouped messages
+     * and logs messages to logLevel=log
+     * @param {string}[messages] messages, comma separated
+     * @memberOf logger#
+     * @name groupEnd
+     * @function
+     */
+    function (message) {
         registered[lastLogger].indentationLevel--;
         this.backend.groupEnd.call(this.backend);
         if (registered[lastLogger].logLevel > LOGLEVEL.trace) {
@@ -367,24 +634,50 @@
  * Wef net module
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
+ *
+ * Original ajax code from https://github.com/alexyoung/turing.js/blob/master/turing.net.js
+ * Copyright (C) 2010-2011 Alex R. Young
+ * MIT Licensed
  */
 (function (wef) {
     var net;
 
+    /**
+     * @namespace
+     */
     net = function () {
         return new net.prototype.init();
     };
 
     net.prototype = {
         constructor:net,
+        /**
+         * Version number
+         */
         version:"0.1.0",
+        /**
+         * @ignore
+         */
         init:function () {
             return this;
         },
+        /**
+         * Launch a XMLHttpRequest, waiting the result
+         * @param url request url
+         * @param [options] additional arguments
+         * @param {string}options.method request method, supports[get|post]
+         * @param {boolean}options.asynchronous request type, synchronous or asynchronous
+         * @param {string}options.postBody message, in post request
+         * @param {Function}options.success success callback
+         * @param {Function}options.failure
+         */
         ajax:function (url, options) {
             var request;
+
             function isSuccessfulRequest(request) {
-                return (request.status >= 200 && request.status < 300) || request.status == 304 || (request.status == 0 && request.responseText);
+                return (request.status >= 200 && request.status < 300)
+                           || request.status == 304
+                    || (request.status == 0 && request.responseText);
             }
 
             function respondToReadyState() {
@@ -417,7 +710,7 @@
 
             //TODO: refactor using wef.fn.extend
             options.method = options.method ? options.method.toLowerCase() : "get";
-            options.asynchronous = options.asynchronous || true;
+            options.asynchronous = options.asynchronous!=="undefined" ? options.asynchronous : true;
             options.postBody = options.postBody || "";
 
             request.onreadystatechange = respondToReadyState;
@@ -447,20 +740,31 @@
         return false;
     }
 
+    /**
+     * Extension point
+     */
     net.fn = net.prototype;
 
     net.prototype.init.prototype = net.prototype;
 
     wef.net = net();
 
-})(window.wef);/*!
+})(window.wef);
+/*!
  * wef.cssParser
  * Copyright (c) 2011 Pablo Escalada
  * MIT Licensed
  *
- * Uses JSCSSP by Daniel Glazman <daniel.glazman@disruptive-innovations.com> licensed under MPL 1.1/GPL 2.0/LGPL 2.1
+ * Uses a lightly modified version of JSCSSP
+ * by Daniel Glazman <daniel.glazman@disruptive-innovations.com>
+ * licensed under MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * Changelog:
+ * - Add module pattern to jscsp
+ * - Change const declarations to var for IE9 compatibility
  */
 (function (wef) {
+    /**#nocode+*/
 
     /* ***** BEGIN LICENSE BLOCK *****
      * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -5452,11 +5756,16 @@
         return "";
     }
 
+    /**#nocode-*/
 
     /**
-     * CSS Style declaration
-     * @param property property name
-     * @param valueText property value
+     * Creates a style declaration
+     *
+     * @param {string} property property name
+     * @param {string} valueText property value
+     *
+     * @class CSS Property declaration
+     * @name StyleDeclaration
      */
     function StyleDeclaration(property, valueText) {
         this.property = property;
@@ -5464,24 +5773,42 @@
     }
 
     StyleDeclaration.prototype = {
+        /**
+         * Property name
+         * @type string
+         */
         property:"",
+        /**
+         * Property value
+         * @type string
+         */
         valueText:"",
-        toString:function () {
-            return this.property + ": " + this.valueText;
-        }
     };
 
     var cssParser, logger, CssParserInstance;
 
     logger = wef.logger("wef.cssParser");
 
+    /**
+     * Creates a CSS parser
+     *
+     * @class CSS parser
+     */
     cssParser = function () {
         return new cssParser.prototype.init();
     };
 
     cssParser.prototype = {
+        /**
+         * Version number*/
         version:"0.2.0",
+        /**
+         * Stores callback functions. Looks like register events
+         */
         callbacks:{
+            /**
+             * todo
+             */
             parserStar:undefined,
             parserStop:undefined,
             cssRuleFound:undefined,
@@ -5489,6 +5816,9 @@
             error:undefined
         },
         constructor:cssParser,
+        /**
+         * @ignore
+         */
         init:function () {
             this.callbacks = {
                 parserStar:undefined,
@@ -5501,110 +5831,181 @@
         }
     };
 
+    /**
+     * Extension point
+     */
     cssParser.fn = cssParser.prototype;
 
     cssParser.prototype.init.prototype = cssParser.prototype;
 
-    wef.extend(cssParser.prototype.init.prototype, {
-        backend:undefined,
+    wef.extend(cssParser.prototype.init.prototype,
+        /**
+         * @lends cssParser#
+         */
+               {
+                   /**
+                    * Reference to jscssp parser
+                    */
+                   backend:undefined,
 
-        whenStart:function (callback) {
-            if (wef.isFunction(callback)) {
-                logger.debug("set parserStart callback");
-                this.callbacks.parserStar = callback;
-            }
-            return this;
-        },
-
-        whenStop:function (callback) {
-            if (wef.isFunction(callback)) {
-                logger.debug("set parserStop callback");
-                this.callbacks.parserStop = callback;
-            }
-            return this;
-        },
-
-        whenCssRule:function (callback) {
-            if (wef.isFunction(callback)) {
-                logger.debug("set CssRuleFound callback");
-                this.callbacks.cssRuleFound = callback;
-            }
-            return this;
-        },
-
-        whenProperty:function (callback) {
-            if (wef.isFunction(callback)) {
-                logger.debug("set propertyFound callback");
-                this.callbacks.propertyFound = callback;
-            }
-            return this;
-        },
-
-        whenError:function (callback) {
-            if (wef.isFunction(callback)) {
-                logger.debug("set error callback");
-                this.callbacks.error = callback;
-            }
-            return this;
-        },
-
-        parse:function (data) {
-            var sheet, property, context = this;
-            try {
-                if (!data || !wef.isString(data) || data === "") {
-                    var message = "InvalidArgumentException - data must be a non empty string";
-                    logger.error(message);
-                    throw new Error(message);
-                }
-                if (context.callbacks.parserStar) {
-                    logger.debug("call parserStart callback");
-                    context.callbacks.parserStar.call(context, {time:new Date().getTime()});
-                }
-                sheet = new CSSParser().parse(data, false, false);
-                //start
-                sheet.cssRules.forEach(function (cssRule) {
-                    logger.debug("cssRule:", cssRule);
-                    if (context.callbacks.cssRuleFound) {
-                        logger.debug("call cssRuleFound callback");
-                        context.callbacks.cssRuleFound.call(context, cssRule);
-                    }
-                    //ErrorRule
-                    if (cssRule.type === 0) {
-                        var message = "ParserException - Error in line " + cssRule.currentLine + ": " + cssRule.parsedCssText;
-                        logger.error(message);
-                        throw new Error(message);
-                    }
-                    cssRule.declarations.forEach(function (declaration) {
-                        property = {
-                            selectorText:cssRule.selectorText(),
-                            declaration:new StyleDeclaration(declaration.property, declaration.valueText)
-                        };
-                        logger.debug("property:", property);
-                        if (context.callbacks.propertyFound) {
-                            logger.debug("call propertyFound callback");
-                            context.callbacks.propertyFound.call(context, property);
-                        }
-                    });
-                });
-                //done
-                if (context.callbacks.parserStop) {
-                    logger.debug("call parserStop callback");
-                    context.callbacks.parserStop.call(context, {time:new Date().getTime()});
-                }
-            } catch (e) {
-                if (context.callbacks.error) {
-                    logger.error("call error callback:", e);
-                    context.callbacks.error.call(context, e.message);
-                    return this;
-                } else {
-                    logger.error("unhandled error call wef.error:", e);
-                    wef.error(e.message);
-                    return null;
-                }
-            }
-            return this;
-        }
-    });
+                   /**
+                    * Calls parserStar callback
+                    * @param {Function}callback "Parser starts" callback
+                    */
+                   whenStart:function (callback) {
+                       if (wef.isFunction(callback)) {
+                           logger.debug("set parserStart callback");
+                           this.callbacks.parserStar = callback;
+                       }
+                       return this;
+                   },
+                   /**
+                    * Calls parserStop callback
+                    * @param {Function}callback "Parser stops" callback
+                    */
+                   whenStop:function (callback) {
+                       if (wef.isFunction(callback)) {
+                           logger.debug("set parserStop callback");
+                           this.callbacks.parserStop = callback;
+                       }
+                       return this;
+                   },
+                   /**
+                    * Calls cssRuleFound callback
+                    * @param {Function}callback "Css rule found" callback
+                    */
+                   whenCssRule:function (callback) {
+                       if (wef.isFunction(callback)) {
+                           logger.debug("set CssRuleFound callback");
+                           this.callbacks.cssRuleFound = callback;
+                       }
+                       return this;
+                   },
+                   /**
+                    * Calls propertyFound callback
+                    * @param {Function}callback "Property found" callback
+                    */
+                   whenProperty:function (callback) {
+                       if (wef.isFunction(callback)) {
+                           logger.debug("set propertyFound callback");
+                           this.callbacks.propertyFound = callback;
+                       }
+                       return this;
+                   },
+                   /**
+                    * Calls error callback
+                    * @param {Function}callback "Error" callback
+                    */
+                   whenError:function (callback) {
+                       if (wef.isFunction(callback)) {
+                           logger.debug("set error callback");
+                           this.callbacks.error = callback;
+                       }
+                       return this;
+                   },
+                   /**
+                    * Parses given text calling callbacks when registered actions happens
+                    * @param {string}data CSS code
+                    */
+                   parse:function (data) {
+                       var sheet, property, context = this;
+                       try {
+                           if (!data || !wef.isString(data) || data === "") {
+                               var message = "InvalidArgumentException - data must be a non empty string";
+                               logger.error(message);
+                               throw new Error(message);
+                           }
+                           if (context.callbacks.parserStar) {
+                               logger.debug("call parserStart callback");
+                               context.callbacks.parserStar.call(context,
+                                   /**
+                                    * @namespace Parser start data format
+                                    * @name StartCallbackData
+                                    */
+                                   /**
+                                    * @lends StartCallbackData#
+                                    */
+                                                                 {
+                                                                     /**
+                                                                      * Start time in millisecons
+                                                                      * @type Number
+                                                                      */
+                                                                     time:new Date().getTime()});
+                           }
+                           sheet = new CSSParser().parse(data, false, false);
+                           //start
+                           sheet.cssRules.forEach(function (cssRule) {
+                               logger.debug("cssRule:", cssRule);
+                               if (context.callbacks.cssRuleFound) {
+                                   logger.debug("call cssRuleFound callback");
+                                   context.callbacks.cssRuleFound.call(context, cssRule);
+                               }
+                               //ErrorRule
+                               if (cssRule.type === 0) {
+                                   var message = "ParserException - Error in line " + cssRule.currentLine + ": " + cssRule.parsedCssText;
+                                   logger.error(message);
+                                   throw new Error(message);
+                               }
+                               cssRule.declarations.forEach(function (declaration) {
+                                   /**
+                                    * @namespace CSS property found data format
+                                    * @name CSSParserProperty
+                                    */
+                                   property =
+                                   /**
+                                    * @lends CSSParserProperty#
+                                    */
+                                   {
+                                       /**
+                                        * Property selector
+                                        * @type string
+                                        */
+                                       selectorText:cssRule.selectorText(),
+                                       /**
+                                        * Property declaration
+                                        * @type StyleDeclaration
+                                        */
+                                       declaration:new StyleDeclaration(declaration.property, declaration.valueText)
+                                   };
+                                   logger.debug("property:", property);
+                                   if (context.callbacks.propertyFound) {
+                                       logger.debug("call propertyFound callback");
+                                       context.callbacks.propertyFound.call(context, property);
+                                   }
+                               });
+                           });
+                           //done
+                           if (context.callbacks.parserStop) {
+                               logger.debug("call parserStop callback");
+                               context.callbacks.parserStop.call(context,
+                                   /**
+                                    * @namespace Parser stop data format
+                                    * @name StopCallbackData
+                                    */
+                                   /**
+                                    * @lends StopCallbackData#
+                                    */
+                                                                 {
+                                                                     /**
+                                                                      * Stop time in millisecons
+                                                                      * @type Number
+                                                                      */
+                                                                     time:new Date().getTime()});
+                           }
+                       } catch (e) {
+                           if (context.callbacks.error) {
+                               logger.error("call error callback:", e);
+                               context.callbacks.error.call(context, e.message);
+                               return this;
+                           } else {
+                               logger.error("unhandled error call wef.error:", e);
+                               wef.error(e.message);
+                               return null;
+                           }
+                       }
+                       return this;
+                   }
+               });
 
     wef.cssParser = cssParser;
 
@@ -5826,7 +6227,6 @@
         parserDone:function (o) {
             log.info("parsing done at", new Date(o.time).toLocaleTimeString());
         },
-
         /**
          * Checks if given property is a valid one.
          * If property name exists in constants then is a valid one
@@ -5899,13 +6299,14 @@
     }
 
     function readFile(url) {
-        var templateText;
+        var templateText="";
 
         try {
             log.info("reading file...");
-            templateText = wef.net.ajax(url, {
+            wef.net.ajax(url, {
+                asynchronous:false,
                 success:function (request) {
-                    return request.responseText;
+                    templateText = request.responseText;
                 }
             });
             log.info("template loaded... [OK]");
