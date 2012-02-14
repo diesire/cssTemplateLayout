@@ -16,7 +16,7 @@ git submodule update
 
 Then you can run <code>make build</code>
 
-For testing, wef uses "jsTestDriver":http://code.google.com/p/js-test-driver/
+For testing, wef uses "Qunit":http://qunitjs.com/
 
 h2. Features
 

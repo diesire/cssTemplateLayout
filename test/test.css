@@ -1,0 +1,29 @@
+.templateLayoutRow {
+    background-color: rgb(210, 224, 230);
+}
+
+.templateLayoutRow:hover {
+    background-color: rgb(43, 129, 175);
+}
+
+.templateLayoutSlot:hover {
+    background-color: rgb(198, 231, 70);
+}
+
+#sourceTemplate {
+    font-family: "Ubuntu Mono", "Monaco";
+    color: gray;
+}
+#sourceTemplate:hover {
+    color: #0D3349;
+}
+#sourceHTML {
+    color: gray;
+}
+#sourceHTML:hover {
+    color: #0D3349;
+}
+#testNotes {
+    font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+    color: #EE5757;
+}

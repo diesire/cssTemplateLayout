@@ -14,26 +14,15 @@
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutTable {
-            -background-color: rgb(43, 129, 175);
-        }
-
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
             var text =
                     "#parent {display: \"xy\"} " +
-                    "#id11{display: \"ab\" /100px 200px 300px; position: x} " +
-                    "#id21{display: \"cd\" /200px 200px 300px; position: y} " +
+                    "#id11{display: \"ab\" /100px 100px 200px; position: x} " +
+                    "#id21{display: \"cd\" /200px 100px 200px; position: y} " +
                     "#id12a{position: d} " +
                     "#id12b{position: c} " +
                     "#id22a{position: b} " +
@@ -46,28 +35,28 @@
                       "there are 1 root templates");
                 //parent->table->row->cell->child = 4 x children()
                 equal($("#id11").attr("id"),
-                      $("#parent").children().children().children().children().get(0).id,
+                      $("#parent .templateLayoutTable tr:eq(0) td:eq(0) div div").attr("id"),
                       "#parent[x] == #id11");
                 equal($("#id21").attr("id"),
-                      $("#parent").children().children().children().children().get(1).id,
+                      $("#parent .templateLayoutTable tr:eq(0) td:eq(3) div div").attr("id"),
                       "#parent[y] == #id21");
 
                 equal($("#id11").children().children().children().children().length, 2,
                       "#id11 has 2 children");
                 equal($("#id22b").attr("id"),
-                      $("#id11").children().children().children().children().get(0).id,
+                      $("#id11 .templateLayoutTable tr:eq(0) td:eq(0) div div").attr("id"),
                       "#id11[a] == #id22b");
                 equal($("#id22a").attr("id"),
-                      $("#id11").children().children().children().children().get(1).id,
+                      $("#id11 .templateLayoutTable tr:eq(0) td:eq(1) div div").attr("id"),
                       "#id11[b] == #id22a");
 
                 equal($("#id21").children().children().children().children().length, 2,
                       "#id21 has 2 children");
                 equal($("#id12b").attr("id"),
-                      $("#id21").children().children().children().children().get(0).id,
+                      $("#id21 .templateLayoutTable tr:eq(0) td:eq(0) div div").attr("id"),
                       "#id21[a] == #id12b");
                 equal($("#id12a").attr("id"),
-                      $("#id21").children().children().children().children().get(1).id,
+                      $("#id21 .templateLayoutTable tr:eq(0) td:eq(1) div div").attr("id"),
                       "#id21[b] == #id12a");
             })
         }
@@ -88,6 +77,25 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<div id=sourceHTML>
+    <div>one</div>
+    <div>two</div>
+    <div>three</div>
+    <div>four</div>
+    <div>five</div>
+    <div>six</div>
+</div>
+<hr/>
+<pre id="sourceTemplate">
+    #parent {display: "xy"}
+    #id11{display: "ab" /100px 100px 200px; position: x}
+    #id21{display: "cd" /200px 100px 200px; position: y}
+    #id12a{position: d}
+    #id12b{position: c}
+    #id22a{position: b}
+    #id22b{position: a}
+</pre>
+<hr/>
 <div id="parent">
     <div id="id11">one</div>
     <div id="id12a">two</div>

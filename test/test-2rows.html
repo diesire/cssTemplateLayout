@@ -14,18 +14,8 @@
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutTable {
-            -background-color: rgb(43, 129, 175);
-        }
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-        pre { font-family: "Ubuntu Mono", "Monaco"}
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
@@ -36,7 +26,19 @@
             test("width", function () {
                 equal($("#parent").children().width(),
                       Math.max($("#child1").width() + $("#child2").width(), $("#child3").width() + $("#child4").width()), "parentWidth = max(childRow_1_Width, ..., childRow_n_Width)");
-            })
+            });
+            test("cols", function(){
+                // get col count with jquery
+                // $('templateLayoutTable tr:eq(0) td').length
+                equal($('#parent .templateLayoutTable tr:eq(0) td').length, 2,
+                      "2 columns");
+                equal($('#parent .templateLayoutTable tr:eq(1) td').length, 2,
+                      "2 columns");
+            });
+            test("rows", function(){
+                equal($("#parent .templateLayoutTable tr").length, 2,
+                      "2 rows");
+            });
         }
     </script>
     <title></title>
@@ -53,6 +55,13 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<div>
+    <h1>First</h1>
+    <h2>Second</h2>
+    <h3>Third</h3>
+    <h4>Fourth</h4>
+</div>
+<hr/>
 <pre>
     #parent {display: "ab" "cd"}
     #child1 {position: d} //First
@@ -60,6 +69,7 @@
     #child3 {position: b} //Third
     #child4 {position: a} //Fourth
 </pre>
+<hr/>
 <div id="parent">
     <h1 id="child1">First</h1>
     <h2 id="child2">Second</h2>

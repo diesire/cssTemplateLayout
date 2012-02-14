@@ -18,25 +18,27 @@
           media="screen"/>
 
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
-            templateLayout("http://127.0.0.1/~diesire/cssTemplateLayout/test/template.css").transform();
+            templateLayout("template.css").transform();
 
             <!-- Test code -->
+            test("externalTemplate", function () {
+                equal($(".templateLayoutTable").length,
+                      1,
+                      "load external template OK");
+            });
             test("width", function () {
-                equal($("#parent").children().width(),
-                      $("#child1").width() + $("#child2").width() + $("#child3").width() + $("#child4").width(), "parentWidth = child_1_Width + ...+ child_n_Width");
-            })
+                equal($("#parent").children().width(), 400,
+                      "parentWidth = 250px + 150px");
+            });
+            test("height", function () {
+                equal($("#parent").children().height(), 400,
+                      "parentHeight = 250px + 150px");
+            });
         }
     </script>
     <title></title>
@@ -53,13 +55,26 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<div id="sourceHTML">
+    <p>Primero</p>
+    <p>Segundo</p>
+    <p>Tercero</p>
+    <p>Cuarto</p>
+</div>
+<hr/>
+<pre id=sourceTemplate>
+    #parent { display: "ab" /250px "cd" /150px 250px 150px;}
+    #child1 {position: d}
+    #child2 {position: c}
+    #child3 {position: b}
+    #child4 {position: a}
+</pre>
+<hr/>
 <div id="parent">
-    <h1 id="child1">Primero</h1>
-
-    <h2 id="child2">Segundo</h2>
-
-    <h3 id="child3">Tercero</h3>
-    <h4 id="child4">Cuarto</h4>
+    <p id="child1">Primero</p>
+    <p id="child2">Segundo</p>
+    <p id="child3">Tercero</p>
+    <p id="child4">Cuarto</p>
 </div>
 </body>
 </html>

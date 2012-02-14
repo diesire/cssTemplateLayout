@@ -4,6 +4,7 @@
  * MIT Licensed
  */
 var isChrome = /chrome/i.exec(navigator.appVersion);
+var defaultTemplate = "body {display: \"ab\"} h1 {position: a} h2 {position: b}";
 
 module("CSSTemplateLayout");
 
@@ -18,14 +19,16 @@ test("templateLayout.fn", function () {
 
 test("constructor", function () {
     var templateSource = "body {display: \"ab\"} h1 {position: a} h2 {position: b}";
-    equal(templateLayout().templateSources[0].type, "file", "calling empty constructor");
+
     //can't load remote files from local ones
     //equal(templateLayout("http://www.uniovi.es/TemaUniovi2010/css/layout.css").templateSources[0].type, "http", "loading remote css file");
     //equal(templateLayout("https://example.com/template.css").templateSources[0].type, "http", "loading remote css file");
     //equal(templateLayout("file://localhost/template.css").templateSources[0].type, "file", "loading local css file");
 
     if (!isChrome) {
-        //Chrome can't load local files from local ones
+        //Chrome can't load local files from local files
+        var aux  = templateLayout().templateSources[0].type;
+        ok(aux === "file"||aux === "http", "calling empty constructor");
         equal(templateLayout("template.css").templateSources[0].type, "file", "loading local css file");
         equal(templateLayout("css/template.css").templateSources[0].type, "file", "loading local css file");
         equal(templateLayout("./css/template.css").templateSources[0].type, "file", "loading local css file");
@@ -43,16 +46,16 @@ test("public properties", function () {
 
 test("public methods", function () {
     //old ones, deleted
-    equal(templateLayout().setTemplate, undefined, "setTemplate no longer supported");
-    equal(templateLayout().insertTemplate, undefined, "insertTemplate no longer supported");
-    equal(templateLayout().preprocess, undefined, "preprocess no longer supported");
-    equal(templateLayout().compile, undefined, "compile no longer supported");
+    equal(templateLayout(defaultTemplate).setTemplate, undefined, "setTemplate no longer supported");
+    equal(templateLayout(defaultTemplate).insertTemplate, undefined, "insertTemplate no longer supported");
+    equal(templateLayout(defaultTemplate).preprocess, undefined, "preprocess no longer supported");
+    equal(templateLayout(defaultTemplate).compile, undefined, "compile no longer supported");
 
     //testing
-    notEqual(templateLayout().getBuffer, undefined, "getBuffer");
+    notEqual(templateLayout(defaultTemplate).getBuffer, undefined, "getBuffer");
 
     //new ones
-    notEqual(templateLayout().transform, undefined, "transform is a public method");
+    notEqual(templateLayout(defaultTemplate).transform, undefined, "transform is a public method");
 });
 
 test("transform options", function () {

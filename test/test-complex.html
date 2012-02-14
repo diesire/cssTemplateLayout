@@ -14,11 +14,8 @@
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutCell:hover {
-            border: solid 1px;
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
@@ -65,7 +62,7 @@
 <body>
 <!-- Qunit code -->
 <div>
-    <div id="qunit-header">CSS Template Layout test - Nested templates
+    <div id="qunit-header">CSS Template Layout test - Complex layout
         handling
     </div>
     <div id="qunit-banner"></div>
@@ -76,6 +73,38 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<hr/>
+<pre id="sourceTemplate">
+    #tl-parent {display: "aaa" "bcc" "ddd" /50px 200px * *}
+
+    .tl-header {
+        position:a;
+        display:"122"
+    }
+    .tl-logo {position: 1;}
+    .tl-title {position: 2;}
+
+    .tl-navbar {
+        position:b;
+        display: "3" /50px" "4" /600px "5" /100px
+    }
+    .tl-navbar-header {position:3;}
+    .tl-navbar-body {position:4;}
+    .tl-navbar-footer {position:5;}
+
+    .tl-news {
+        position:c;
+        display: "xxx" "yyz" "tuz" * * 20%
+    }
+    .tl-news-breaking1 {position:x;}
+    .tl-news-breaking2 {position:y;}
+    .tl-news-breaking3 {position:z;}
+    .tl-news-breaking4 {position:t;}
+    .tl-news-breaking5 {position:u;}
+
+    .tl-footer {position:d;}
+</pre>
+<hr/>
 <div id="tl-parent">
     <div class="tl-title">
         Lorem ipsum Times

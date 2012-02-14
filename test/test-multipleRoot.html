@@ -14,19 +14,8 @@
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutTable {
-            -background-color: rgb(43, 129, 175);
-        }
-
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
@@ -36,9 +25,10 @@
             <!-- Test code -->
             test("root elements", function () {
                 equal(2, $("#parent").children().length, "there are 2 root templates");
-                equal($("#id11").attr("id"), $("#parent").children().get(0).id, "child_1 == template1");
+                equal($("#id11").attr("id"), $("#parent").children().get(0)
+                        .id, "child_1 == template1");
                 equal($("#id21").attr("id"), $("#parent").children().get(1).id, "child_2 == template2");
-            })
+            });
         }
     </script>
     <title></title>
@@ -57,25 +47,63 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
-<div id="parent">
-    <div id="id11">
+<div id="sourceHTML">
+    <div>
+        default content
+    </div>
+    <div>
         one
     </div>
-    <div id="id12a">
+    <div>
         two
     </div>
-    <div id="id12b">
+    <div>
+    </div>
+    <div>
         three
     </div>
-    <div id="id21">
+    <div>
         four
     </div>
+</div>
+<hr/>
+<pre id="sourceTemplate">
+    #id11{display: "ab"}
+    #id21{display: "cd"}
+    #id12a{position: d}
+    #id12b{position: c}
+    #id22a{position: b}
+    #id22b{position: a}
+</pre>
+<hr/>
+<div id="parent">
+    <div id="id11">
+        default content
+    </div>
+    <div id="id12a">
+        one
+    </div>
+    <div id="id12b">
+        two
+    </div>
+    <div id="id21">
+    </div>
     <div id="id22a">
-        five
+        three
     </div>
     <div id="id22b">
-        six
+        four
     </div>
+</div>
+
+<div id=testNotes>
+    <h2>Issues</h2>
+    <ul>
+        <li>
+            In webkit browsers, there are vertical scrollbars,
+            but height sizes are OK. In Firefox, Opera and IE9 there aren't.
+        </li>
+    </ul>
 </div>
 </body>
 </html>

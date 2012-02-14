@@ -14,19 +14,8 @@
     <script src="../src/templateLayout.compiler.js"></script>
     <script src="../src/templateLayout.generator.js"></script>
     <!-- Example style -->
-    <style type="text/css">
-        .templateLayoutTable {
-            -background-color: rgb(43, 129, 175);
-        }
-
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
@@ -40,9 +29,25 @@
             templateLayout(text).transform();
 
             <!-- Test code -->
-            test("root elements", function () {
-                ok(true);
-            })
+            test("col span", function() {
+                equal($('#tl-parent .templateLayoutTable tr:eq(0) td').length,
+                      1,
+                      "first row span OK");
+            });
+            test("row span", function() {
+                equal($('#tl-parent .templateLayoutTable tr:eq(2) td').length,
+                      1,
+                      "second-third col span OK");
+            });
+            test("cols", function(){
+                equal($('#tl-parent .templateLayoutTable tr:eq(1) td')
+                              .length, 2,
+                      "second row 2 columns");
+            });
+            test("rows", function(){
+                equal($("#tl-parent .templateLayoutTable tr").length, 3,
+                      "3 rows");
+            });
         }
     </script>
 
@@ -51,8 +56,7 @@
 <body>
 <!-- Qunit code -->
 <div>
-    <div id="qunit-header">CSS Template Layout test - Nested templates
-        handling
+    <div id="qunit-header">CSS Template Layout test - Cell span
     </div>
     <div id="qunit-banner"></div>
     <div id="qunit-testrunner-toolbar"></div>
@@ -61,7 +65,40 @@
     <div id="qunit-fixture">test markup, will be hidden</div>
     <div style="margin: 50px"></div>
 </div>
-<pre>
+
+<div id=sourceHTML>
+    <p>Lorem
+        ipsum</p>
+
+    <div class="breakingnews">
+        <p>Lorem ipsum dolor sit amet,
+            consectetuer adipiscing
+            elit...
+        </p>
+    </div>
+    <div class="breakingnews">
+        <p>Aenean leo ligula, porttitor
+            eu, ...</p>
+
+        <p>Nullam quis ante. Etiam sit amet orc....</p>
+    </div>
+    <div>
+        <ul>
+            <li>
+                Lorem
+            </li>
+            <li>
+                ipsum
+            </li>
+        </ul>
+    </div>
+    <img src="resources/cc.png" alt="Creative Commons"
+         width="100"
+         height="100"
+            />
+</div>
+<hr/>
+<pre id=sourceTemplate>
     #tl-parent {display: \"aa\" \"bc\" \"bd\";}
     #tl-logo {position:a;}
     #tl-header {position: a;}
@@ -69,6 +106,7 @@
     #tl-top {position:c;}
     #tl-bottom {position:d;}
 </pre>
+<hr/>
 <!-- Test -->
 <div id="tl-parent">
     <p id="tl-header">Lorem

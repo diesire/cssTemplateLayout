@@ -15,12 +15,12 @@
                 if (className || className === "") {
                     //HTMLElementNodes
                     if (!/templateLayout/.test(className)) {
-                        console.log(className, currentNode.childNodes[i].tagName);
+                        log.log(className, currentNode.childNodes[i].tagName);
                         candidates.push(currentNode.childNodes[i]);
                     }
                 } else {
                     //TextNodes
-                    console.log("text", currentNode.childNodes[i].textContent);
+                    log.log("text", currentNode.childNodes[i].textContent);
                     //insert in template.grid.getDefaultNode()
                     candidates.push(currentNode.childNodes[i]);
                 }
@@ -91,7 +91,7 @@
                     });
                 });
             } else {
-                log.warn("leaf - no grid");
+                log.log("leaf - no grid");
             }
             log.debug("template resize... [OK]");
         }
@@ -102,7 +102,6 @@
             templateNode = template.htmlNode;
 
             if (!template.isLeaf()) {
-//                computedHeights = generator.fn.computeRowHeights(template);
                 gridNode = generator.fn.getGridNode(templateNode);
 
                 columnNode = generator.fn.getColumnNodes(gridNode, template.grid.colNumber);
@@ -119,13 +118,6 @@
                                 resizeTemplateHeight(childTemplate, slotNode);
 
                             });
-                            //todo:delete
-                            //generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
-//                                    var zzz = slot.htmlNode.offsetHeight;
-//                                    if(zzz>computedHeights.rowHeight[rowIndex]) {
-//                                        computedHeights.rowHeight[rowIndex] = zzz;
-//                                        generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
-//                                    }
                         }
                         computedHeights = generator.fn.computeRowHeights(template);
                         generator.fn.setSlotNodeHeight(slotNode, computedHeights, rowIndex);
@@ -136,7 +128,7 @@
                 computedHeights = generator.fn.computeRowHeights(template);
                 generator.fn.setGridNodeHeight(gridNode, computedHeights);
             } else {
-                log.warn("leaf - no grid");
+                log.log("leaf - no grid");
             }
             log.debug("template resize... [OK]");
         }
@@ -387,7 +379,7 @@
                     tmp[rowIndex] = 0;
                     row.slots.forEach(function (slot) {
                         if (slot.rowSpan === 1) {
-                            var zzz = slot.htmlNode.offsetHeight;
+                            var zzz = slot.htmlNode.clientHeight;
                             if (zzz > tmp[rowIndex]) {
                                 tmp[rowIndex] = zzz;
                             }

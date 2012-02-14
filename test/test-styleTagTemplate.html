@@ -37,25 +37,19 @@
     </style>
 
     <!-- Example style-->
-    <style type="text/css">
-        .templateLayoutRow {
-            background-color: rgb(210, 224, 230);
-        }
-
-        .templateLayoutCell:hover {
-            background-color: rgb(198, 231, 70);
-        }
-    </style>
+    <link rel="stylesheet" href="test.css" type="text/css"
+          media="screen"/>
 
     <script type="text/javascript">
         window.onload = function () {
             templateLayout().transform();
 
             <!-- Test code -->
-            test("width", function () {
-                equal($("#parent").children().width(),
-                      $("#child1").width() + $("#child2").width() + $("#child3").width() + $("#child4").width(), "parentWidth = child_1_Width + ...+ child_n_Width");
-            })
+            test("styleTemplate", function () {
+                equal($(".templateLayoutTable").length,
+                      1,
+                      "load style template OK");
+            });
         }
     </script>
     <title></title>
@@ -72,11 +66,32 @@
     <div style="margin: 50px"></div>
 </div>
 <!-- Test -->
+<div id="sourceHTML">
+    <h1>Primero</h1>
+    <h2>Segundo</h2>
+    <h3>Tercero</h3>
+    <h4>Cuarto</h4>
+</div>
+<pre id="sourceTemplate">
+    #parent {
+            display: "ab" /250px "cd" /150px 250px 150px;
+        }
+        #child1 {
+            position: d
+        }
+        #child2 {
+            position: c
+        }
+        #child3 {
+            position: b
+        }
+        #child4 {
+            position: a
+        }
+</pre>
 <div id="parent">
     <h1 id="child1">Primero</h1>
-
     <h2 id="child2">Segundo</h2>
-
     <h3 id="child3">Tercero</h3>
     <h4 id="child4">Cuarto</h4>
 </div>
