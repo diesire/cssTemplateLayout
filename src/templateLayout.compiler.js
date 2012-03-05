@@ -1,6 +1,10 @@
 /*!
- * templateLayout.compiler
+ * templateLayout.compiler module
  * Copyright (c) 2011 Pablo Escalada
+ *
+ * Contributor(s):
+ *   César Acebal
+ *
  * MIT Licensed
  */
 (function (templateLayout) {
